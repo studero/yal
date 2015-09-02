@@ -1,9 +1,0 @@
-{
-  "generator-java": {
-    "title": "Yal Controller",
-    "description": "",
-    "author": "studero",
-    "email": "mail@romanstuder.ch",
-    "namespace": "ch.sulco.yal.controller"
-  }
-}

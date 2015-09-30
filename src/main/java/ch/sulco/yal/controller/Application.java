@@ -1,42 +1,64 @@
 package ch.sulco.yal.controller;
 
+import static spark.Spark.get;
+
 import java.util.logging.Logger;
 
+import spark.Spark;
 import ch.sulco.yal.dsp.AppConfig;
+import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
 import ch.sulco.yal.dsp.audio.onboard.LoopStore;
 import ch.sulco.yal.dsp.audio.onboard.OnboardProcessor;
 import ch.sulco.yal.dsp.audio.onboard.Player;
 import ch.sulco.yal.dsp.audio.onboard.Recorder;
-import ch.sulco.yal.dsp.cmd.Command;
-import ch.sulco.yal.dsp.cmd.Loop;
-import ch.sulco.yal.dsp.cmd.Play;
 import ch.sulco.yal.dsp.cmd.SocketCommandReceiver;
-import spark.Spark;
+
+import com.google.gson.Gson;
 
 public class Application {
 	
 	private final static Logger log = Logger.getLogger(Application.class.getName());
 	
 	private final ch.sulco.yal.dsp.Application dspApplication;
+	
+	private final Gson gson = new Gson();
 
 	public Application() {
 		log.info("Initialize Application");
 		AppConfig appConfig = new AppConfig();
-        dspApplication = new ch.sulco.yal.dsp.Application(appConfig,
+        Player player = new Player();
+		LoopStore loopStore = new LoopStore(appConfig, new AudioSystemProvider());
+		Recorder recorder = new Recorder(appConfig, player, loopStore);
+		dspApplication = new ch.sulco.yal.dsp.Application(appConfig,
 				new SocketCommandReceiver(appConfig), new OnboardProcessor(
-						new Player(), new Recorder(appConfig), new LoopStore()));
+						player, recorder, loopStore));
 		
         Spark.staticFileLocation("/public");
         
-        Spark.get("/play", (req, res) -> runCommand(new Play()));
-        Spark.get("/loop", (req, res) -> runCommand(new Loop()));
+        get("/play", (req, res) -> play());
+        get("/loop", (req, res) -> loop());
+        get("/samples", (req, res) -> getSamples());
+        get("/channels", (req, res) -> getChannels());
         
         log.info("Application started");
         
 	}
 	
-	private String runCommand(Command command){
-		dspApplication.onCommand(command);
+	private String getSamples(){
+		return gson.toJson(dspApplication.getAudioProcessor().getSampleIds());
+	}
+	
+	private String getChannels(){
+		return gson.toJson(dspApplication.getAudioProcessor().getChannelIds());
+	}
+	
+	private String play(){
+		dspApplication.getAudioProcessor().play();
+		return "Success";
+	}
+	
+	private String loop(){
+		dspApplication.getAudioProcessor().loop();
 		return "Success";
 	}
 }

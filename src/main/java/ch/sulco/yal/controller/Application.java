@@ -39,7 +39,7 @@ public class Application {
 		LoopStore loopStore = new LoopStore(appConfig, new AudioSystemProvider());
 		Recorder recorder = new Recorder(appConfig, player, loopStore);
 		this.dspApplication = new ch.sulco.yal.dsp.Application(appConfig, new SocketCommandReceiver(appConfig),
-				new OnboardProcessor(player, recorder, loopStore));
+				new OnboardProcessor(player, loopStore, recorder));
 
 		Spark.staticFileLocation("/public");
 

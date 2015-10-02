@@ -18,9 +18,11 @@
 		<button ng-click="play()">Play</button>
 		<button ng-click="loop()">Loop</button>
 		
+		<h4>Loop Length: {{loopLength}}</h4>
+		
 		<h2>Channels</h2>
 		<div ng-repeat="(key, value) in channels">
-			{{key}} -- {{value}}		
+			{{key}} -- {{value}} <button ng-click="record(value.id, true)">Start Record</button> <button ng-click="record(value.id, false)">Stop Record</button>
 		</div>
 		
 		<h2>Samples</h2>

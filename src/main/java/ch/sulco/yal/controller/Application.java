@@ -51,13 +51,34 @@ public class Application {
 
 		get("/play", (req, res) -> this.play());
 		get("/loop", (req, res) -> this.loop());
+		get("/length", (req, res) -> this.getLoopLength());
 		get("/samples", (req, res) -> this.getSamples());
 		get("/channels", (req, res) -> this.getChannels());
+		
+		get("/record/:channelId/:enabled", (req, res) -> this.setRecord(Integer.parseInt(req.params(":channelId")), Boolean.parseBoolean(req.params(":enabled"))));
+		
+		get("/volume/:sampleId/:volume", (req, res) -> this.setVolume(Integer.parseInt(req.params(":sampleId")), Float.parseFloat(req.params(":volume"))));
 
 		log.info("Application started");
 
 		this.setupMidi();
 
+	}
+	
+	private String getLoopLength(){
+		Long loopLength = this.dspApplication.getAudioProcessor().getLoopLength();
+		return loopLength == null ? "" : loopLength.toString();
+	}
+	
+	private String setRecord(int channelId, boolean enabled) {
+		log.info("Record [channelId=" + channelId + "][enabled=" + enabled + "]");
+		this.dspApplication.getAudioProcessor().setChannelRecording(channelId, enabled);
+		return "Success";
+	}
+
+	private String setVolume(int sampleId, float volume) {
+		this.dspApplication.getAudioProcessor().setSampleVolume(sampleId, volume);
+		return "Success";
 	}
 
 	private void setupMidi() {

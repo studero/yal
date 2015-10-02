@@ -12,9 +12,16 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 			url : '/loop'
 		});
 	};
+	$scope.record = function(channelId, enabled) {
+		$http({
+			method : 'GET',
+			url : '/record/' + channelId + '/' + enabled
+		});
+	};
 	
 	$interval(updateChannels, 1000);
 	$interval(updateSamples, 1000);
+	$interval(updateLoopLength, 1000);
 	
 	function updateChannels(){
 		$http({
@@ -32,6 +39,16 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 			url : '/samples'
 		}).success(function(data, status, headers, config) {
 			$scope.samples = data;
+		}).error(function(data, status, headers, config) {
+		});
+	}
+	
+	function updateLoopLength(){
+		$http({
+			method : 'GET',
+			url : '/length'
+		}).success(function(data, status, headers, config) {
+			$scope.loopLength = data;
 		}).error(function(data, status, headers, config) {
 		});
 	}

@@ -28,7 +28,8 @@ import com.google.gson.Gson;
 
 public class Application {
 
-	private final static Logger log = Logger.getLogger(Application.class.getName());
+	private final static Logger log = Logger.getLogger(Application.class
+			.getName());
 
 	private final ch.sulco.yal.dsp.Application dspApplication;
 
@@ -38,11 +39,13 @@ public class Application {
 		log.info("Initialize Application");
 		AppConfig appConfig = new AppConfig();
 		Player player = new Player();
-		LoopStore loopStore = new LoopStore(appConfig, new AudioSystemProvider());
+		LoopStore loopStore = new LoopStore(appConfig,
+				new AudioSystemProvider());
 		Recorder recorder = new Recorder(appConfig, player, loopStore);
 		Recorder recorder2 = new Recorder(appConfig, player, loopStore);
-		this.dspApplication = new ch.sulco.yal.dsp.Application(appConfig, new SocketCommandReceiver(appConfig),
-				new OnboardProcessor(player, loopStore, recorder, recorder2));
+		this.dspApplication = new ch.sulco.yal.dsp.Application(appConfig,
+				new SocketCommandReceiver(appConfig), new OnboardProcessor(
+						player, loopStore, recorder, recorder2));
 
 		Spark.staticFileLocation("/public");
 
@@ -109,16 +112,28 @@ public class Application {
 	}
 
 	private String getSamples() {
-		return this.gson.toJson(this.dspApplication.getAudioProcessor().getSampleIds());
+		Set<Integer> sampleIds = this.dspApplication.getAudioProcessor()
+				.getSampleIds();
+		List<Sample> samples = new ArrayList<>();
+		for (int id : sampleIds) {
+			Sample sample = new Sample();
+			sample.setId(id);
+			sample.setMute(this.dspApplication.getAudioProcessor().isSampleMute(id));
+			sample.setVolume(this.dspApplication.getAudioProcessor().getSampleVolume(id));
+			samples.add(sample);
+		}
+		return this.gson.toJson(samples);
 	}
 
 	private String getChannels() {
-		Set<Integer> channelIds = this.dspApplication.getAudioProcessor().getChannelIds();
+		Set<Integer> channelIds = this.dspApplication.getAudioProcessor()
+				.getChannelIds();
 		List<Channel> channels = new ArrayList<>();
-		for(int id:channelIds){
+		for (int id : channelIds) {
 			Channel ch = new Channel();
 			ch.setId(id);
-			ch.setRecordingState(this.dspApplication.getAudioProcessor().getChannelRecordingState(id));
+			ch.setRecordingState(this.dspApplication.getAudioProcessor()
+					.getChannelRecordingState(id));
 			ch.setName("Channel " + id);
 			channels.add(ch);
 		}

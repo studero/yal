@@ -1,14 +1,32 @@
-<html ng-app="yalApp">
+<!DOCTYPE html>
+<html ng-app="yalApp" lang="en">
 <head>
 <script type="text/javascript" src="js/angular.min.js"></script>
+<script src="js/jquery-2.1.4.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/yal.js"></script>
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body ng-controller="yalCtrl">
-	<button ng-click="play()">Play</button>
-	<button ng-click="loop()">Loop</button>
+	<div class="container-fluid">
+		<div class="page-header">
+			<h1>YAL</h1>
+		</div>
+		<button ng-click="play()">Play</button>
+		<button ng-click="loop()">Loop</button>
+		
+		<h2>Channels</h2>
+		<div ng-repeat="(key, value) in channels">
+			{{key}} -- {{value}}		
+		</div>
+		
+		<h2>Samples</h2>
+		<div ng-repeat="(key, value) in samples">
+			{{key}} -- {{value}}		
+		</div>
+	</div>
 </body>
 </html>

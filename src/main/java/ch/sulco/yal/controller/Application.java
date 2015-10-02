@@ -2,7 +2,9 @@ package ch.sulco.yal.controller;
 
 import static spark.Spark.get;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.sound.midi.MidiDevice;
@@ -38,8 +40,9 @@ public class Application {
 		Player player = new Player();
 		LoopStore loopStore = new LoopStore(appConfig, new AudioSystemProvider());
 		Recorder recorder = new Recorder(appConfig, player, loopStore);
+		Recorder recorder2 = new Recorder(appConfig, player, loopStore);
 		this.dspApplication = new ch.sulco.yal.dsp.Application(appConfig, new SocketCommandReceiver(appConfig),
-				new OnboardProcessor(player, loopStore, recorder));
+				new OnboardProcessor(player, loopStore, recorder, recorder2));
 
 		Spark.staticFileLocation("/public");
 
@@ -110,7 +113,16 @@ public class Application {
 	}
 
 	private String getChannels() {
-		return this.gson.toJson(this.dspApplication.getAudioProcessor().getChannelIds());
+		Set<Integer> channelIds = this.dspApplication.getAudioProcessor().getChannelIds();
+		List<Channel> channels = new ArrayList<>();
+		for(int id:channelIds){
+			Channel ch = new Channel();
+			ch.setId(id);
+			ch.setRecordingState(this.dspApplication.getAudioProcessor().getChannelRecordingState(id));
+			ch.setName("Channel " + id);
+			channels.add(ch);
+		}
+		return this.gson.toJson(channels);
 	}
 
 	private String play() {

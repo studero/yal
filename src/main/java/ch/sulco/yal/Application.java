@@ -45,4 +45,8 @@ public class Application {
 	public Processor getAudioProcessor() {
 		return audioProcessor;
 	}
+	
+	public static void main(String[] args) {
+		new Application();
+	}
 }

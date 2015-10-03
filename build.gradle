@@ -18,4 +18,4 @@ dependencies {
   testCompile 'org.mockito:mockito-all:2.0.2-beta'
 }
 
-mainClassName = "ch.sulco.yal.Main"
+mainClassName = "ch.sulco.yal.Application"

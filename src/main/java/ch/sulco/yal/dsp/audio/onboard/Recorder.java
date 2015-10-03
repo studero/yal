@@ -22,22 +22,20 @@ public class Recorder implements LoopListener {
 	private RecordingState recordingState = RecordingState.STOPPED;
 	private byte[] recordedSample;
 	private ByteArrayOutputStream recordingSample;
-	
+
 	private TargetDataLine line;
 
 	public Recorder(AppConfig appConfig, Player player, LoopStore loopStore) {
 		this.appConfig = appConfig;
 		this.player = player;
 		this.loopStore = loopStore;
-		
-		DataLine.Info info = new DataLine.Info(TargetDataLine.class,
-				Recorder.this.appConfig.getAudioFormat());
+
+		DataLine.Info info = new DataLine.Info(TargetDataLine.class, Recorder.this.appConfig.getAudioFormat());
 		// checkState(AudioSystem.isLineSupported(info),
 		// "Line not supported");
-		TargetDataLine line;
 		try {
-			line = (TargetDataLine) AudioSystem.getLine(info);
-			line.open();
+			this.line = (TargetDataLine) AudioSystem.getLine(info);
+			this.line.open();
 		} catch (LineUnavailableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -79,9 +77,9 @@ public class Recorder implements LoopListener {
 				@Override
 				public void run() {
 					try {
-						line.start();
+						Recorder.this.line.start();
 						log.info("Start capturing...");
-						AudioInputStream ais = new AudioInputStream(line);
+						AudioInputStream ais = new AudioInputStream(Recorder.this.line);
 						log.info("Start recording...");
 						while (Recorder.this.recordingState == RecordingState.RECORDING) {
 							byte[] buffer = new byte[2];

@@ -1,15 +1,6 @@
 package ch.sulco.yal.controller;
 
-import java.util.List;
 import java.util.logging.Logger;
-
-import javax.sound.midi.MidiDevice;
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Receiver;
-import javax.sound.midi.ShortMessage;
-import javax.sound.midi.Transmitter;
 
 import ch.sulco.yal.dsp.AppConfig;
 import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
@@ -28,6 +19,7 @@ public class Application {
 	private final ch.sulco.yal.dsp.Application dspApplication;
 
 	private final Server server;
+	private final MidiControl midiControl;
 
 	public Application() {
 		log.info("Initialize Application");
@@ -43,60 +35,9 @@ public class Application {
 
 		server = new Server(this.dspApplication);
 
+		midiControl = new MidiControl(this.dspApplication);
+		
 		log.info("Application started");
 
-		this.setupMidi();
-
-	}
-
-	private void setupMidi() {
-		MidiDevice device;
-		MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
-		for (int i = 0; i < infos.length; i++) {
-			try {
-				device = MidiSystem.getMidiDevice(infos[i]);
-				log.info("Device: " + infos[i]);
-				List<Transmitter> transmitters = device.getTransmitters();
-				for (int j = 0; j < transmitters.size(); j++) {
-					transmitters.get(j).setReceiver(new Receiver() {
-						@Override
-						public void send(MidiMessage message, long timeStamp) {
-							Application.this.handleMidiMessage(message);
-						}
-
-						@Override
-						public void close() {
-						}
-					});
-				}
-
-				Transmitter trans = device.getTransmitter();
-				trans.setReceiver(new Receiver() {
-					@Override
-					public void send(MidiMessage message, long timeStamp) {
-						Application.this.handleMidiMessage(message);
-					}
-
-					@Override
-					public void close() {
-					}
-				});
-
-				device.open();
-				log.info(device.getDeviceInfo() + " Was Opened");
-
-			} catch (MidiUnavailableException e) {
-			}
-		}
-	}
-
-	private void handleMidiMessage(MidiMessage message) {
-		if (message instanceof ShortMessage) {
-			ShortMessage m = (ShortMessage) message;
-			if (m.getData1() == 41)
-				this.dspApplication.getAudioProcessor().play();
-			if (m.getData1() == 42)
-				this.dspApplication.getAudioProcessor().loop();
-		}
 	}
 }

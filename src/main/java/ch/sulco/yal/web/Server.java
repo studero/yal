@@ -7,22 +7,22 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.google.gson.Gson;
-
-import ch.sulco.yal.dsp.Application;
+import spark.Spark;
+import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.web.dm.Channel;
 import ch.sulco.yal.web.dm.Sample;
-import spark.Spark;
+
+import com.google.gson.Gson;
 
 public class Server {
 	private final static Logger log = Logger.getLogger(Server.class.getName());
 
-	private final Application dspApplication;
+	private final Processor audioProcessor;
 
 	private final Gson gson = new Gson();
 
-	public Server(Application dspApplication) {
-		this.dspApplication = dspApplication;
+	public Server(Processor audioProcessor) {
+		this.audioProcessor = audioProcessor;
 
 		Spark.staticFileLocation("/public");
 
@@ -47,55 +47,47 @@ public class Server {
 	}
 
 	private String playSample(int sampleId) {
-		this.dspApplication.getAudioProcessor().setSampleMute(sampleId, false);
+		this.audioProcessor.setSampleMute(sampleId, false);
 		return "Success";
 	}
 
 	private String getLoopLength() {
-		Long loopLength = this.dspApplication.getAudioProcessor()
-				.getLoopLength();
+		Long loopLength = this.audioProcessor.getLoopLength();
 		return loopLength == null ? "" : loopLength.toString();
 	}
 
 	private String setRecord(int channelId, boolean enabled) {
 		log.info("Record [channelId=" + channelId + "][enabled=" + enabled
 				+ "]");
-		this.dspApplication.getAudioProcessor().setChannelRecording(channelId,
-				enabled);
+		this.audioProcessor.setChannelRecording(channelId, enabled);
 		return "Success";
 	}
 
 	private String setVolume(int sampleId, float volume) {
-		this.dspApplication.getAudioProcessor().setSampleVolume(sampleId,
-				volume);
+		this.audioProcessor.setSampleVolume(sampleId, volume);
 		return "Success";
 	}
 
 	private String getSamples() {
-		Set<Integer> sampleIds = this.dspApplication.getAudioProcessor()
-				.getSampleIds();
+		Set<Integer> sampleIds = this.audioProcessor.getSampleIds();
 		List<Sample> samples = new ArrayList<>();
 		for (int id : sampleIds) {
 			Sample sample = new Sample();
 			sample.setId(id);
-			sample.setMute(this.dspApplication.getAudioProcessor()
-					.isSampleMute(id));
-			sample.setVolume(this.dspApplication.getAudioProcessor()
-					.getSampleVolume(id));
+			sample.setMute(this.audioProcessor.isSampleMute(id));
+			sample.setVolume(this.audioProcessor.getSampleVolume(id));
 			samples.add(sample);
 		}
 		return this.gson.toJson(samples);
 	}
 
 	private String getChannels() {
-		Set<Integer> channelIds = this.dspApplication.getAudioProcessor()
-				.getChannelIds();
+		Set<Integer> channelIds = this.audioProcessor				.getChannelIds();
 		List<Channel> channels = new ArrayList<>();
 		for (int id : channelIds) {
 			Channel ch = new Channel();
 			ch.setId(id);
-			ch.setRecordingState(this.dspApplication.getAudioProcessor()
-					.getChannelRecordingState(id));
+			ch.setRecordingState(this.audioProcessor					.getChannelRecordingState(id));
 			ch.setName("Channel " + id);
 			channels.add(ch);
 		}
@@ -103,12 +95,12 @@ public class Server {
 	}
 
 	private String play() {
-		this.dspApplication.getAudioProcessor().play();
+		this.audioProcessor.play();
 		return "Success";
 	}
 
 	private String loop() {
-		this.dspApplication.getAudioProcessor().loop();
+		this.audioProcessor.loop();
 		return "Success";
 	}
 }

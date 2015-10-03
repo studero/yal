@@ -3,7 +3,7 @@
  */
 package ch.sulco.yal;
 
-import ch.sulco.yal.controller.Application;
+
 
 
 /**

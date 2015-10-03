@@ -11,16 +11,16 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 
-import ch.sulco.yal.dsp.Application;
+import ch.sulco.yal.dsp.audio.Processor;
 
 public class MidiControl {
 	
 	private final static Logger log = Logger.getLogger(MidiControl.class.getName());
 
-	private final Application dspApplication;
+	private final Processor audioProcessor;
 	
-	public MidiControl(Application dspApplication){
-		this.dspApplication = dspApplication;
+	public MidiControl(Processor audioProcessor){
+		this.audioProcessor = audioProcessor;
 		setupMidi();
 	}
 	
@@ -69,9 +69,9 @@ public class MidiControl {
 		if (message instanceof ShortMessage) {
 			ShortMessage m = (ShortMessage) message;
 			if (m.getData1() == 41)
-				this.dspApplication.getAudioProcessor().play();
+				this.audioProcessor.play();
 			if (m.getData1() == 42)
-				this.dspApplication.getAudioProcessor().loop();
+				this.audioProcessor.loop();
 		}
 	}
 }

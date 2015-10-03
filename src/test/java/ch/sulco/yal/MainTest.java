@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2015 studero.
  */
-package ch.sulco.yal.controller;
+package ch.sulco.yal;
 
 import static org.junit.Assert.*;
 import org.junit.*;

@@ -1,10 +1,6 @@
 package ch.sulco.yal.controller;
 
-import static spark.Spark.get;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.sound.midi.MidiDevice;
@@ -15,7 +11,6 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 
-import spark.Spark;
 import ch.sulco.yal.dsp.AppConfig;
 import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
 import ch.sulco.yal.dsp.audio.onboard.LoopStore;
@@ -23,8 +18,7 @@ import ch.sulco.yal.dsp.audio.onboard.OnboardProcessor;
 import ch.sulco.yal.dsp.audio.onboard.Player;
 import ch.sulco.yal.dsp.audio.onboard.Recorder;
 import ch.sulco.yal.dsp.cmd.SocketCommandReceiver;
-
-import com.google.gson.Gson;
+import ch.sulco.yal.web.Server;
 
 public class Application {
 
@@ -33,7 +27,7 @@ public class Application {
 
 	private final ch.sulco.yal.dsp.Application dspApplication;
 
-	private final Gson gson = new Gson();
+	private final Server server;
 
 	public Application() {
 		log.info("Initialize Application");
@@ -47,45 +41,12 @@ public class Application {
 				new SocketCommandReceiver(appConfig), new OnboardProcessor(
 						player, loopStore, recorder, recorder2));
 
-		Spark.staticFileLocation("/public");
+		server = new Server(this.dspApplication);
 
-		get("/play", (req, res) -> this.play());
-		get("/loop", (req, res) -> this.loop());
-		get("/length", (req, res) -> this.getLoopLength());
-		get("/samples", (req, res) -> this.getSamples());
-		get("/channels", (req, res) -> this.getChannels());
-		
-		get("/record/:channelId/:enabled", (req, res) -> this.setRecord(Integer.parseInt(req.params(":channelId")), Boolean.parseBoolean(req.params(":enabled"))));
-		
-		get("/volume/:sampleId/:volume", (req, res) -> this.setVolume(Integer.parseInt(req.params(":sampleId")), Float.parseFloat(req.params(":volume"))));
-
-		get("/sample/play/:sampleId", (req, res) -> this.playSample(Integer.parseInt(req.params(":sampleId"))));
-		
 		log.info("Application started");
 
 		this.setupMidi();
 
-	}
-	
-	private String playSample(int sampleId){
-		this.dspApplication.getAudioProcessor().setSampleMute(sampleId, false);
-		return "Success";
-	}
-	
-	private String getLoopLength(){
-		Long loopLength = this.dspApplication.getAudioProcessor().getLoopLength();
-		return loopLength == null ? "" : loopLength.toString();
-	}
-	
-	private String setRecord(int channelId, boolean enabled) {
-		log.info("Record [channelId=" + channelId + "][enabled=" + enabled + "]");
-		this.dspApplication.getAudioProcessor().setChannelRecording(channelId, enabled);
-		return "Success";
-	}
-
-	private String setVolume(int sampleId, float volume) {
-		this.dspApplication.getAudioProcessor().setSampleVolume(sampleId, volume);
-		return "Success";
 	}
 
 	private void setupMidi() {
@@ -133,48 +94,9 @@ public class Application {
 		if (message instanceof ShortMessage) {
 			ShortMessage m = (ShortMessage) message;
 			if (m.getData1() == 41)
-				this.play();
+				this.dspApplication.getAudioProcessor().play();
 			if (m.getData1() == 42)
-				this.loop();
+				this.dspApplication.getAudioProcessor().loop();
 		}
-	}
-
-	private String getSamples() {
-		Set<Integer> sampleIds = this.dspApplication.getAudioProcessor()
-				.getSampleIds();
-		List<Sample> samples = new ArrayList<>();
-		for (int id : sampleIds) {
-			Sample sample = new Sample();
-			sample.setId(id);
-			sample.setMute(this.dspApplication.getAudioProcessor().isSampleMute(id));
-			sample.setVolume(this.dspApplication.getAudioProcessor().getSampleVolume(id));
-			samples.add(sample);
-		}
-		return this.gson.toJson(samples);
-	}
-
-	private String getChannels() {
-		Set<Integer> channelIds = this.dspApplication.getAudioProcessor()
-				.getChannelIds();
-		List<Channel> channels = new ArrayList<>();
-		for (int id : channelIds) {
-			Channel ch = new Channel();
-			ch.setId(id);
-			ch.setRecordingState(this.dspApplication.getAudioProcessor()
-					.getChannelRecordingState(id));
-			ch.setName("Channel " + id);
-			channels.add(ch);
-		}
-		return this.gson.toJson(channels);
-	}
-
-	private String play() {
-		this.dspApplication.getAudioProcessor().play();
-		return "Success";
-	}
-
-	private String loop() {
-		this.dspApplication.getAudioProcessor().loop();
-		return "Success";
 	}
 }

@@ -1,4 +1,4 @@
-package ch.sulco.yal.controller;
+package ch.sulco.yal.web.dm;
 
 import ch.sulco.yal.dsp.audio.RecordingState;
 

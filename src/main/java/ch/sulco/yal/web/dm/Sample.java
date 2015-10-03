@@ -1,4 +1,4 @@
-package ch.sulco.yal.controller;
+package ch.sulco.yal.web.dm;
 
 public class Sample {
 	private int id;

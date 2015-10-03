@@ -9,9 +9,9 @@ import java.util.logging.Logger;
 
 import com.google.gson.Gson;
 
-import ch.sulco.yal.controller.Channel;
-import ch.sulco.yal.controller.Sample;
 import ch.sulco.yal.dsp.Application;
+import ch.sulco.yal.web.dm.Channel;
+import ch.sulco.yal.web.dm.Sample;
 import spark.Spark;
 
 public class Server {

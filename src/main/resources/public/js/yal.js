@@ -18,6 +18,13 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 			url : '/record/' + channelId + '/' + enabled
 		});
 	};
+	$scope.playSample = function(sampleId) {
+		$http({
+			method : 'GET',
+			url : '/sample/play/' + sampleId
+		});
+	};
+	
 	
 	$interval(updateChannels, 1000);
 	$interval(updateSamples, 1000);

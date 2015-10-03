@@ -27,7 +27,7 @@
 		
 		<h2>Samples</h2>
 		<div ng-repeat="(key, value) in samples">
-			{{key}} -- {{value}}		
+			{{key}} -- {{value}} <button ng-click="playSample(value.id)">Play Sample</button>	
 		</div>
 	</div>
 </body>

@@ -59,10 +59,17 @@ public class Application {
 		
 		get("/volume/:sampleId/:volume", (req, res) -> this.setVolume(Integer.parseInt(req.params(":sampleId")), Float.parseFloat(req.params(":volume"))));
 
+		get("/sample/play/:sampleId", (req, res) -> this.playSample(Integer.parseInt(req.params(":sampleId"))));
+		
 		log.info("Application started");
 
 		this.setupMidi();
 
+	}
+	
+	private String playSample(int sampleId){
+		this.dspApplication.getAudioProcessor().setSampleMute(sampleId, false);
+		return "Success";
 	}
 	
 	private String getLoopLength(){

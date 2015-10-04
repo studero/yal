@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.inject.Inject;
+
 import spark.Spark;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.web.dm.Channel;
@@ -17,12 +19,12 @@ import com.google.gson.Gson;
 public class Server {
 	private final static Logger log = Logger.getLogger(Server.class.getName());
 
-	private final Processor audioProcessor;
+	@Inject
+	private Processor audioProcessor;
 
 	private final Gson gson = new Gson();
 
-	public Server(Processor audioProcessor) {
-		this.audioProcessor = audioProcessor;
+	public Server() {
 
 		Spark.staticFileLocation("/public");
 
@@ -33,17 +35,11 @@ public class Server {
 		get("/channels", (req, res) -> this.getChannels());
 
 		get("/record/:channelId/:enabled",
-				(req, res) -> this.setRecord(
-						Integer.parseInt(req.params(":channelId")),
-						Boolean.parseBoolean(req.params(":enabled"))));
+				(req, res) -> this.setRecord(Integer.parseInt(req.params(":channelId")), Boolean.parseBoolean(req.params(":enabled"))));
 
-		get("/volume/:sampleId/:volume",
-				(req, res) -> this.setVolume(
-						Integer.parseInt(req.params(":sampleId")),
-						Float.parseFloat(req.params(":volume"))));
+		get("/volume/:sampleId/:volume", (req, res) -> this.setVolume(Integer.parseInt(req.params(":sampleId")), Float.parseFloat(req.params(":volume"))));
 
-		get("/sample/play/:sampleId", (req, res) -> this.playSample(Integer
-				.parseInt(req.params(":sampleId"))));
+		get("/sample/play/:sampleId", (req, res) -> this.playSample(Integer.parseInt(req.params(":sampleId"))));
 	}
 
 	private String playSample(int sampleId) {
@@ -57,8 +53,7 @@ public class Server {
 	}
 
 	private String setRecord(int channelId, boolean enabled) {
-		log.info("Record [channelId=" + channelId + "][enabled=" + enabled
-				+ "]");
+		log.info("Record [channelId=" + channelId + "][enabled=" + enabled + "]");
 		this.audioProcessor.setChannelRecording(channelId, enabled);
 		return "Success";
 	}
@@ -82,12 +77,12 @@ public class Server {
 	}
 
 	private String getChannels() {
-		Set<Integer> channelIds = this.audioProcessor				.getChannelIds();
+		Set<Integer> channelIds = this.audioProcessor.getChannelIds();
 		List<Channel> channels = new ArrayList<>();
 		for (int id : channelIds) {
 			Channel ch = new Channel();
 			ch.setId(id);
-			ch.setRecordingState(this.audioProcessor					.getChannelRecordingState(id));
+			ch.setRecordingState(this.audioProcessor.getChannelRecordingState(id));
 			ch.setName("Channel " + id);
 			channels.add(ch);
 		}

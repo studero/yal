@@ -3,6 +3,9 @@ package ch.sulco.yal.controller;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiSystem;
@@ -13,18 +16,16 @@ import javax.sound.midi.Transmitter;
 
 import ch.sulco.yal.dsp.audio.Processor;
 
+@Singleton
 public class MidiControl {
-	
+
 	private final static Logger log = Logger.getLogger(MidiControl.class.getName());
 
-	private final Processor audioProcessor;
-	
-	public MidiControl(Processor audioProcessor){
-		this.audioProcessor = audioProcessor;
-		setupMidi();
-	}
-	
-	private void setupMidi() {
+	@Inject
+	private Processor audioProcessor;
+
+	@PostConstruct
+	public void setup() {
 		MidiDevice device;
 		MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
 		for (int i = 0; i < infos.length; i++) {
@@ -36,7 +37,7 @@ public class MidiControl {
 					transmitters.get(j).setReceiver(new Receiver() {
 						@Override
 						public void send(MidiMessage message, long timeStamp) {
-							handleMidiMessage(message);
+							MidiControl.this.handleMidiMessage(message);
 						}
 
 						@Override
@@ -49,7 +50,7 @@ public class MidiControl {
 				trans.setReceiver(new Receiver() {
 					@Override
 					public void send(MidiMessage message, long timeStamp) {
-						handleMidiMessage(message);
+						MidiControl.this.handleMidiMessage(message);
 					}
 
 					@Override

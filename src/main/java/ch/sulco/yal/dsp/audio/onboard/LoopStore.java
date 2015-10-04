@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.inject.Inject;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.Clip;
@@ -19,15 +20,14 @@ import ch.sulco.yal.dsp.dm.Sample;
 public class LoopStore {
 	private final static Logger log = Logger.getLogger(LoopStore.class.getName());
 
-	private final AudioSystemProvider audioSystemProvider;
-	private final AppConfig appConfig;
+	@Inject
+	private AudioSystemProvider audioSystemProvider;
+
+	@Inject
+	private AppConfig appConfig;
+
 	private int sampleLength;
 	private Map<Integer, Sample> samples = new HashMap<Integer, Sample>();
-
-	public LoopStore(AppConfig appConfig, AudioSystemProvider audioSystemProvider) {
-		this.appConfig = appConfig;
-		this.audioSystemProvider = audioSystemProvider;
-	}
 
 	public int addSample(String fileName) {
 		log.info("Add Sample [fileName=" + fileName + "]");

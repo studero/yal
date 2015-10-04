@@ -13,19 +13,16 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.Clip;
 
-import ch.sulco.yal.dsp.AppConfig;
 import ch.sulco.yal.dsp.dm.Sample;
 
 public class LoopStore {
 	private final static Logger log = Logger.getLogger(LoopStore.class.getName());
 
 	private final AudioSystemProvider audioSystemProvider;
-	private final AppConfig appConfig;
 	private int sampleLength;
 	private Map<Integer, Sample> samples = new HashMap<Integer, Sample>();
 
-	public LoopStore(AppConfig appConfig, AudioSystemProvider audioSystemProvider) {
-		this.appConfig = appConfig;
+	public LoopStore(AudioSystemProvider audioSystemProvider) {
 		this.audioSystemProvider = audioSystemProvider;
 	}
 
@@ -44,7 +41,7 @@ public class LoopStore {
 	}
 
 	public int addSample(byte[] data) {
-		int id = this.addSample(this.appConfig.getAudioFormat(), data);
+		int id = this.addSample(null, data);
 		log.info("New Sample Id [" + id + "]");
 		return id;
 	}

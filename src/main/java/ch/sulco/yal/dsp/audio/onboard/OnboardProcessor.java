@@ -17,11 +17,13 @@ public class OnboardProcessor implements Processor {
 
 	private final static Logger log = Logger.getLogger(OnboardProcessor.class.getName());
 
+	private final AudioSystemProvider audioSystemProvider;
 	private final Player player;
 	private final Map<Integer, Recorder> recorders;
 	private final LoopStore loopStore;
 
-	public OnboardProcessor(Player player, LoopStore loopStore, Recorder... recorders) {
+	public OnboardProcessor(AudioSystemProvider audioSystemProvider, Player player, LoopStore loopStore, Recorder... recorders) {
+		this.audioSystemProvider = audioSystemProvider;
 		this.player = player;
 		this.recorders = new HashMap<>();
 		int i = 0;

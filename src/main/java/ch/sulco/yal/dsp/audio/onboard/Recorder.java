@@ -5,18 +5,14 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
-import ch.sulco.yal.dsp.AppConfig;
 import ch.sulco.yal.dsp.audio.RecordingState;
 
 public class Recorder implements LoopListener {
 	private final static Logger log = Logger.getLogger(Recorder.class.getName());
 
-	private final AppConfig appConfig;
 	private Player player;
 	private LoopStore loopStore;
 	private RecordingState recordingState = RecordingState.STOPPED;
@@ -26,16 +22,13 @@ public class Recorder implements LoopListener {
 
 	private TargetDataLine line;
 
-	public Recorder(AppConfig appConfig, Player player, LoopStore loopStore) {
-		this.appConfig = appConfig;
+	public Recorder(AudioSystemProvider audioSystemProvider, Player player, LoopStore loopStore) {
 		this.player = player;
 		this.loopStore = loopStore;
-
-		DataLine.Info info = new DataLine.Info(TargetDataLine.class, Recorder.this.appConfig.getAudioFormat());
 		// checkState(AudioSystem.isLineSupported(info),
 		// "Line not supported");
 		try {
-			this.line = (TargetDataLine) AudioSystem.getLine(info);
+			this.line = (TargetDataLine) audioSystemProvider.getLine(null);
 			this.line.open();
 		} catch (LineUnavailableException e) {
 			// TODO Auto-generated catch block

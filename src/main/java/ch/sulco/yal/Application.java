@@ -27,12 +27,12 @@ public class Application {
 		
 		this.appConfig = new AppConfig();
 		Player player = new Player();
-		LoopStore loopStore = new LoopStore(appConfig,
-				new AudioSystemProvider());
-		Recorder recorder = new Recorder(appConfig, player, loopStore);
-		Recorder recorder2 = new Recorder(appConfig, player, loopStore);
+		AudioSystemProvider audioSystemProvider = new AudioSystemProvider(appConfig);
+		LoopStore loopStore = new LoopStore(audioSystemProvider);
+		Recorder recorder = new Recorder(audioSystemProvider, player, loopStore);
+		Recorder recorder2 = new Recorder(audioSystemProvider, player, loopStore);
 		
-		this.audioProcessor = new OnboardProcessor(player, loopStore, recorder, recorder2);
+		this.audioProcessor = new OnboardProcessor(audioSystemProvider, player, loopStore, recorder, recorder2);
 
 		server = new Server(this.getAudioProcessor());
 

@@ -61,7 +61,6 @@ public class OnboardProcessor implements Processor {
 		log.info("Play");
 		for (Recorder recorder : this.recorders.values()) {
 			recorder.startRecord();
-			recorder.loopStarted();
 		}
 	}
 

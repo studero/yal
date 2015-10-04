@@ -20,6 +20,7 @@ public class Recorder implements LoopListener {
 	private Player player;
 	private LoopStore loopStore;
 	private RecordingState recordingState = RecordingState.STOPPED;
+	private boolean overdubbing = false;
 	private byte[] recordedSample;
 	private ByteArrayOutputStream recordingSample;
 
@@ -41,6 +42,10 @@ public class Recorder implements LoopListener {
 			e.printStackTrace();
 		}
 	}
+	
+	private TargetDataLine getLine(){
+		return line;
+	}
 
 	public RecordingState getRecordingState() {
 		return this.recordingState;
@@ -56,9 +61,8 @@ public class Recorder implements LoopListener {
 	public void stopRecord() {
 		this.recordingState = RecordingState.STOPPED;
 		this.player.removeLoopListerner(this);
-		if (this.recordingSample != null) {
+		if(!overdubbing){
 			this.recordedSample = this.recordingSample.toByteArray();
-			this.recordingSample = null;
 		}
 		if (this.recordedSample != null) {
 			this.loopStore.addSample(this.recordedSample);
@@ -68,18 +72,19 @@ public class Recorder implements LoopListener {
 	}
 
 	@Override
-	public void loopStarted() {
+	public void loopStarted(boolean firstLoop) {
 		if (this.recordingState == RecordingState.WAITING) {
 			this.recordingState = RecordingState.RECORDING;
+			this.overdubbing = !firstLoop;
 			this.recordedSample = null;
 			this.recordingSample = new ByteArrayOutputStream();
 			Thread recordThread = new Thread() {
 				@Override
 				public void run() {
 					try {
-						Recorder.this.line.start();
+						getLine().start();
 						log.info("Start capturing...");
-						AudioInputStream ais = new AudioInputStream(Recorder.this.line);
+						AudioInputStream ais = new AudioInputStream(getLine());
 						log.info("Start recording...");
 						while (Recorder.this.recordingState == RecordingState.RECORDING) {
 							byte[] buffer = new byte[2];

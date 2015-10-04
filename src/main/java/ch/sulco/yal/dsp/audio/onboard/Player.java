@@ -39,7 +39,7 @@ public class Player {
 					Player.this.playingClips.getFirst().removeLineListener(this);
 					Player.this.lineListener = null;
 					for (LoopListener loopListener : Player.this.loopListeners) {
-						loopListener.loopStarted();
+						loopListener.loopStarted(false);
 					}
 					Player.this.startAllSamples();
 				}
@@ -66,7 +66,7 @@ public class Player {
 
 	public void addLoopListerner(LoopListener loopListerer) {
 		if (this.playingClips.isEmpty()) {
-			loopListerer.loopStarted();
+			loopListerer.loopStarted(true);
 		} else {
 			this.checkLine();
 		}

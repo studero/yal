@@ -7,24 +7,33 @@
 <script src="js/yal.js"></script>
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="css/yal.css">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body ng-controller="yalCtrl">
 	<div class="container-fluid">
 		<div class="page-header">
-			<h1>YAL</h1>
+			<h2>YAL</h2>
 		</div>
-		<button ng-click="play()">Play</button>
-		<button ng-click="loop()">Loop</button>
+		<button ng-click="play()" class="btn btn-primary btn-lg">
+			<span class="glyphicon glyphicon-play"></span>
+		</button>
+		<button ng-click="loop()" class="btn btn-primary btn-lg">Loop</button>
 		
-		<button ng-click="test()">test</button>
+		<button ng-click="test()" class="btn btn-primary btn-lg">test</button>
 		
 		<h4>Loop Length: {{loopLength}}</h4>
 		
 		<h2>Channels</h2>
 		<div ng-repeat="(key, value) in channels">
-			{{key}} -- {{value}} <button ng-click="record(value.id, true)">Start Record</button> <button ng-click="record(value.id, false)">Stop Record</button>
+			{{key}} -- {{value}} 
+			<button ng-click="record(value.id, true)" class="btn btn-primary btn-lg" ng-show="value.recordingState == 'STOPPED'">
+				<span class="glyphicon glyphicon-record"></span>
+			</button> 
+			<button ng-click="record(value.id, false)" class="btn btn-primary btn-lg" ng-show="value.recordingState == 'RECORDING' || value.recordingState == 'WAITING'">
+				<span class="glyphicon glyphicon-stop"></span>
+			</button>
 		</div>
 		
 		<h2>Samples</h2>

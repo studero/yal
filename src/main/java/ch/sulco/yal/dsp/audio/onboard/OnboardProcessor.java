@@ -17,6 +17,8 @@ import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.dsp.audio.RecorderProvider;
 import ch.sulco.yal.dsp.audio.RecordingState;
 import ch.sulco.yal.dsp.dm.Sample;
+import ch.sulco.yal.event.EventManager;
+import ch.sulco.yal.event.LoopLengthChanged;
 
 @Singleton
 public class OnboardProcessor implements Processor {
@@ -34,6 +36,9 @@ public class OnboardProcessor implements Processor {
 
 	@Inject
 	private RecorderProvider recorderProvider;
+
+	@Inject
+	private EventManager eventManager;
 
 	private final Map<Integer, Recorder> recorders = new HashMap<>();
 
@@ -96,8 +101,10 @@ public class OnboardProcessor implements Processor {
 			recorder.stopRecord();
 		}
 
-		log.info("Start Sample");
-		this.player.startSample(this.loopStore.getSample(0));
+		// log.info("Start Sample");
+		// this.player.startSample(this.loopStore.getSample(0));
+
+		this.eventManager.addEvent(new LoopLengthChanged(this.loopStore.getLoopLength()));
 	}
 
 	@Override

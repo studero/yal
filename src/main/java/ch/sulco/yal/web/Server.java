@@ -13,17 +13,23 @@ import javax.inject.Singleton;
 
 import spark.Spark;
 import ch.sulco.yal.dsp.audio.Processor;
+import ch.sulco.yal.event.Event;
+import ch.sulco.yal.event.EventListener;
+import ch.sulco.yal.event.EventManager;
 import ch.sulco.yal.web.dm.Channel;
 import ch.sulco.yal.web.dm.Sample;
 
 import com.google.gson.Gson;
 
 @Singleton
-public class Server {
+public class Server implements EventListener {
 	private final static Logger log = Logger.getLogger(Server.class.getName());
 
 	@Inject
 	private Processor audioProcessor;
+
+	@Inject
+	private EventManager eventManager;
 
 	private final Gson gson = new Gson();
 
@@ -49,6 +55,7 @@ public class Server {
 
 	@PostConstruct
 	public void setup() {
+		this.eventManager.addListener(this);
 	}
 
 	private String playSample(int sampleId) {
@@ -106,5 +113,10 @@ public class Server {
 	private String loop() {
 		this.audioProcessor.loop();
 		return "Success";
+	}
+
+	@Override
+	public void onEvent(Event event) {
+		UpdatesWebSocket.getInstance().send(this.gson.toJson(event));
 	}
 }

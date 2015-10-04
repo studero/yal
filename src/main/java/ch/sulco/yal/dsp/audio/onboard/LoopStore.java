@@ -10,18 +10,32 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.Clip;
 
+import ch.sulco.yal.dsp.AppConfig;
 import ch.sulco.yal.dsp.dm.Sample;
+import ch.sulco.yal.event.EventManager;
+import ch.sulco.yal.event.SampleCreated;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.FluentIterable;
+
+@Singleton
 public class LoopStore {
 	private final static Logger log = Logger.getLogger(LoopStore.class.getName());
 
 	@Inject
+	private AppConfig appConfig;
+
+	@Inject
 	private AudioSystemProvider audioSystemProvider;
-	
+
+	@Inject
+	private EventManager eventManager;
+
 	private int sampleLength;
 	private Map<Integer, Sample> samples = new HashMap<Integer, Sample>();
 
@@ -40,12 +54,12 @@ public class LoopStore {
 	}
 
 	public int addSample(byte[] data) {
-		int id = this.addSample(null, data);
+		int id = this.addSample(this.appConfig.getAudioFormat(), data);
 		log.info("New Sample Id [" + id + "]");
 		return id;
 	}
 
-	public int addSample(AudioFormat format, byte[] data) {
+	private int addSample(AudioFormat format, byte[] data) {
 		int newId = -1;
 		try {
 			if (this.samples.isEmpty()) {
@@ -59,6 +73,8 @@ public class LoopStore {
 			newId = this.samples.size() == 0 ? 0 : Collections.max(this.samples.keySet()) + 1;
 			Sample sample = new Sample(newId, clip);
 			this.samples.put(newId, sample);
+			this.eventManager.addEvent(new SampleCreated(newId));
+			log.info("Sample added [" + newId + "][" + clip + "]");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -91,5 +107,12 @@ public class LoopStore {
 
 	public Sample getSample(int id) {
 		return this.samples.get(id);
+	}
+
+	public Long getLoopLength() {
+		Optional<Sample> first = FluentIterable.from(this.samples.values()).first();
+		if (first.isPresent())
+			return first.get().getClip().getMicrosecondLength();
+		return null;
 	}
 }

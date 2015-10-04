@@ -22,10 +22,10 @@ public class OnboardProcessor implements Processor {
 
 	private final static Logger log = Logger.getLogger(OnboardProcessor.class.getName());
 
-	private final AudioSystemProvider audioSystemProvider;
+	@Inject
+	private AudioSystemProvider audioSystemProvider;
 	@Inject
 	private Player player;
-
 	@Inject
 	private LoopStore loopStore;
 

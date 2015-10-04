@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.inject.Inject;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.Clip;
@@ -20,9 +21,7 @@ public class LoopStore {
 
 	@Inject
 	private AudioSystemProvider audioSystemProvider;
-
-	@Inject
-	private AppConfig appConfig;
+	
 	private int sampleLength;
 	private Map<Integer, Sample> samples = new HashMap<Integer, Sample>();
 

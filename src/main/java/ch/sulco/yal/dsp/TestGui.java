@@ -26,9 +26,6 @@ public class TestGui extends JPanel {
 	private static JFrame frame;
 
 	@Inject
-	private AppConfig appConfig;
-
-	@Inject
 	private OnboardProcessor controller;
 
 	JComboBox<String> fileSelector;

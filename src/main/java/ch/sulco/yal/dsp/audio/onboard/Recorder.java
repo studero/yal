@@ -10,7 +10,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
-import ch.sulco.yal.dsp.AppConfig;
 import ch.sulco.yal.dsp.audio.RecordingState;
 
 public class Recorder implements LoopListener {
@@ -18,8 +17,7 @@ public class Recorder implements LoopListener {
 
 
 	@Inject
-	private AppConfig appConfig;
-
+	private AudioSystemProvider audioSystemProvider;
 	@Inject
 	private Player player;
 

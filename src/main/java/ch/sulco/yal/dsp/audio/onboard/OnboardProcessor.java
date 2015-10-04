@@ -5,33 +5,43 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.sound.sampled.BooleanControl;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.FloatControl.Type;
 
 import ch.sulco.yal.dsp.audio.Processor;
+import ch.sulco.yal.dsp.audio.RecorderProvider;
 import ch.sulco.yal.dsp.audio.RecordingState;
 import ch.sulco.yal.dsp.dm.Sample;
 
+@Singleton
 public class OnboardProcessor implements Processor {
 
 	private final static Logger log = Logger.getLogger(OnboardProcessor.class.getName());
 
 	private final AudioSystemProvider audioSystemProvider;
-	private final Player player;
-	private final Map<Integer, Recorder> recorders;
-	private final LoopStore loopStore;
+	@Inject
+	private Player player;
 
-	public OnboardProcessor(AudioSystemProvider audioSystemProvider, Player player, LoopStore loopStore, Recorder... recorders) {
-		this.audioSystemProvider = audioSystemProvider;
-		this.player = player;
-		this.recorders = new HashMap<>();
+	@Inject
+	private LoopStore loopStore;
+
+	@Inject
+	private RecorderProvider recorderProvider;
+
+	private final Map<Integer, Recorder> recorders = new HashMap<>();
+
+		@PostConstruct
+	public void setup() {
+		log.info("Setup");
 		int i = 0;
-		for (Recorder r : recorders) {
+		for (Recorder r : this.recorderProvider.getRecorders()) {
 			this.recorders.put(i, r);
 			i++;
 		}
-		this.loopStore = loopStore;
 	}
 
 	public LoopStore getLoopStore() {
@@ -141,7 +151,7 @@ public class OnboardProcessor implements Processor {
 
 	@Override
 	public Long getLoopLength() {
-		return loopStore.getSampleIds().isEmpty() ? null : loopStore.getSample(0).getClip().getMicrosecondLength();
+		return this.loopStore.getSampleIds().isEmpty() ? null : this.loopStore.getSample(0).getClip().getMicrosecondLength();
 	}
 
 }

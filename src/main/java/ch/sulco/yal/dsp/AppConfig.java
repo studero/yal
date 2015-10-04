@@ -1,7 +1,9 @@
 package ch.sulco.yal.dsp;
 
+import javax.inject.Singleton;
 import javax.sound.sampled.AudioFormat;
 
+@Singleton
 public class AppConfig {
 
 	public int getCommandSocketPort() {

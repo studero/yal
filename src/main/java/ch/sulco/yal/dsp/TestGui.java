@@ -7,33 +7,34 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.inject.Inject;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
-import ch.sulco.yal.dsp.audio.onboard.LoopStore;
+import ch.sulco.yal.YalModule;
 import ch.sulco.yal.dsp.audio.onboard.OnboardProcessor;
-import ch.sulco.yal.dsp.audio.onboard.Player;
-import ch.sulco.yal.dsp.audio.onboard.Recorder;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 public class TestGui extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private static JFrame frame;
+
+	@Inject
+	private AppConfig appConfig;
+
+	@Inject
 	private OnboardProcessor controller;
+
 	JComboBox<String> fileSelector;
 	JPanel loopsPanel;
 
 	public TestGui() {
-		AppConfig appConfig = new AppConfig();
-		AudioSystemProvider audioSystemProvider = new AudioSystemProvider(appConfig);
-		Player player = new Player();
-		LoopStore loopStore = new LoopStore(audioSystemProvider);
-		Recorder recorder = new Recorder(audioSystemProvider, player, loopStore);
-		this.controller = new OnboardProcessor(audioSystemProvider, player, loopStore, recorder);
 
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -44,8 +45,7 @@ public class TestGui extends JPanel {
 		constraints.gridy = 0;
 		constraints.gridwidth = 2;
 
-		this.fileSelector = new JComboBox<String>(new File(TestGui.class.getClassLoader().getResource("sounds")
-				.getFile()).list());
+		this.fileSelector = new JComboBox<String>(new File(TestGui.class.getClassLoader().getResource("sounds").getFile()).list());
 		this.add(this.fileSelector, constraints);
 
 		JButton add = new JButton("add");
@@ -69,6 +69,8 @@ public class TestGui extends JPanel {
 	}
 
 	public static void main(String[] args) {
+		Injector injector = Guice.createInjector(new YalModule());
+
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -103,8 +105,7 @@ public class TestGui extends JPanel {
 			start.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					TestGui.this.controller.getPlayer().startSample(
-							TestGui.this.controller.getLoopStore().getSample(id));
+					TestGui.this.controller.getPlayer().startSample(TestGui.this.controller.getLoopStore().getSample(id));
 				}
 			});
 			constraints.gridx = 1;
@@ -114,8 +115,7 @@ public class TestGui extends JPanel {
 			stop.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					TestGui.this.controller.getPlayer()
-							.stopSample(TestGui.this.controller.getLoopStore().getSample(id));
+					TestGui.this.controller.getPlayer().stopSample(TestGui.this.controller.getLoopStore().getSample(id));
 				}
 			});
 			constraints.gridx = 2;

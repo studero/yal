@@ -18,13 +18,13 @@ import ch.sulco.yal.dsp.dm.Sample;
 public class LoopStore {
 	private final static Logger log = Logger.getLogger(LoopStore.class.getName());
 
-	private final AudioSystemProvider audioSystemProvider;
+	@Inject
+	private AudioSystemProvider audioSystemProvider;
+
+	@Inject
+	private AppConfig appConfig;
 	private int sampleLength;
 	private Map<Integer, Sample> samples = new HashMap<Integer, Sample>();
-
-	public LoopStore(AudioSystemProvider audioSystemProvider) {
-		this.audioSystemProvider = audioSystemProvider;
-	}
 
 	public int addSample(String fileName) {
 		log.info("Add Sample [fileName=" + fileName + "]");

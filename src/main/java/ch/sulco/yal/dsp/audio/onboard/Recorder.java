@@ -4,17 +4,28 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
+import ch.sulco.yal.dsp.AppConfig;
 import ch.sulco.yal.dsp.audio.RecordingState;
 
 public class Recorder implements LoopListener {
 	private final static Logger log = Logger.getLogger(Recorder.class.getName());
 
+
+	@Inject
+	private AppConfig appConfig;
+
+	@Inject
 	private Player player;
+
+	@Inject
 	private LoopStore loopStore;
+
 	private RecordingState recordingState = RecordingState.STOPPED;
 	private boolean overdubbing = false;
 	private byte[] recordedSample;
@@ -22,9 +33,12 @@ public class Recorder implements LoopListener {
 
 	private TargetDataLine line;
 
-	public Recorder(AudioSystemProvider audioSystemProvider, Player player, LoopStore loopStore) {
-		this.player = player;
-		this.loopStore = loopStore;
+	public Recorder() {
+
+	}
+
+	@PostConstruct
+	public void setup() {
 		// checkState(AudioSystem.isLineSupported(info),
 		// "Line not supported");
 		try {

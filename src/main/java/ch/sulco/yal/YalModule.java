@@ -1,0 +1,32 @@
+package ch.sulco.yal;
+
+import ch.sulco.yal.controller.MidiControl;
+import ch.sulco.yal.dsp.AppConfig;
+import ch.sulco.yal.dsp.audio.Processor;
+import ch.sulco.yal.dsp.audio.RecorderProvider;
+import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
+import ch.sulco.yal.dsp.audio.onboard.LoopStore;
+import ch.sulco.yal.dsp.audio.onboard.OnboardProcessor;
+import ch.sulco.yal.dsp.audio.onboard.Player;
+import ch.sulco.yal.dsp.audio.onboard.Recorder;
+import ch.sulco.yal.web.Server;
+
+import com.google.inject.AbstractModule;
+
+public class YalModule extends AbstractModule {
+
+	@Override
+	protected void configure() {
+		this.bind(AppConfig.class);
+		this.bind(Application.class);
+		this.bind(AudioSystemProvider.class);
+		this.bind(LoopStore.class);
+		this.bind(MidiControl.class);
+		this.bind(Processor.class).to(OnboardProcessor.class);
+		this.bind(Player.class);
+		this.bind(Recorder.class);
+		this.bind(RecorderProvider.class);
+		this.bind(Server.class);
+	}
+
+}

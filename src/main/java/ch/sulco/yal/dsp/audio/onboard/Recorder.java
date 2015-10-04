@@ -16,15 +16,16 @@ import ch.sulco.yal.dsp.audio.RecordingState;
 public class Recorder implements LoopListener {
 	private final static Logger log = Logger.getLogger(Recorder.class.getName());
 
-
 	@Inject
 	private AudioSystemProvider audioSystemProvider;
+
 	@Inject
 	private Player player;
 
 	@Inject
 	private LoopStore loopStore;
 
+	private int id;
 	private RecordingState recordingState = RecordingState.STOPPED;
 	private boolean overdubbing = false;
 	private byte[] recordedSample;
@@ -33,12 +34,12 @@ public class Recorder implements LoopListener {
 	private Info lineInfo = null;
 	private TargetDataLine line;
 
-	public Recorder() {
-
+	public void setLineInfo(Info lineInfo) {
+		this.lineInfo = lineInfo;
 	}
 
-	public Recorder(Info lineInfo) {
-		this.lineInfo = lineInfo;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	@PostConstruct
@@ -46,16 +47,16 @@ public class Recorder implements LoopListener {
 		// checkState(AudioSystem.isLineSupported(info),
 		// "Line not supported");
 		try {
-			this.line = (TargetDataLine) audioSystemProvider.getLine(lineInfo);
+			this.line = (TargetDataLine) this.audioSystemProvider.getLine(this.lineInfo);
 			this.line.open();
 		} catch (LineUnavailableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	private TargetDataLine getLine(){
-		return line;
+
+	private TargetDataLine getLine() {
+		return this.line;
 	}
 
 	public RecordingState getRecordingState() {
@@ -72,7 +73,7 @@ public class Recorder implements LoopListener {
 	public void stopRecord() {
 		this.recordingState = RecordingState.STOPPED;
 		this.player.removeLoopListerner(this);
-		if(!overdubbing){
+		if (!this.overdubbing) {
 			this.recordedSample = this.recordingSample.toByteArray();
 		}
 		if (this.recordedSample != null) {
@@ -93,9 +94,9 @@ public class Recorder implements LoopListener {
 				@Override
 				public void run() {
 					try {
-						getLine().start();
+						Recorder.this.getLine().start();
 						log.info("Start capturing...");
-						AudioInputStream ais = new AudioInputStream(getLine());
+						AudioInputStream ais = new AudioInputStream(Recorder.this.getLine());
 						log.info("Start recording...");
 						while (Recorder.this.recordingState == RecordingState.RECORDING) {
 							byte[] buffer = new byte[2];

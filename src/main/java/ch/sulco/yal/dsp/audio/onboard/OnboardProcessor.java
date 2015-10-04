@@ -25,8 +25,10 @@ public class OnboardProcessor implements Processor {
 
 	@Inject
 	private AudioSystemProvider audioSystemProvider;
+
 	@Inject
 	private Player player;
+
 	@Inject
 	private LoopStore loopStore;
 
@@ -35,7 +37,7 @@ public class OnboardProcessor implements Processor {
 
 	private final Map<Integer, Recorder> recorders = new HashMap<>();
 
-		@PostConstruct
+	@PostConstruct
 	public void setup() {
 		log.info("Setup");
 		int i = 0;
@@ -52,13 +54,9 @@ public class OnboardProcessor implements Processor {
 	public Player getPlayer() {
 		return this.player;
 	}
-	
-	public Map<Integer, ChannelInfo> getInputChannels(){
-		return audioSystemProvider.getTargetLines();
-	}
-	
-	public void createRecorder(ChannelInfo info){
-		new Recorder(info.getLineInfo());
+
+	public Map<Integer, ChannelInfo> getInputChannels() {
+		return this.audioSystemProvider.getTargetLines();
 	}
 
 	@Override

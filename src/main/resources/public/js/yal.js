@@ -1,5 +1,17 @@
 var app = angular.module('yalApp', []);
+
 app.controller('yalCtrl', function($scope, $http, $interval) {
+	var socket = new WebSocket("ws://localhost:4567/updates");
+	socket.onmessage = function (e) {
+	  console.log('Server: ' + e.data);
+	  var event = angular.fromJson(e.data);
+	  if(event.eventType == 'ChannelStateChanged'){
+	  	$scope.channels[event.id].recordingState = event.recordingState;
+	  } else if(event.eventType == 'LoopLengthChanged'){
+	    $scope.loopLength = event.loopLength;
+	  }
+	};
+
 	$scope.play = function() {
 		$http({
 			method : 'GET',
@@ -24,11 +36,12 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 			url : '/sample/play/' + sampleId
 		});
 	};
+	$scope.test = function(){
+		socket.send("test");
+	};
 	
 	
-	$interval(updateChannels, 1000);
-	$interval(updateSamples, 1000);
-	$interval(updateLoopLength, 1000);
+	updateChannels();
 	
 	function updateChannels(){
 		$http({

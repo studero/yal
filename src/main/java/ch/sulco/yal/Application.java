@@ -10,6 +10,7 @@ import ch.sulco.yal.dsp.AppConfig;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.web.Server;
 
+import com.google.inject.Binding;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
@@ -30,21 +31,13 @@ public class Application {
 	@Inject
 	private MidiControl midiControl;
 
-	public Application() {
-		log.info("Initialize Application");
-
-		log.info("AppConfig " + this.appConfig);
-
-		log.info("Application started");
-
-	}
-
 	public Processor getAudioProcessor() {
 		return this.audioProcessor;
 	}
 
+	public static Injector injector = Guice.createInjector(new YalModule(), new PostConstructModule());
+
 	public static void main(String[] args) {
-		Injector injector = Guice.createInjector(new YalModule(), new PostConstructModule());
 		Application application = injector.getInstance(Application.class);
 	}
 }

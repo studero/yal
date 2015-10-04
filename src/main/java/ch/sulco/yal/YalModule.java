@@ -9,6 +9,7 @@ import ch.sulco.yal.dsp.audio.onboard.LoopStore;
 import ch.sulco.yal.dsp.audio.onboard.OnboardProcessor;
 import ch.sulco.yal.dsp.audio.onboard.Player;
 import ch.sulco.yal.dsp.audio.onboard.Recorder;
+import ch.sulco.yal.event.EventManager;
 import ch.sulco.yal.web.Server;
 
 import com.google.inject.AbstractModule;
@@ -20,6 +21,7 @@ public class YalModule extends AbstractModule {
 		this.bind(AppConfig.class);
 		this.bind(Application.class);
 		this.bind(AudioSystemProvider.class);
+		this.bind(EventManager.class);
 		this.bind(LoopStore.class);
 		this.bind(MidiControl.class);
 		this.bind(Processor.class).to(OnboardProcessor.class);
@@ -28,5 +30,4 @@ public class YalModule extends AbstractModule {
 		this.bind(RecorderProvider.class);
 		this.bind(Server.class);
 	}
-
 }

@@ -12,6 +12,9 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
 import ch.sulco.yal.dsp.audio.RecordingState;
+import ch.sulco.yal.event.ChannelCreated;
+import ch.sulco.yal.event.ChannelStateChanged;
+import ch.sulco.yal.event.EventManager;
 
 public class Recorder implements LoopListener {
 	private final static Logger log = Logger.getLogger(Recorder.class.getName());
@@ -25,9 +28,14 @@ public class Recorder implements LoopListener {
 	@Inject
 	private LoopStore loopStore;
 
-	private int id;
-	private RecordingState recordingState = RecordingState.STOPPED;
+	@Inject
+	private EventManager eventManager;
+
 	private boolean overdubbing = false;
+
+	private int id;
+
+	private RecordingState recordingState;
 	private byte[] recordedSample;
 	private ByteArrayOutputStream recordingSample;
 
@@ -44,6 +52,7 @@ public class Recorder implements LoopListener {
 
 	@PostConstruct
 	public void setup() {
+		this.setRecordingState(RecordingState.STOPPED);
 		// checkState(AudioSystem.isLineSupported(info),
 		// "Line not supported");
 		try {
@@ -53,6 +62,7 @@ public class Recorder implements LoopListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		this.eventManager.addEvent(new ChannelCreated(this.id));
 	}
 
 	private TargetDataLine getLine() {
@@ -65,13 +75,13 @@ public class Recorder implements LoopListener {
 
 	public void startRecord() {
 		if (this.recordingState == RecordingState.STOPPED) {
-			this.recordingState = RecordingState.WAITING;
+			this.setRecordingState(RecordingState.WAITING);
 			this.player.addLoopListerner(this);
 		}
 	}
 
 	public void stopRecord() {
-		this.recordingState = RecordingState.STOPPED;
+		this.setRecordingState(RecordingState.STOPPED);
 		this.player.removeLoopListerner(this);
 		if (!this.overdubbing) {
 			this.recordedSample = this.recordingSample.toByteArray();
@@ -86,8 +96,8 @@ public class Recorder implements LoopListener {
 	@Override
 	public void loopStarted(boolean firstLoop) {
 		if (this.recordingState == RecordingState.WAITING) {
-			this.recordingState = RecordingState.RECORDING;
 			this.overdubbing = !firstLoop;
+			this.setRecordingState(RecordingState.RECORDING);
 			this.recordedSample = null;
 			this.recordingSample = new ByteArrayOutputStream();
 			Thread recordThread = new Thread() {
@@ -117,5 +127,10 @@ public class Recorder implements LoopListener {
 		} else {
 			this.player.removeLoopListerner(this);
 		}
+	}
+
+	private void setRecordingState(RecordingState recordingState) {
+		this.recordingState = recordingState;
+		this.eventManager.addEvent(new ChannelStateChanged(this.id, recordingState));
 	}
 }

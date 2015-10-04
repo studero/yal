@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import spark.Spark;
 import ch.sulco.yal.dsp.audio.Processor;
@@ -16,6 +18,7 @@ import ch.sulco.yal.web.dm.Sample;
 
 import com.google.gson.Gson;
 
+@Singleton
 public class Server {
 	private final static Logger log = Logger.getLogger(Server.class.getName());
 
@@ -27,6 +30,8 @@ public class Server {
 	public Server() {
 
 		Spark.staticFileLocation("/public");
+
+		Spark.webSocket("/updates", UpdatesWebSocket.class);
 
 		get("/play", (req, res) -> this.play());
 		get("/loop", (req, res) -> this.loop());
@@ -40,6 +45,10 @@ public class Server {
 		get("/volume/:sampleId/:volume", (req, res) -> this.setVolume(Integer.parseInt(req.params(":sampleId")), Float.parseFloat(req.params(":volume"))));
 
 		get("/sample/play/:sampleId", (req, res) -> this.playSample(Integer.parseInt(req.params(":sampleId"))));
+	}
+
+	@PostConstruct
+	public void setup() {
 	}
 
 	private String playSample(int sampleId) {

@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.Line.Info;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
@@ -29,10 +30,15 @@ public class Recorder implements LoopListener {
 	private byte[] recordedSample;
 	private ByteArrayOutputStream recordingSample;
 
+	private Info lineInfo = null;
 	private TargetDataLine line;
 
 	public Recorder() {
 
+	}
+
+	public Recorder(Info lineInfo) {
+		this.lineInfo = lineInfo;
 	}
 
 	@PostConstruct
@@ -40,7 +46,7 @@ public class Recorder implements LoopListener {
 		// checkState(AudioSystem.isLineSupported(info),
 		// "Line not supported");
 		try {
-			this.line = (TargetDataLine) audioSystemProvider.getLine(null);
+			this.line = (TargetDataLine) audioSystemProvider.getLine(lineInfo);
 			this.line.open();
 		} catch (LineUnavailableException e) {
 			// TODO Auto-generated catch block

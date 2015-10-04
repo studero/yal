@@ -12,6 +12,7 @@ import javax.sound.sampled.BooleanControl;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.FloatControl.Type;
 
+import ch.sulco.yal.dsp.audio.ChannelInfo;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.dsp.audio.RecorderProvider;
 import ch.sulco.yal.dsp.audio.RecordingState;
@@ -50,6 +51,14 @@ public class OnboardProcessor implements Processor {
 
 	public Player getPlayer() {
 		return this.player;
+	}
+	
+	public Map<Integer, ChannelInfo> getInputChannels(){
+		return audioSystemProvider.getTargetLines();
+	}
+	
+	public void createRecorder(ChannelInfo info){
+		new Recorder(info.getLineInfo());
 	}
 
 	@Override

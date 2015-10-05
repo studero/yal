@@ -5,11 +5,13 @@ import ch.sulco.yal.dsp.audio.RecordingState;
 public class ChannelStateChanged extends Event {
 	private int id;
 	private RecordingState recordingState;
+	private boolean monitoring;
 
-	public ChannelStateChanged(int id, RecordingState recordingState) {
+	public ChannelStateChanged(int id, RecordingState recordingState, boolean monitoring) {
 		super();
 		this.id = id;
 		this.recordingState = recordingState;
+		this.setMonitoring(monitoring);
 	}
 
 	public int getId() {
@@ -26,5 +28,13 @@ public class ChannelStateChanged extends Event {
 
 	public void setRecordingState(RecordingState recordingState) {
 		this.recordingState = recordingState;
+	}
+
+	public boolean isMonitoring() {
+		return this.monitoring;
+	}
+
+	public void setMonitoring(boolean monitoring) {
+		this.monitoring = monitoring;
 	}
 }

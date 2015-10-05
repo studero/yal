@@ -1,18 +1,18 @@
 package ch.sulco.yal.event;
 
 public class LoopPositionChanged extends Event {
-	private Long loopPosition;
+	private Integer loopPosition;
 
-	public LoopPositionChanged(Long loopPosition) {
+	public LoopPositionChanged(Integer loopPosition) {
 		super();
 		this.setLoopPosition(loopPosition);
 	}
 
-	public Long getLoopPosition() {
-		return loopPosition;
+	public Integer getLoopPosition() {
+		return this.loopPosition;
 	}
 
-	public void setLoopPosition(Long loopPosition) {
+	public void setLoopPosition(Integer loopPosition) {
 		this.loopPosition = loopPosition;
 	}
 }

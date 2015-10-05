@@ -12,33 +12,50 @@
 </head>
 
 <body ng-controller="yalCtrl">
-	<div class="container-fluid">
+	<div class="container" width="1024px">
 		<div class="page-header">
 			<h2>YAL</h2>
 		</div>
-		<button ng-click="play()" class="btn btn-primary btn-lg">
-			<span class="glyphicon glyphicon-play"></span>
-		</button>
-		<button ng-click="loop()" class="btn btn-primary btn-lg">Loop</button>
 		
-		<button ng-click="test()" class="btn btn-primary btn-lg">test</button>
-		
-		<h4>Loop Length: {{loopLength}}</h4>
-		
-		<h2>Channels</h2>
-		<div ng-repeat="(key, value) in channels">
-			{{key}} -- {{value}} 
-			<button ng-click="record(value.id, true)" class="btn btn-primary btn-lg" ng-show="value.recordingState == 'STOPPED'">
-				<span class="glyphicon glyphicon-record"></span>
-			</button> 
-			<button ng-click="record(value.id, false)" class="btn btn-primary btn-lg" ng-show="value.recordingState == 'RECORDING' || value.recordingState == 'WAITING'">
-				<span class="glyphicon glyphicon-stop"></span>
+		<div class="panel panel-default">
+			<div class>{{loopLocation}}</div>
+			<button ng-click="play()" class="btn btn-primary btn-lg">
+				<span class="glyphicon glyphicon-play"></span>
 			</button>
+			<button ng-click="loop()" class="btn btn-primary btn-lg">Loop</button>
+			<button ng-click="test()" class="btn btn-primary btn-lg">test</button>
 		</div>
 		
-		<h2>Samples</h2>
-		<div ng-repeat="(key, value) in samples">
-			{{key}} -- {{value}} <button ng-click="playSample(value.id)">Play Sample</button>	
+		<div class="panel panel-default">
+			<h4>Channels</h4>
+			<div class="row channels">
+				<div ng-repeat="(key, value) in channels" class="col-xs-1 channel">				
+					<div class="panel panel-default channel">
+						<div class="panel panel-default meter-back">
+							<div id="meter_{{value.id}}" class="panel panel-default meter"></div>
+						</div>
+						<button ng-click="record(value.id, true)" class="btn btn-primary btn-md" ng-show="value.recordingState == 'STOPPED'">
+							<span class="glyphicon glyphicon-record"></span>
+						</button> 
+						<button ng-click="record(value.id, false)" class="btn btn-primary btn-md" ng-show="value.recordingState == 'RECORDING' || value.recordingState == 'WAITING'">
+							<span class="glyphicon glyphicon-stop"></span>
+						</button>
+						<button ng-click="monitor(value.id, true)" class="btn btn-primary btn-md" ng-show="value.monitoring == false">
+							<span class="glyphicon glyphicon-star-empty"></span>
+						</button> 
+						<button ng-click="monitor(value.id, false)" class="btn btn-primary btn-md" ng-show="value.monitoring == true">
+							<span class="glyphicon glyphicon-star"></span>
+						</button> 
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="panel panel-default">
+			<h4>Samples</h4>
+			<div ng-repeat="(key, value) in samples">
+				{{key}} -- {{value}} <button ng-click="playSample(value.id)">Play Sample</button>	
+			</div>
 		</div>
 	</div>
 </body>

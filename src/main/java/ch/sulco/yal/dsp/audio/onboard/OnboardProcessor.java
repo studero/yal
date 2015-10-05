@@ -168,4 +168,14 @@ public class OnboardProcessor implements Processor {
 		return this.loopStore.getSampleIds().isEmpty() ? null : this.loopStore.getSample(0).getClip().getMicrosecondLength();
 	}
 
+	@Override
+	public boolean getChannelMonitoring(int channelId) {
+		return this.recorders.get(channelId).isMonitoring();
+	}
+
+	@Override
+	public void setChannelMonitoring(int channelId, boolean monitoring) {
+		this.recorders.get(channelId).setMonitoring(monitoring);
+	}
+
 }

@@ -54,7 +54,7 @@ public interface Processor {
 	 *            true if channel should be recording.
 	 */
 	void setChannelRecording(int channelId, boolean recording);
-	
+
 	RecordingState getChannelRecordingState(int channelId);
 
 	/**
@@ -66,7 +66,7 @@ public interface Processor {
 	 *            true if the sample should be muted.
 	 */
 	void setSampleMute(int sampleId, boolean mute);
-	
+
 	boolean isSampleMute(int sampleId);
 
 	/**
@@ -78,7 +78,7 @@ public interface Processor {
 	 *            the volume the sample should be set to.
 	 */
 	void setSampleVolume(int sampleId, float volume);
-	
+
 	float getSampleVolume(int sampleId);
 
 	/**
@@ -88,6 +88,10 @@ public interface Processor {
 	 *            the id of the sample.
 	 */
 	void removeSample(int sampleId);
-	
+
 	Long getLoopLength();
+
+	boolean getChannelMonitoring(int channelId);
+
+	void setChannelMonitoring(int channelId, boolean monitoring);
 }

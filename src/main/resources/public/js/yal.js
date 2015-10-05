@@ -7,8 +7,19 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	  var event = angular.fromJson(e.data);
 	  if(event.eventType == 'ChannelStateChanged'){
 	  	$scope.channels[event.id].recordingState = event.recordingState;
+	  	$scope.channels[event.id].monitoring = event.monitoring;
 	  } else if(event.eventType == 'LoopLengthChanged'){
 	    $scope.loopLength = event.loopLength;
+	    $scope.loopLocation = $scope.loopPosition + ' / ' + $scope.loopLength;
+	  } else if(event.eventType == 'LoopPositionChanged'){
+	    $scope.loopPosition = event.loopLength;
+	    $scope.loopLocation = $scope.loopPosition + ' / ' + $scope.loopLength;
+	  } else if(event.eventType == 'ChannelMonitorValueChanged'){
+	    var meterLevel = event.value * 1000;
+	    if(meterLevel > 200) meterLevel = 200;
+	    $scope.channels[event.id].meterLevel = meterLevel;
+	    $("#meter_" + event.id).css("height", meterLevel);
+	    console.log('meterLevel: ' + meterLevel);
 	  }
 	};
 
@@ -28,6 +39,12 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 		$http({
 			method : 'GET',
 			url : '/record/' + channelId + '/' + enabled
+		});
+	};
+	$scope.monitor = function(channelId, enabled) {
+		$http({
+			method : 'GET',
+			url : '/monitor/' + channelId + '/' + enabled
 		});
 	};
 	$scope.playSample = function(sampleId) {

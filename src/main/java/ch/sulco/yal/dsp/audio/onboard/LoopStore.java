@@ -36,7 +36,7 @@ public class LoopStore {
 	@Inject
 	private EventManager eventManager;
 
-	private int sampleLength;
+	private Integer sampleLength;
 	private Map<Integer, Sample> samples = new HashMap<Integer, Sample>();
 
 	public int addSample(String fileName) {
@@ -109,10 +109,15 @@ public class LoopStore {
 		return this.samples.get(id);
 	}
 
-	public Long getLoopLength() {
+	public Integer getLoopLength() {
+		return this.sampleLength;
+	}
+
+	public Long getLoopPosition() {
 		Optional<Sample> first = FluentIterable.from(this.samples.values()).first();
-		if (first.isPresent())
-			return first.get().getClip().getMicrosecondLength();
+		if (first.isPresent()) {
+			return first.get().getClip().getMicrosecondPosition();
+		}
 		return null;
 	}
 }

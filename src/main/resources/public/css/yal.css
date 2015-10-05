@@ -2,3 +2,34 @@ body {
 	background-color: #333;
 	color: #fff;
 }
+
+.panel {
+	background-color: #333;
+	color: #fff;
+	padding: 3px;
+}
+
+.channels {
+	margin-left:0px;
+}
+
+.channel {
+	height: 300px;
+	width; 100px;
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
+.meter {
+	width: 26px;
+	height: 10px;
+	background-color: #dedede;
+	bottom:0px;
+}
+
+.meter-back {
+	vertical-align: bottom;
+	align:bottom;
+	height: 210px;
+	width: 34px;
+}

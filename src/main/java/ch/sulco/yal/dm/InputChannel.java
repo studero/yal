@@ -1,17 +1,17 @@
 package ch.sulco.yal.dm;
 
-
 public class InputChannel extends Channel {
 
 	private Double gain;
 	private RecordingState recordingState;
+	private Double level;
 
 	public InputChannel() {
 		super(ChannelDirection.IN);
 	}
 
 	public Double getGain() {
-		return gain;
+		return this.gain;
 	}
 
 	public void setGain(Double gain) {
@@ -19,11 +19,19 @@ public class InputChannel extends Channel {
 	}
 
 	public RecordingState getRecordingState() {
-		return recordingState;
+		return this.recordingState;
 	}
 
 	public void setRecordingState(RecordingState recordingState) {
 		this.recordingState = recordingState;
+	}
+
+	public Double getLevel() {
+		return level;
+	}
+
+	public void setLevel(Double level) {
+		this.level = level;
 	}
 
 }

@@ -10,17 +10,18 @@ public class Channel {
 	private String name;
 	private Mixer.Info mixerInfo;
 	private Line.Info lineInfo;
+	private boolean monitoring;
 
 	public Channel(ChannelDirection direction) {
 		this.direction = direction;
 	}
 
 	public ChannelDirection getDirection() {
-		return direction;
+		return this.direction;
 	}
 
 	public Long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(Long id) {
@@ -28,7 +29,7 @@ public class Channel {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(String name) {
@@ -36,7 +37,7 @@ public class Channel {
 	}
 
 	public Mixer.Info getMixerInfo() {
-		return mixerInfo;
+		return this.mixerInfo;
 	}
 
 	public void setMixerInfo(Mixer.Info mixerInfo) {
@@ -44,10 +45,18 @@ public class Channel {
 	}
 
 	public Line.Info getLineInfo() {
-		return lineInfo;
+		return this.lineInfo;
 	}
 
 	public void setLineInfo(Line.Info lineInfo) {
 		this.lineInfo = lineInfo;
+	}
+
+	public boolean isMonitoring() {
+		return monitoring;
+	}
+
+	public void setMonitoring(boolean monitoring) {
+		this.monitoring = monitoring;
 	}
 }

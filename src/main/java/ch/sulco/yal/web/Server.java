@@ -12,11 +12,12 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import spark.Spark;
+import ch.sulco.yal.dm.Channel;
+import ch.sulco.yal.dm.InputChannel;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.event.Event;
 import ch.sulco.yal.event.EventListener;
 import ch.sulco.yal.event.EventManager;
-import ch.sulco.yal.web.dm.Channel;
 import ch.sulco.yal.web.dm.Sample;
 
 import com.google.gson.Gson;
@@ -105,13 +106,13 @@ public class Server implements EventListener {
 	private String getChannels() {
 		Set<Integer> channelIds = this.audioProcessor.getChannelIds();
 		List<Channel> channels = new ArrayList<>();
-		for (int id : channelIds) {
-			Channel ch = new Channel();
-			ch.setId(id);
+		for (Integer id : channelIds) {
+			InputChannel ch = new InputChannel();
+			ch.setId(Long.valueOf(id));
 			ch.setRecordingState(this.audioProcessor.getChannelRecordingState(id));
 			ch.setName("Channel " + id);
 			ch.setMonitoring(this.audioProcessor.getChannelMonitoring(id));
-			ch.setMeterLevel(0);
+			ch.setLevel(0.0);
 			channels.add(ch);
 		}
 		return this.gson.toJson(channels);

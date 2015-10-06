@@ -15,11 +15,11 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	    $scope.loopPosition = event.loopLength;
 	    $scope.loopLocation = $scope.loopPosition + ' / ' + $scope.loopLength;
 	  } else if(event.eventType == 'ChannelMonitorValueChanged'){
-	    var meterLevel = event.value * 1000;
-	    if(meterLevel > 200) meterLevel = 200;
-	    $scope.channels[event.id].meterLevel = meterLevel;
-	    $("#meter_" + event.id).css("height", meterLevel);
-	    console.log('meterLevel: ' + meterLevel);
+	    var level = event.value * 1000;
+	    if(level > 200) level = 200;
+	    $scope.channels[event.id].level = level;
+	    $("#meter_" + event.id).css("height", level);
+	    console.log('level: ' + level);
 	  }
 	};
 

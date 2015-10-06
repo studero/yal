@@ -14,11 +14,11 @@ import javax.inject.Singleton;
 import spark.Spark;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.InputChannel;
+import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.event.Event;
 import ch.sulco.yal.event.EventListener;
 import ch.sulco.yal.event.EventManager;
-import ch.sulco.yal.web.dm.Sample;
 
 import com.google.gson.Gson;
 
@@ -92,12 +92,12 @@ public class Server implements EventListener {
 
 	private String getSamples() {
 		Set<Integer> sampleIds = this.audioProcessor.getSampleIds();
-		List<Sample> samples = new ArrayList<>();
+		List<ch.sulco.yal.dm.Sample> samples = new ArrayList<>();
 		for (int id : sampleIds) {
 			Sample sample = new Sample();
-			sample.setId(id);
+			sample.setId(Long.valueOf(id));
 			sample.setMute(this.audioProcessor.isSampleMute(id));
-			sample.setVolume(this.audioProcessor.getSampleVolume(id));
+			sample.setGain(this.audioProcessor.getSampleVolume(id));
 			samples.add(sample);
 		}
 		return this.gson.toJson(samples);

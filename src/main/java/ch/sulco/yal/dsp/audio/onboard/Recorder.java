@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
@@ -46,8 +45,7 @@ public class Recorder implements LoopListener {
 		this.inputChannel = inputChannel;
 	}
 
-	@PostConstruct
-	public void setup() {
+	public void initialize() {
 		this.setRecordingState(RecordingState.STOPPED);
 		// checkState(AudioSystem.isLineSupported(info),
 		// "Line not supported");

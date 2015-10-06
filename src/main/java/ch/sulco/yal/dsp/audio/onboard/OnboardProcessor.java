@@ -12,20 +12,22 @@ import javax.sound.sampled.BooleanControl;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.FloatControl.Type;
 
+import ch.sulco.yal.Application;
+import ch.sulco.yal.dm.Channel;
+import ch.sulco.yal.dm.InputChannel;
 import ch.sulco.yal.dm.RecordingState;
 import ch.sulco.yal.dsp.audio.Processor;
-import ch.sulco.yal.dsp.audio.RecorderProvider;
 import ch.sulco.yal.dsp.dm.Sample;
+import ch.sulco.yal.event.ChannelCreated;
+import ch.sulco.yal.event.Event;
+import ch.sulco.yal.event.EventListener;
 import ch.sulco.yal.event.EventManager;
 import ch.sulco.yal.event.LoopLengthChanged;
 
 @Singleton
-public class OnboardProcessor implements Processor {
+public class OnboardProcessor implements Processor, EventListener {
 
 	private final static Logger log = Logger.getLogger(OnboardProcessor.class.getName());
-
-	@Inject
-	private AudioSystemProvider audioSystemProvider;
 
 	@Inject
 	private Player player;
@@ -34,21 +36,14 @@ public class OnboardProcessor implements Processor {
 	private LoopStore loopStore;
 
 	@Inject
-	private RecorderProvider recorderProvider;
-
-	@Inject
 	private EventManager eventManager;
 
-	private final Map<Integer, Recorder> recorders = new HashMap<>();
+	private final Map<Long, Recorder> recorders = new HashMap<>();
 
 	@PostConstruct
 	public void setup() {
 		log.info("Setup");
-		int i = 0;
-		for (Recorder r : this.recorderProvider.getRecorders()) {
-			this.recorders.put(i, r);
-			i++;
-		}
+		this.eventManager.addListener(this);
 	}
 
 	public LoopStore getLoopStore() {
@@ -62,11 +57,6 @@ public class OnboardProcessor implements Processor {
 	@Override
 	public Set<Integer> getSampleIds() {
 		return this.loopStore.getSampleIds();
-	}
-
-	@Override
-	public Set<Integer> getChannelIds() {
-		return this.recorders.keySet();
 	}
 
 	@Override
@@ -171,6 +161,23 @@ public class OnboardProcessor implements Processor {
 	@Override
 	public void setChannelMonitoring(int channelId, boolean monitoring) {
 		this.recorders.get(channelId).setMonitoring(monitoring);
+	}
+
+	@Override
+	public void onEvent(Event event) {
+		if (event instanceof ChannelCreated) {
+			ChannelCreated channelCreated = (ChannelCreated) event;
+			Channel channel = channelCreated.getChannel();
+			if (channel instanceof InputChannel) {
+				InputChannel inputChannel = (InputChannel) channel;
+				if (!this.recorders.containsKey(channel.getId())) {
+					Recorder recorder = Application.injector.getInstance(Recorder.class);
+					recorder.setInputChannel(inputChannel);
+					recorder.initialize();
+					this.recorders.put(inputChannel.getId(), recorder);
+				}
+			}
+		}
 	}
 
 }

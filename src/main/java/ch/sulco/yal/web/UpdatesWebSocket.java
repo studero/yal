@@ -9,11 +9,6 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
-import ch.sulco.yal.event.Event;
-import ch.sulco.yal.event.EventListener;
-
-import com.google.gson.Gson;
-
 @WebSocket
 public class UpdatesWebSocket {
 	private final static Logger log = Logger.getLogger(UpdatesWebSocket.class.getName());
@@ -48,7 +43,8 @@ public class UpdatesWebSocket {
 
 	public void send(String message) {
 		try {
-			this.session.getRemote().sendString(message);
+			if (this.session != null)
+				this.session.getRemote().sendString(message);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

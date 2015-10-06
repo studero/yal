@@ -2,7 +2,6 @@ package ch.sulco.yal.dsp.audio;
 
 import java.util.Set;
 
-import ch.sulco.yal.dm.ChannelDirection;
 import ch.sulco.yal.dm.RecordingState;
 
 /**
@@ -13,11 +12,6 @@ public interface Processor {
 	 * @return an array of sample ids.
 	 */
 	Set<Integer> getSampleIds();
-
-	/**
-	 * @return an array of channel ids.
-	 */
-	Set<Integer> getChannelIds();
 
 	/**
 	 * @param sampleId

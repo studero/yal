@@ -2,6 +2,9 @@ package ch.sulco.yal.dsp.audio;
 
 import java.util.Set;
 
+import ch.sulco.yal.dm.ChannelDirection;
+import ch.sulco.yal.dm.RecordingState;
+
 /**
  * provides method for audio processing.
  */

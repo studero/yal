@@ -1,6 +1,6 @@
 package ch.sulco.yal.web.dm;
 
-import ch.sulco.yal.dsp.audio.RecordingState;
+import ch.sulco.yal.dm.RecordingState;
 
 public class Channel {
 	private int id;

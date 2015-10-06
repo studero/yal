@@ -12,10 +12,10 @@ import javax.sound.sampled.BooleanControl;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.FloatControl.Type;
 
+import ch.sulco.yal.dm.RecordingState;
 import ch.sulco.yal.dsp.audio.ChannelInfo;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.dsp.audio.RecorderProvider;
-import ch.sulco.yal.dsp.audio.RecordingState;
 import ch.sulco.yal.dsp.dm.Sample;
 import ch.sulco.yal.event.EventManager;
 import ch.sulco.yal.event.LoopLengthChanged;

@@ -1,6 +1,6 @@
 package ch.sulco.yal.event;
 
-import ch.sulco.yal.dsp.audio.RecordingState;
+import ch.sulco.yal.dm.RecordingState;
 
 public class ChannelStateChanged extends Event {
 	private int id;

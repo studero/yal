@@ -11,8 +11,8 @@ import javax.sound.sampled.Line.Info;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
+import ch.sulco.yal.dm.RecordingState;
 import ch.sulco.yal.dsp.AppConfig;
-import ch.sulco.yal.dsp.audio.RecordingState;
 import ch.sulco.yal.event.ChannelCreated;
 import ch.sulco.yal.event.ChannelMonitorValueChanged;
 import ch.sulco.yal.event.ChannelStateChanged;

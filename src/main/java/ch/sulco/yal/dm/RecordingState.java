@@ -1,4 +1,4 @@
-package ch.sulco.yal.dsp.audio;
+package ch.sulco.yal.dm;
 
 public enum RecordingState{
 	STOPPED,

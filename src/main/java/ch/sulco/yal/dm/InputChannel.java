@@ -2,19 +2,20 @@ package ch.sulco.yal.dm;
 
 public class InputChannel extends Channel {
 
-	private Double gain;
+	private Float gain;
 	private RecordingState recordingState;
-	private Double level;
+	private Float level;
+	private boolean overdubbing;
 
 	public InputChannel() {
 		super(ChannelDirection.IN);
 	}
 
-	public Double getGain() {
+	public Float getGain() {
 		return this.gain;
 	}
 
-	public void setGain(Double gain) {
+	public void setGain(Float gain) {
 		this.gain = gain;
 	}
 
@@ -26,12 +27,20 @@ public class InputChannel extends Channel {
 		this.recordingState = recordingState;
 	}
 
-	public Double getLevel() {
-		return level;
+	public Float getLevel() {
+		return this.level;
 	}
 
-	public void setLevel(Double level) {
+	public void setLevel(Float level) {
 		this.level = level;
+	}
+
+	public boolean isOverdubbing() {
+		return this.overdubbing;
+	}
+
+	public void setOverdubbing(boolean overdubbing) {
+		this.overdubbing = overdubbing;
 	}
 
 }

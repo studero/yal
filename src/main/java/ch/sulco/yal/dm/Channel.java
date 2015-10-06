@@ -9,7 +9,7 @@ public class Channel {
 	private Long id;
 	private String name;
 	private Mixer.Info mixerInfo;
-	private Line.Info lineInfo;
+	private transient Line.Info lineInfo;
 	private boolean monitoring;
 
 	public Channel(ChannelDirection direction) {
@@ -53,7 +53,7 @@ public class Channel {
 	}
 
 	public boolean isMonitoring() {
-		return monitoring;
+		return this.monitoring;
 	}
 
 	public void setMonitoring(boolean monitoring) {

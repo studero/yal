@@ -2,6 +2,7 @@ package ch.sulco.yal;
 
 import ch.sulco.yal.controller.MidiControl;
 import ch.sulco.yal.dsp.AppConfig;
+import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.dsp.audio.RecorderProvider;
 import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
@@ -21,6 +22,7 @@ public class YalModule extends AbstractModule {
 		this.bind(AppConfig.class);
 		this.bind(Application.class);
 		this.bind(AudioSystemProvider.class);
+		this.bind(DataStore.class);
 		this.bind(EventManager.class);
 		this.bind(LoopStore.class);
 		this.bind(MidiControl.class);

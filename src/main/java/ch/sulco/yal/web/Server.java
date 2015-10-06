@@ -5,6 +5,7 @@ import static spark.Spark.get;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -13,13 +14,15 @@ import javax.inject.Singleton;
 
 import spark.Spark;
 import ch.sulco.yal.dm.Channel;
-import ch.sulco.yal.dm.InputChannel;
 import ch.sulco.yal.dm.Sample;
+import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
+import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
 import ch.sulco.yal.event.Event;
 import ch.sulco.yal.event.EventListener;
 import ch.sulco.yal.event.EventManager;
 
+import com.google.common.collect.FluentIterable;
 import com.google.gson.Gson;
 
 @Singleton
@@ -27,10 +30,16 @@ public class Server implements EventListener {
 	private final static Logger log = Logger.getLogger(Server.class.getName());
 
 	@Inject
+	private AudioSystemProvider audioSystemProvider;
+
+	@Inject
 	private Processor audioProcessor;
 
 	@Inject
 	private EventManager eventManager;
+
+	@Inject
+	private DataStore dataStore;
 
 	private final Gson gson = new Gson();
 
@@ -104,18 +113,14 @@ public class Server implements EventListener {
 	}
 
 	private String getChannels() {
-		Set<Integer> channelIds = this.audioProcessor.getChannelIds();
-		List<Channel> channels = new ArrayList<>();
-		for (Integer id : channelIds) {
-			InputChannel ch = new InputChannel();
-			ch.setId(Long.valueOf(id));
-			ch.setRecordingState(this.audioProcessor.getChannelRecordingState(id));
-			ch.setName("Channel " + id);
-			ch.setMonitoring(this.audioProcessor.getChannelMonitoring(id));
-			ch.setLevel(0.0);
-			channels.add(ch);
-		}
-		return this.gson.toJson(channels);
+		FluentIterable<Channel> channels = FluentIterable.from(this.dataStore.getChannels());
+		channels.forEach(new Consumer<Channel>() {
+			@Override
+			public void accept(Channel t) {
+				t.setName("Channel " + t.getId());
+			}
+		});
+		return this.gson.toJson(channels.toList());
 	}
 
 	private String play() {

@@ -7,6 +7,7 @@ body {
 	background-color: #333;
 	color: #fff;
 	padding: 3px;
+	margin-bottom:1px;
 }
 
 .channels {
@@ -14,14 +15,13 @@ body {
 }
 
 .channel {
-	height: 300px;
-	width; 100px;
+	height: 180px;
 	padding-left: 2px;
 	padding-right: 2px;
 }
 
 .meter {
-	width: 26px;
+	width: 14px;
 	height: 10px;
 	background-color: #dedede;
 	bottom:0px;
@@ -29,7 +29,13 @@ body {
 
 .meter-back {
 	vertical-align: bottom;
-	align:bottom;
-	height: 210px;
-	width: 34px;
+	text-align:bottom;
+	height: 110px;
+	width: 22px;
+}
+
+.channel-name {
+	font-size:10px;
+	padding-top:6px;
+	text-align:center;
 }

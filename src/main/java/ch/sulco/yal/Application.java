@@ -2,15 +2,18 @@ package ch.sulco.yal;
 
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import ch.sulco.yal.controller.MidiControl;
+import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dsp.AppConfig;
+import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
+import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
 import ch.sulco.yal.web.Server;
 
-import com.google.inject.Binding;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
@@ -30,6 +33,19 @@ public class Application {
 
 	@Inject
 	private MidiControl midiControl;
+
+	@Inject
+	private DataStore dataStore;
+
+	@Inject
+	private AudioSystemProvider audioSystemProvider;
+
+	@PostConstruct
+	public void setup() {
+		for (Channel channel : this.audioSystemProvider.getChannels()) {
+			this.dataStore.addChannel(channel);
+		}
+	}
 
 	public Processor getAudioProcessor() {
 		return this.audioProcessor;

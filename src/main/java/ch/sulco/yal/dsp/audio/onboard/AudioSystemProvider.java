@@ -1,13 +1,13 @@
 package ch.sulco.yal.dsp.audio.onboard;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -17,14 +17,19 @@ import javax.sound.sampled.DataLine.Info;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
+import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import ch.sulco.yal.dm.Channel;
+import ch.sulco.yal.dm.InputChannel;
+import ch.sulco.yal.dm.OutputChannel;
 import ch.sulco.yal.dsp.AppConfig;
-import ch.sulco.yal.dsp.audio.ChannelInfo;
 
 @Singleton
 public class AudioSystemProvider {
+
+	private static final Logger log = Logger.getLogger(AudioSystemProvider.class.getName());
 
 	@Inject
 	private AppConfig appConfig;
@@ -42,12 +47,27 @@ public class AudioSystemProvider {
 		return AudioSystem.getAudioInputStream(file);
 	}
 
-	public Map<Integer, ChannelInfo> getTargetLines() {
-		HashMap<Integer, ChannelInfo> channels = new HashMap<Integer, ChannelInfo>();
+	public List<Channel> getChannels() {
+		long id = 0;
+		List<Channel> channels = new ArrayList<>();
 		for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo()) {
 			for (Line.Info lineInfo : AudioSystem.getMixer(mixerInfo).getTargetLineInfo(this.getTargetLineInfo())) {
-				ChannelInfo channel = new ChannelInfo(channels.size(), mixerInfo, lineInfo);
-				channels.put(channel.getId(), channel);
+				InputChannel channel = new InputChannel();
+				channel.setId(id);
+				channel.setMixerInfo(mixerInfo);
+				channel.setLineInfo(lineInfo);
+				channels.add(channel);
+				log.info("New Input Channel [" + channel + "]");
+				id++;
+			}
+			for (Line.Info lineInfo : AudioSystem.getMixer(mixerInfo).getSourceLineInfo(this.getSourceLineInfo())) {
+				OutputChannel channel = new OutputChannel();
+				channel.setId(id);
+				channel.setMixerInfo(mixerInfo);
+				channel.setLineInfo(lineInfo);
+				channels.add(channel);
+				log.info("New Output Channel [" + channel + "]");
+				id++;
 			}
 		}
 		return channels;
@@ -62,5 +82,9 @@ public class AudioSystemProvider {
 
 	private Info getTargetLineInfo() {
 		return new DataLine.Info(TargetDataLine.class, this.appConfig.getAudioFormat());
+	}
+
+	private Info getSourceLineInfo() {
+		return new DataLine.Info(SourceDataLine.class, this.appConfig.getAudioFormat());
 	}
 }

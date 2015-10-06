@@ -25,7 +25,7 @@ public class Recorder implements LoopListener {
 	private AudioSystemProvider audioSystemProvider;
 
 	@Inject
-	private Player player;
+	private Synchronizer synchronizer;
 
 	@Inject
 	private LoopStore loopStore;
@@ -70,13 +70,13 @@ public class Recorder implements LoopListener {
 	public void startRecord() {
 		if (this.inputChannel.getRecordingState() == RecordingState.STOPPED) {
 			this.setRecordingState(RecordingState.WAITING);
-			this.player.addLoopListerner(this);
+			this.synchronizer.addLoopListerner(this);
 		}
 	}
 
 	public void stopRecord() {
 		this.setRecordingState(RecordingState.STOPPED);
-		this.player.removeLoopListerner(this);
+		this.synchronizer.removeLoopListerner(this);
 		if (!this.inputChannel.isOverdubbing()) {
 			this.recordedSample = this.recordingSample.toByteArray();
 		}
@@ -169,7 +169,7 @@ public class Recorder implements LoopListener {
 			this.recordedSample = this.recordingSample.toByteArray();
 			this.recordingSample = new ByteArrayOutputStream();
 		} else {
-			this.player.removeLoopListerner(this);
+			this.synchronizer.removeLoopListerner(this);
 		}
 	}
 

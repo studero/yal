@@ -15,7 +15,6 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.Clip;
 
-import ch.sulco.yal.dsp.AppConfig;
 import ch.sulco.yal.dsp.dm.Sample;
 import ch.sulco.yal.event.EventManager;
 import ch.sulco.yal.event.SampleCreated;
@@ -28,13 +27,11 @@ public class LoopStore {
 	private final static Logger log = Logger.getLogger(LoopStore.class.getName());
 
 	@Inject
-	private AppConfig appConfig;
-
-	@Inject
 	private AudioSystemProvider audioSystemProvider;
-
 	@Inject
 	private EventManager eventManager;
+	@Inject
+	private Synchronizer synchronizer;
 
 	private Integer sampleLength;
 	private Map<Integer, Sample> samples = new HashMap<Integer, Sample>();
@@ -54,7 +51,7 @@ public class LoopStore {
 	}
 
 	public int addSample(byte[] data) {
-		int id = this.addSample(this.appConfig.getAudioFormat(), data);
+		int id = this.addSample(null, data);
 		log.info("New Sample Id [" + id + "]");
 		return id;
 	}
@@ -64,6 +61,7 @@ public class LoopStore {
 		try {
 			if (this.samples.isEmpty()) {
 				this.sampleLength = data.length;
+				synchronizer.initialize(data.length);
 			} else if (data.length < this.sampleLength) {
 				byte[] longerData = Arrays.copyOf(data, this.sampleLength);
 				data = longerData;
@@ -94,6 +92,9 @@ public class LoopStore {
 				}
 
 			}.start();
+		}
+		if(this.samples.isEmpty()){
+			synchronizer.reset();
 		}
 	}
 

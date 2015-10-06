@@ -102,7 +102,7 @@ public class TestGui extends JPanel {
 			start.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					TestGui.this.controller.getPlayer().startSample(TestGui.this.controller.getLoopStore().getSample(id));
+					TestGui.this.controller.setSampleMute(id, false);
 				}
 			});
 			constraints.gridx = 1;
@@ -112,7 +112,7 @@ public class TestGui extends JPanel {
 			stop.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					TestGui.this.controller.getPlayer().stopSample(TestGui.this.controller.getLoopStore().getSample(id));
+					TestGui.this.controller.setSampleMute(id, true);
 				}
 			});
 			constraints.gridx = 2;

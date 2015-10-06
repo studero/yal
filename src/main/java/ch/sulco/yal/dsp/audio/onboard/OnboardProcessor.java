@@ -30,28 +30,26 @@ public class OnboardProcessor implements Processor, EventListener {
 	private final static Logger log = Logger.getLogger(OnboardProcessor.class.getName());
 
 	@Inject
-	private Player player;
-
-	@Inject
 	private LoopStore loopStore;
 
 	@Inject
 	private EventManager eventManager;
 
 	private final Map<Long, Recorder> recorders = new HashMap<>();
+	private final Map<Long, Player> players = new HashMap<>();
 
 	@PostConstruct
 	public void setup() {
 		log.info("Setup");
 		this.eventManager.addListener(this);
+		// TODO create players on event
+		Player player = Application.injector.getInstance(Player.class);
+		long id = 0;
+		this.players.put(id, player);
 	}
 
 	public LoopStore getLoopStore() {
 		return this.loopStore;
-	}
-
-	public Player getPlayer() {
-		return this.player;
 	}
 
 	@Override
@@ -103,12 +101,15 @@ public class OnboardProcessor implements Processor, EventListener {
 
 	@Override
 	public void setSampleMute(int sampleId, boolean mute) {
+		// TODO get player by playerId
+		long playerId = 0;
+		Player player = players.get(playerId);
 		Sample sample = this.loopStore.getSample(sampleId);
 		if (sample != null) {
 			if (mute) {
-				this.player.stopSample(sample);
+				player.stopSample(sample);
 			} else {
-				this.player.startSample(sample);
+				player.startSample(sample);
 			}
 		}
 

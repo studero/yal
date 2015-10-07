@@ -117,14 +117,15 @@ public class Recorder implements LoopListener {
 						log.info("Start recording...");
 						int monitoringCount = 0;
 						while (Recorder.this.inputChannel.getRecordingState() == RecordingState.RECORDING) {
-							byte[] buffer = new byte[2];
+							byte[] buffer = new byte[4];
 							int bytesRead = ais.read(buffer);
 							if (Recorder.this.inputChannel.getRecordingState() == RecordingState.RECORDING) {
-								if (Recorder.this.recordingSample == null)
+								if (Recorder.this.recordingSample == null){
 									Recorder.this.recordingSample = new ByteArrayOutputStream();
+								}
 								Recorder.this.recordingSample.write(buffer, 0, bytesRead);
 							}
-							Recorder.this.updateMonitoring(monitoringCount, buffer, bytesRead);
+//							Recorder.this.updateMonitoring(monitoringCount, buffer, bytesRead);
 						}
 						log.info("Stop recording...");
 
@@ -135,7 +136,7 @@ public class Recorder implements LoopListener {
 			};
 			recordThread.start();
 		} else if (this.inputChannel.getRecordingState() == RecordingState.RECORDING) {
-			this.recordedSample = this.recordingSample.toByteArray();
+			this.recordedSample = this.recordingSample.toByteArray();			
 			this.recordingSample = new ByteArrayOutputStream();
 		} else {
 			this.synchronizer.removeLoopListerner(this);

@@ -15,6 +15,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.Clip;
 
+import ch.sulco.yal.dsp.AppConfig;
 import ch.sulco.yal.dsp.dm.Sample;
 import ch.sulco.yal.event.EventManager;
 import ch.sulco.yal.event.SampleCreated;
@@ -26,6 +27,9 @@ import com.google.common.collect.FluentIterable;
 public class LoopStore {
 	private final static Logger log = Logger.getLogger(LoopStore.class.getName());
 
+	@Inject
+	private AppConfig appConfig;
+	
 	@Inject
 	private AudioSystemProvider audioSystemProvider;
 	@Inject
@@ -51,7 +55,7 @@ public class LoopStore {
 	}
 
 	public int addSample(byte[] data) {
-		int id = this.addSample(null, data);
+		int id = this.addSample(appConfig.getAudioFormat(), data);
 		log.info("New Sample Id [" + id + "]");
 		return id;
 	}

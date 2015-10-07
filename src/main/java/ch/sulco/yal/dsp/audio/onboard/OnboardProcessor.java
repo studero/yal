@@ -15,6 +15,7 @@ import javax.sound.sampled.FloatControl.Type;
 import ch.sulco.yal.Application;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.InputChannel;
+import ch.sulco.yal.dm.OutputChannel;
 import ch.sulco.yal.dm.RecordingState;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.dsp.dm.Sample;
@@ -24,10 +25,14 @@ import ch.sulco.yal.event.EventListener;
 import ch.sulco.yal.event.EventManager;
 import ch.sulco.yal.event.LoopLengthChanged;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.FluentIterable;
+
 @Singleton
 public class OnboardProcessor implements Processor, EventListener {
 
-	private final static Logger log = Logger.getLogger(OnboardProcessor.class.getName());
+	private final static Logger log = Logger.getLogger(OnboardProcessor.class
+			.getName());
 
 	@Inject
 	private LoopStore loopStore;
@@ -42,10 +47,6 @@ public class OnboardProcessor implements Processor, EventListener {
 	public void setup() {
 		log.info("Setup");
 		this.eventManager.addListener(this);
-		// TODO create players on event
-		Player player = Application.injector.getInstance(Player.class);
-		long id = 0;
-		this.players.put(id, player);
 	}
 
 	public LoopStore getLoopStore() {
@@ -84,10 +85,15 @@ public class OnboardProcessor implements Processor, EventListener {
 			recorder.stopRecord();
 		}
 
-		// log.info("Start Sample");
-		// this.player.startSample(this.loopStore.getSample(0));
+		log.info("Start Sample");
+		log.info("Player " + this.players.get(0));
+		Optional<Player> firstPlayer = FluentIterable.from(
+				this.players.values()).first();
+		if (firstPlayer.isPresent())
+			firstPlayer.get().startSample(this.loopStore.getSample(0));
 
-		this.eventManager.addEvent(new LoopLengthChanged(this.loopStore.getLoopLength()));
+		this.eventManager.addEvent(new LoopLengthChanged(this.loopStore
+				.getLoopLength()));
 	}
 
 	@Override
@@ -117,7 +123,8 @@ public class OnboardProcessor implements Processor, EventListener {
 
 	@Override
 	public void setSampleVolume(int sampleId, float volume) {
-		FloatControl control = (FloatControl) this.loopStore.getSample(sampleId).getClip().getControl(Type.MASTER_GAIN);
+		FloatControl control = (FloatControl) this.loopStore
+				.getSample(sampleId).getClip().getControl(Type.MASTER_GAIN);
 		control.setValue(volume);
 	}
 
@@ -139,19 +146,23 @@ public class OnboardProcessor implements Processor, EventListener {
 
 	@Override
 	public boolean isSampleMute(int sampleId) {
-		BooleanControl control = (BooleanControl) this.loopStore.getSample(sampleId).getClip().getControl(BooleanControl.Type.MUTE);
+		BooleanControl control = (BooleanControl) this.loopStore
+				.getSample(sampleId).getClip()
+				.getControl(BooleanControl.Type.MUTE);
 		return control.getValue();
 	}
 
 	@Override
 	public float getSampleVolume(int sampleId) {
-		FloatControl control = (FloatControl) this.loopStore.getSample(sampleId).getClip().getControl(Type.MASTER_GAIN);
+		FloatControl control = (FloatControl) this.loopStore
+				.getSample(sampleId).getClip().getControl(Type.MASTER_GAIN);
 		return control.getValue();
 	}
 
 	@Override
 	public Long getLoopLength() {
-		return this.loopStore.getSampleIds().isEmpty() ? null : this.loopStore.getSample(0).getClip().getMicrosecondLength();
+		return this.loopStore.getSampleIds().isEmpty() ? null : this.loopStore
+				.getSample(0).getClip().getMicrosecondLength();
 	}
 
 	@Override
@@ -172,10 +183,18 @@ public class OnboardProcessor implements Processor, EventListener {
 			if (channel instanceof InputChannel) {
 				InputChannel inputChannel = (InputChannel) channel;
 				if (!this.recorders.containsKey(channel.getId())) {
-					Recorder recorder = Application.injector.getInstance(Recorder.class);
+					Recorder recorder = Application.injector
+							.getInstance(Recorder.class);
 					recorder.setInputChannel(inputChannel);
 					recorder.initialize();
 					this.recorders.put(inputChannel.getId(), recorder);
+				}
+			} else if (channel instanceof OutputChannel) {
+				OutputChannel outputChannel = (OutputChannel) channel;
+				if (!players.containsKey(outputChannel.getId())) {
+					Player player = Application.injector
+							.getInstance(Player.class);
+					this.players.put(outputChannel.getId(), player);
 				}
 			}
 		}

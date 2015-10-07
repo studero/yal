@@ -29,12 +29,14 @@ import ch.sulco.yal.dsp.AppConfig;
 @Singleton
 public class AudioSystemProvider {
 
-	private static final Logger log = Logger.getLogger(AudioSystemProvider.class.getName());
+	private static final Logger log = Logger
+			.getLogger(AudioSystemProvider.class.getName());
 
 	@Inject
 	private AppConfig appConfig;
 
-	public Clip getClip(AudioFormat format, byte[] data, int offset, int bufferSize) throws LineUnavailableException {
+	public Clip getClip(AudioFormat format, byte[] data, int offset,
+			int bufferSize) throws LineUnavailableException {
 		if (format == null) {
 			format = this.appConfig.getAudioFormat();
 		}
@@ -43,7 +45,8 @@ public class AudioSystemProvider {
 		return clip;
 	}
 
-	public AudioInputStream getAudioInputStream(File file) throws UnsupportedAudioFileException, IOException {
+	public AudioInputStream getAudioInputStream(File file)
+			throws UnsupportedAudioFileException, IOException {
 		return AudioSystem.getAudioInputStream(file);
 	}
 
@@ -51,7 +54,8 @@ public class AudioSystemProvider {
 		long id = 0;
 		List<Channel> channels = new ArrayList<>();
 		for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo()) {
-			for (Line.Info lineInfo : AudioSystem.getMixer(mixerInfo).getTargetLineInfo(this.getTargetLineInfo())) {
+			for (Line.Info lineInfo : AudioSystem.getMixer(mixerInfo)
+					.getTargetLineInfo(this.getTargetLineInfo())) {
 				InputChannel channel = new InputChannel();
 				channel.setId(id);
 				channel.setMixerInfo(mixerInfo);
@@ -60,7 +64,8 @@ public class AudioSystemProvider {
 				log.info("New Input Channel [" + channel + "]");
 				id++;
 			}
-			for (Line.Info lineInfo : AudioSystem.getMixer(mixerInfo).getSourceLineInfo(this.getSourceLineInfo())) {
+			for (Line.Info lineInfo : AudioSystem.getMixer(mixerInfo)
+					.getSourceLineInfo(this.getSourceLineInfo())) {
 				OutputChannel channel = new OutputChannel();
 				channel.setId(id);
 				channel.setMixerInfo(mixerInfo);
@@ -73,18 +78,21 @@ public class AudioSystemProvider {
 		return channels;
 	}
 
-	public Line getLine(Line.Info info) throws LineUnavailableException {
+	public Line getLine(Mixer.Info mixerInfo, Line.Info info)
+			throws LineUnavailableException {
 		if (info == null) {
 			info = this.getTargetLineInfo();
 		}
-		return AudioSystem.getLine(info);
+		return AudioSystem.getMixer(mixerInfo).getLine(info);
 	}
 
 	private Info getTargetLineInfo() {
-		return new DataLine.Info(TargetDataLine.class, this.appConfig.getAudioFormat());
+		return new DataLine.Info(TargetDataLine.class,
+				this.appConfig.getAudioFormat());
 	}
 
 	private Info getSourceLineInfo() {
-		return new DataLine.Info(SourceDataLine.class, this.appConfig.getAudioFormat());
+		return new DataLine.Info(SourceDataLine.class,
+				this.appConfig.getAudioFormat());
 	}
 }

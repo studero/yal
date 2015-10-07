@@ -11,7 +11,7 @@ public class AppConfig {
 	}
 
 	public float getSampleRate() {
-		return 128000;
+		return 44100;
 	}
 
 	public int getSampleSize() {

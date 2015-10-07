@@ -28,9 +28,9 @@ public class OnboardProcessorTest {
 	@Ignore
 	@Test
 	public void testPutData() {
-		when(this.loopStore.addSample("test".getBytes())).thenReturn(10101);
+		when(this.loopStore.addSample("test".getBytes())).thenReturn(10101L);
 
-		int sample1 = this.onboardProcessor.putData("test".getBytes());
+		Long sample1 = this.onboardProcessor.putData("test".getBytes());
 
 		verify(this.loopStore).addSample("test".getBytes());
 		assertThat(sample1, is(10101));
@@ -39,10 +39,10 @@ public class OnboardProcessorTest {
 	@Ignore
 	@Test
 	public void testGetSampleIds() {
-		when(this.loopStore.getSampleIds()).thenReturn(Sets.newSet(10101, 20202));
+		when(this.loopStore.getSampleIds()).thenReturn(Sets.newSet(10101L, 20202L));
 
-		Set<Integer> sampleIds = this.onboardProcessor.getSampleIds();
+		Set<Long> sampleIds = this.onboardProcessor.getSampleIds();
 
-		assertThat(sampleIds, containsInAnyOrder(10101, 20202));
+		assertThat(sampleIds, containsInAnyOrder(10101L, 20202L));
 	}
 }

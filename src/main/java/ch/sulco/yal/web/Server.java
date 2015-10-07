@@ -56,7 +56,7 @@ public class Server implements EventListener {
 		get("/channels", (req, res) -> this.getChannels());
 
 		get("/record/:channelId/:enabled",
-				(req, res) -> this.setRecord(Integer.parseInt(req.params(":channelId")), Boolean.parseBoolean(req.params(":enabled"))));
+				(req, res) -> this.setRecord(Long.valueOf(req.params(":channelId")), Boolean.parseBoolean(req.params(":enabled"))));
 
 		get("/monitor/:channelId/:enabled",
 				(req, res) -> this.setMonitoring(Integer.parseInt(req.params(":channelId")), Boolean.parseBoolean(req.params(":enabled"))));
@@ -82,7 +82,7 @@ public class Server implements EventListener {
 		return loopLength == null ? "" : loopLength.toString();
 	}
 
-	private String setRecord(int channelId, boolean enabled) {
+	private String setRecord(Long channelId, boolean enabled) {
 		log.info("Record [channelId=" + channelId + "][enabled=" + enabled + "]");
 		this.audioProcessor.setChannelRecording(channelId, enabled);
 		return "Success";

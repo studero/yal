@@ -20,14 +20,14 @@ public class Synchronizer {
 	
 	private LineListener lineListener;
 	private LinkedList<LoopListener> loopListeners = new LinkedList<LoopListener>();
-	private Clip synchroniseClip;
+	private Clip synchronizeClip;
 
 
 	public void initialize(int length) {
 		try {
 			byte[] data = new byte[length];
 			Arrays.fill(data, 0, length, (byte)0x00);
-			synchroniseClip = this.audioSystemProvider.getClip(null, data, 0, length);
+			synchronizeClip = this.audioSystemProvider.getClip(null, data, 0, length);
 			log.info("Synchronizer loop initialized, length "+length);
 		} catch (LineUnavailableException e) {
 			e.printStackTrace();
@@ -35,7 +35,7 @@ public class Synchronizer {
 	}
 
 	public void reset() {
-		synchroniseClip = null;
+		synchronizeClip = null;
 		log.info("Synchronizer loop cleared");
 	}
 
@@ -45,26 +45,26 @@ public class Synchronizer {
 				@Override
 				public void update(LineEvent event) {
 					log.info("Synchronization event [" + event + "]");
-					synchroniseClip.removeLineListener(this);
+					synchronizeClip.removeLineListener(this);
 					lineListener = null;
 					if(!loopListeners.isEmpty()){
 						log.info("Synchronization loop playing");
-						synchroniseClip.setFramePosition(0);
-						synchroniseClip.loop(Clip.LOOP_CONTINUOUSLY);
+						synchronizeClip.setFramePosition(0);
+						synchronizeClip.loop(Clip.LOOP_CONTINUOUSLY);
 					}
 					for (LoopListener loopListener : loopListeners) {
 						loopListener.loopStarted(false);
 					}
 				}
 			};
-			synchroniseClip.addLineListener(this.lineListener);
-			synchroniseClip.loop(0);
+			synchronizeClip.addLineListener(this.lineListener);
+			synchronizeClip.loop(0);
 			log.info("Synchronization loop event set up");
 		}
 	}
 
 	public void addLoopListerner(LoopListener loopListerer) {
-		if (synchroniseClip == null) {
+		if (synchronizeClip == null) {
 			loopListerer.loopStarted(true);
 		} else {
 			this.checkLine();
@@ -76,9 +76,9 @@ public class Synchronizer {
 	public void removeLoopListerner(LoopListener loopListerer) {
 		this.loopListeners.remove(loopListerer);
 		log.info("Synchronization listener removed, now has "+loopListeners.size());
-		if(loopListeners.isEmpty()){
-			synchroniseClip.stop();
-			synchroniseClip.setFramePosition(0);
+		if(loopListeners.isEmpty() && synchronizeClip != null){
+			synchronizeClip.stop();
+			synchronizeClip.setFramePosition(0);
 		}
 	}
 }

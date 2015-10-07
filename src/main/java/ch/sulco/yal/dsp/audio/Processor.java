@@ -50,7 +50,7 @@ public interface Processor {
 	 * @param recording
 	 *            true if channel should be recording.
 	 */
-	void setChannelRecording(int channelId, boolean recording);
+	void setChannelRecording(Long channelId, boolean recording);
 
 	RecordingState getChannelRecordingState(int channelId);
 

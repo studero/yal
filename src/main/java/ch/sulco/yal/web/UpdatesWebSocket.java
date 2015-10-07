@@ -22,6 +22,9 @@ public class UpdatesWebSocket {
 	}
 
 	public static UpdatesWebSocket getInstance() {
+		if(instance == null){
+			new UpdatesWebSocket();
+		}
 		return instance;
 	}
 

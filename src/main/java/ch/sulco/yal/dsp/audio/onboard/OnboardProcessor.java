@@ -91,7 +91,7 @@ public class OnboardProcessor implements Processor, EventListener {
 	}
 
 	@Override
-	public void setChannelRecording(int channelId, boolean recording) {
+	public void setChannelRecording(Long channelId, boolean recording) {
 		if (recording) {
 			this.recorders.get(channelId).startRecord();
 		} else {

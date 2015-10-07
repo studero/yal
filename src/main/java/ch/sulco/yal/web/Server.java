@@ -65,6 +65,9 @@ public class Server implements EventListener {
 				(req, res) -> this.setVolume(Long.parseLong(req.params(":sampleId")), Float.parseFloat(req.params(":volume"))));
 
 		get("/sample/play/:sampleId", (req, res) -> this.playSample(Long.parseLong(req.params(":sampleId"))));
+
+		get("/sample/:sampleId/:mute",
+				(req, res) -> this.setSampleMute(Long.parseLong(req.params(":sampleId")), Boolean.parseBoolean(req.params(":mute"))));
 	}
 
 	@PostConstruct
@@ -85,6 +88,12 @@ public class Server implements EventListener {
 	private String setRecord(Long channelId, boolean enabled) {
 		log.info("Record [channelId=" + channelId + "][enabled=" + enabled + "]");
 		this.audioProcessor.setChannelRecording(channelId, enabled);
+		return "Success";
+	}
+
+	private String setSampleMute(Long sampleId, boolean mute) {
+		log.info("SampleMute [sampleId=" + sampleId + "][mute=" + mute + "]");
+		this.audioProcessor.setSampleMute(sampleId, mute);
 		return "Success";
 	}
 

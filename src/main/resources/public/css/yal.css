@@ -39,3 +39,18 @@ body {
 	padding-top:6px;
 	text-align:center;
 }
+
+.samples {
+	margin-left:0px;
+}
+
+.sample {
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
+.sample-name {
+	font-size:10px;
+	padding-top:6px;
+	text-align:center;
+}

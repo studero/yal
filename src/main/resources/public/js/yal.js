@@ -5,9 +5,8 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	socket.onmessage = function (e) {
 	  console.log('Server: ' + e.data);
 	  var event = angular.fromJson(e.data);
-	  if(event.eventType == 'ChannelStateChanged'){
-	  	$scope.channels[event.id].recordingState = event.recordingState;
-	  	$scope.channels[event.id].monitoring = event.monitoring;
+	  if(event.eventType == 'ChannelUpdated'){
+	  	$scope.channels[event.channel.id] = event.channel;
 	  } else if(event.eventType == 'LoopLengthChanged'){
 	    $scope.loopLength = event.loopLength;
 	    $scope.loopLocation = $scope.loopPosition + ' / ' + $scope.loopLength;
@@ -20,6 +19,10 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	    $scope.channels[event.id].level = level;
 	    $("#meter_" + event.id).css("height", level);
 	    console.log('level: ' + level);
+	  } else if(event.eventType == 'SampleCreated'){
+	    $scope.samples[event.sample.id] = event.sample;
+	  } else if(event.eventType == 'SampleUpdated'){
+	    $scope.samples[event.sample.id] = event.sample;
 	  }
 	};
 
@@ -47,6 +50,12 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 			url : '/monitor/' + channelId + '/' + enabled
 		});
 	};
+	$scope.sampleMute = function(sampleId, mute) {
+		$http({
+			method : 'GET',
+			url : '/sample/' + sampleId + '/' + mute
+		});
+	};
 	$scope.playSample = function(sampleId) {
 		$http({
 			method : 'GET',
@@ -59,6 +68,7 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	
 	
 	updateChannels();
+	updateSamples();
 	
 	function updateChannels(){
 		$http({

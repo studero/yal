@@ -17,6 +17,7 @@ import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.InputChannel;
 import ch.sulco.yal.dm.OutputChannel;
 import ch.sulco.yal.dm.RecordingState;
+import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.dsp.dm.SampleClip;
 import ch.sulco.yal.event.ChannelCreated;
@@ -24,6 +25,7 @@ import ch.sulco.yal.event.Event;
 import ch.sulco.yal.event.EventListener;
 import ch.sulco.yal.event.EventManager;
 import ch.sulco.yal.event.LoopLengthChanged;
+import ch.sulco.yal.event.SampleUpdated;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
@@ -104,15 +106,19 @@ public class OnboardProcessor implements Processor, EventListener {
 
 	@Override
 	public void setSampleMute(Long sampleId, boolean mute) {
-		// TODO get player by playerId
-		long playerId = 0;
-		Player player = this.players.get(playerId);
-		SampleClip sample = this.loopStore.getSample(sampleId);
-		if (sample != null) {
-			if (mute) {
-				player.stopSample(sample);
-			} else {
-				player.startSample(sample);
+		Optional<Player> firstPlayer = FluentIterable.from(this.players.values()).first();
+		if (firstPlayer.isPresent()) {
+			SampleClip sample = this.loopStore.getSample(sampleId);
+			if (sample != null) {
+				if (mute) {
+					firstPlayer.get().stopSample(sample);
+				} else {
+					firstPlayer.get().startSample(sample);
+				}
+				Sample s = new Sample();
+				s.setId(sampleId);
+				s.setMute(mute);
+				this.eventManager.addEvent(new SampleUpdated(s));
 			}
 		}
 

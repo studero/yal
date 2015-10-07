@@ -15,8 +15,9 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.Clip;
 
+import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.AppConfig;
-import ch.sulco.yal.dsp.dm.Sample;
+import ch.sulco.yal.dsp.dm.SampleClip;
 import ch.sulco.yal.event.EventManager;
 import ch.sulco.yal.event.SampleCreated;
 
@@ -29,18 +30,20 @@ public class LoopStore {
 
 	@Inject
 	private AppConfig appConfig;
-	
+
 	@Inject
 	private AudioSystemProvider audioSystemProvider;
+
 	@Inject
 	private EventManager eventManager;
+
 	@Inject
 	private Synchronizer synchronizer;
 
 	private Integer sampleLength;
-	private Map<Integer, Sample> samples = new HashMap<Integer, Sample>();
+	private Map<Long, SampleClip> samples = new HashMap<>();
 
-	public int addSample(String fileName) {
+	public Long addSample(String fileName) {
 		log.info("Add Sample [fileName=" + fileName + "]");
 		try {
 			File file = new File(fileName);
@@ -51,21 +54,21 @@ public class LoopStore {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return 0;
+		return null;
 	}
 
-	public int addSample(byte[] data) {
-		int id = this.addSample(appConfig.getAudioFormat(), data);
+	public Long addSample(byte[] data) {
+		Long id = this.addSample(this.appConfig.getAudioFormat(), data);
 		log.info("New Sample Id [" + id + "]");
 		return id;
 	}
 
-	private int addSample(AudioFormat format, byte[] data) {
-		int newId = -1;
+	private Long addSample(AudioFormat format, byte[] data) {
+		Long newId = null;
 		try {
 			if (this.samples.isEmpty()) {
 				this.sampleLength = data.length;
-				synchronizer.initialize(data.length);
+				this.synchronizer.initialize(data.length);
 			} else if (data.length < this.sampleLength) {
 				byte[] longerData = Arrays.copyOf(data, this.sampleLength);
 				data = longerData;
@@ -73,9 +76,11 @@ public class LoopStore {
 			Clip clip = this.audioSystemProvider.getClip(format, data, 0, this.sampleLength);
 			log.info("Added Clip [length=" + clip.getMicrosecondLength() + "]");
 			newId = this.samples.size() == 0 ? 0 : Collections.max(this.samples.keySet()) + 1;
-			Sample sample = new Sample(newId, clip);
-			this.samples.put(newId, sample);
-			this.eventManager.addEvent(new SampleCreated(newId));
+			SampleClip sampleClip = new SampleClip(newId, clip);
+			this.samples.put(newId, sampleClip);
+			Sample sample = new Sample();
+			sample.setId(newId);
+			this.eventManager.addEvent(new SampleCreated(sample));
 			log.info("Sample added [" + newId + "][" + clip + "]");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -83,8 +88,8 @@ public class LoopStore {
 		return newId;
 	}
 
-	public void removeSample(int id) {
-		Sample sample = this.samples.remove(id);
+	public void removeSample(Long id) {
+		SampleClip sample = this.samples.remove(id);
 		final Clip clip = sample.getClip();
 		if (clip != null) {
 			new Thread() {
@@ -97,20 +102,20 @@ public class LoopStore {
 
 			}.start();
 		}
-		if(this.samples.isEmpty()){
-			synchronizer.reset();
+		if (this.samples.isEmpty()) {
+			this.synchronizer.reset();
 		}
 	}
 
-	public Collection<Sample> getSamples() {
+	public Collection<SampleClip> getSamples() {
 		return this.samples.values();
 	}
 
-	public Set<Integer> getSampleIds() {
+	public Set<Long> getSampleIds() {
 		return this.samples.keySet();
 	}
 
-	public Sample getSample(int id) {
+	public SampleClip getSample(Long id) {
 		return this.samples.get(id);
 	}
 
@@ -119,7 +124,7 @@ public class LoopStore {
 	}
 
 	public Long getLoopPosition() {
-		Optional<Sample> first = FluentIterable.from(this.samples.values()).first();
+		Optional<SampleClip> first = FluentIterable.from(this.samples.values()).first();
 		if (first.isPresent()) {
 			return first.get().getClip().getMicrosecondPosition();
 		}

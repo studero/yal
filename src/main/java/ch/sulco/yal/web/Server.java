@@ -59,12 +59,12 @@ public class Server implements EventListener {
 				(req, res) -> this.setRecord(Long.valueOf(req.params(":channelId")), Boolean.parseBoolean(req.params(":enabled"))));
 
 		get("/monitor/:channelId/:enabled",
-				(req, res) -> this.setMonitoring(Integer.parseInt(req.params(":channelId")), Boolean.parseBoolean(req.params(":enabled"))));
+				(req, res) -> this.setMonitoring(Long.parseLong(req.params(":channelId")), Boolean.parseBoolean(req.params(":enabled"))));
 
 		get("/volume/:sampleId/:volume",
-				(req, res) -> this.setVolume(Integer.parseInt(req.params(":sampleId")), Float.parseFloat(req.params(":volume"))));
+				(req, res) -> this.setVolume(Long.parseLong(req.params(":sampleId")), Float.parseFloat(req.params(":volume"))));
 
-		get("/sample/play/:sampleId", (req, res) -> this.playSample(Integer.parseInt(req.params(":sampleId"))));
+		get("/sample/play/:sampleId", (req, res) -> this.playSample(Long.parseLong(req.params(":sampleId"))));
 	}
 
 	@PostConstruct
@@ -72,7 +72,7 @@ public class Server implements EventListener {
 		this.eventManager.addListener(this);
 	}
 
-	private String playSample(int sampleId) {
+	private String playSample(Long sampleId) {
 		this.audioProcessor.setSampleMute(sampleId, false);
 		return "Success";
 	}
@@ -88,21 +88,21 @@ public class Server implements EventListener {
 		return "Success";
 	}
 
-	private String setMonitoring(int channelId, boolean enabled) {
+	private String setMonitoring(Long channelId, boolean enabled) {
 		log.info("Monitoring [channelId=" + channelId + "][enabled=" + enabled + "]");
 		this.audioProcessor.setChannelMonitoring(channelId, enabled);
 		return "Success";
 	}
 
-	private String setVolume(int sampleId, float volume) {
+	private String setVolume(Long sampleId, float volume) {
 		this.audioProcessor.setSampleVolume(sampleId, volume);
 		return "Success";
 	}
 
 	private String getSamples() {
-		Set<Integer> sampleIds = this.audioProcessor.getSampleIds();
+		Set<Long> sampleIds = this.audioProcessor.getSampleIds();
 		List<ch.sulco.yal.dm.Sample> samples = new ArrayList<>();
-		for (int id : sampleIds) {
+		for (Long id : sampleIds) {
 			Sample sample = new Sample();
 			sample.setId(Long.valueOf(id));
 			sample.setMute(this.audioProcessor.isSampleMute(id));

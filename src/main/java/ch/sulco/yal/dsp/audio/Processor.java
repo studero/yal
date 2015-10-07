@@ -11,7 +11,7 @@ public interface Processor {
 	/**
 	 * @return an array of sample ids.
 	 */
-	Set<Integer> getSampleIds();
+	Set<Long> getSampleIds();
 
 	/**
 	 * @param sampleId
@@ -25,7 +25,7 @@ public interface Processor {
 	 *            the sample data as byte array to be loaded.
 	 * @return the newly created sample id.
 	 */
-	int putData(byte[] data);
+	Long putData(byte[] data);
 
 	/**
 	 * start playing current audio setup.
@@ -52,7 +52,7 @@ public interface Processor {
 	 */
 	void setChannelRecording(Long channelId, boolean recording);
 
-	RecordingState getChannelRecordingState(int channelId);
+	RecordingState getChannelRecordingState(Long channelId);
 
 	/**
 	 * set provided sample id to provided mute state.
@@ -62,9 +62,9 @@ public interface Processor {
 	 * @param mute
 	 *            true if the sample should be muted.
 	 */
-	void setSampleMute(int sampleId, boolean mute);
+	void setSampleMute(Long sampleId, boolean mute);
 
-	boolean isSampleMute(int sampleId);
+	boolean isSampleMute(Long sampleId);
 
 	/**
 	 * set provided sample id to provided volume.
@@ -74,9 +74,9 @@ public interface Processor {
 	 * @param volume
 	 *            the volume the sample should be set to.
 	 */
-	void setSampleVolume(int sampleId, float volume);
+	void setSampleVolume(Long sampleId, float volume);
 
-	float getSampleVolume(int sampleId);
+	float getSampleVolume(Long sampleId);
 
 	/**
 	 * remove sample identified by provided sample id.
@@ -84,11 +84,11 @@ public interface Processor {
 	 * @param sampleId
 	 *            the id of the sample.
 	 */
-	void removeSample(int sampleId);
+	void removeSample(Long sampleId);
 
 	Long getLoopLength();
 
-	boolean getChannelMonitoring(int channelId);
+	boolean getChannelMonitoring(Long channelId);
 
-	void setChannelMonitoring(int channelId, boolean monitoring);
+	void setChannelMonitoring(Long channelId, boolean monitoring);
 }

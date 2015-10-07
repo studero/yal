@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.sound.sampled.Clip;
 
-import ch.sulco.yal.dsp.dm.Sample;
+import ch.sulco.yal.dsp.dm.SampleClip;
 
 public class Player implements LoopListener {
 	private final static Logger log = Logger.getLogger(Player.class.getName());
@@ -16,7 +16,7 @@ public class Player implements LoopListener {
 
 	private LinkedList<Clip> playingClips = new LinkedList<Clip>();
 
-	public void startSample(Sample sample) {
+	public void startSample(SampleClip sample) {
 		log.info("Play sample "+sample.getId());
 		Clip clip = sample.getClip();
 		if (clip != null) {
@@ -36,7 +36,7 @@ public class Player implements LoopListener {
 		}
 	}
 
-	public void stopSample(Sample sample) {
+	public void stopSample(SampleClip sample) {
 		log.info("Stop sample "+sample.getId());
 		Clip clip = sample.getClip();
 		if (clip != null) {

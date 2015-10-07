@@ -1,19 +1,16 @@
 package ch.sulco.yal.event;
 
+import ch.sulco.yal.dm.Sample;
 
 public class SampleCreated extends Event {
-	private int id;
+	private final Sample sample;
 
-	public SampleCreated(int id) {
+	public SampleCreated(Sample sample) {
 		super();
-		this.id = id;
+		this.sample = sample;
 	}
 
-	public int getId() {
-		return this.id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
+	public Sample getSample() {
+		return sample;
 	}
 }

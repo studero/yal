@@ -93,7 +93,7 @@ public class TestGui extends JPanel {
 			constraints.weighty = 1.0;
 			constraints.gridy = 0;
 
-			final int id = TestGui.this.controller.getLoopStore().addSample(file);
+			final Long id = TestGui.this.controller.getLoopStore().addSample(file);
 			JLabel label = new JLabel(file);
 			constraints.gridx = 0;
 			this.add(label, constraints);

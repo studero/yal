@@ -56,7 +56,6 @@ public class Recorder implements LoopListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		this.eventManager.addEvent(new ChannelUpdated(this.inputChannel));
 	}
 
 	private TargetDataLine getLine() {
@@ -125,37 +124,7 @@ public class Recorder implements LoopListener {
 									Recorder.this.recordingSample = new ByteArrayOutputStream();
 								Recorder.this.recordingSample.write(buffer, 0, bytesRead);
 							}
-							if (Recorder.this.inputChannel.isMonitoring()) {
-								if (Recorder.this.monitoringSample == null)
-									Recorder.this.monitoringSample = new ByteArrayOutputStream();
-								Recorder.this.monitoringSample.write(buffer, 0, bytesRead);
-								monitoringCount++;
-								int aggregation = 60000; // 2000;
-								if (monitoringCount % aggregation == 0) {
-									byte[] byteArray = Recorder.this.monitoringSample.toByteArray();
-									float[] samples = new float[byteArray.length / 2];
-									for (int i = 0; i < byteArray.length; i += 2) {
-										byte b1 = byteArray[i];
-										byte b2 = byteArray[i + 1];
-										if (Recorder.this.appConfig.getAudioFormat().isBigEndian()) {
-											samples[i / 2] = (b1 << 8 | b2 & 0xFF) / 32768f;
-										} else {
-											samples[i / 2] = (b2 << 8 | b1 & 0xFF) / 32768f;
-										}
-									}
-									double value = 0;
-									for (float sample : samples) {
-										value += sample * sample;
-									}
-									float rms = (float) Math.sqrt(value / (samples.length));
-									Recorder.this.inputChannel.setLevel(rms);
-									Recorder.this.eventManager.addEvent(new ChannelUpdated(Recorder.this.inputChannel));
-									monitoringCount = 0;
-									Recorder.this.monitoringSample = null;
-								}
-							} else {
-								Recorder.this.monitoringSample = null;
-							}
+							Recorder.this.updateMonitoring(monitoringCount, buffer, bytesRead);
 						}
 						log.info("Stop recording...");
 
@@ -170,6 +139,40 @@ public class Recorder implements LoopListener {
 			this.recordingSample = new ByteArrayOutputStream();
 		} else {
 			this.synchronizer.removeLoopListerner(this);
+		}
+	}
+
+	private void updateMonitoring(int monitoringCount, byte[] buffer, int bytesRead) {
+		if (Recorder.this.inputChannel.isMonitoring()) {
+			if (Recorder.this.monitoringSample == null)
+				Recorder.this.monitoringSample = new ByteArrayOutputStream();
+			Recorder.this.monitoringSample.write(buffer, 0, bytesRead);
+			monitoringCount++;
+			int aggregation = 60000; // 2000;
+			if (monitoringCount % aggregation == 0) {
+				byte[] byteArray = Recorder.this.monitoringSample.toByteArray();
+				float[] samples = new float[byteArray.length / 2];
+				for (int i = 0; i < byteArray.length; i += 2) {
+					byte b1 = byteArray[i];
+					byte b2 = byteArray[i + 1];
+					if (Recorder.this.appConfig.getAudioFormat().isBigEndian()) {
+						samples[i / 2] = (b1 << 8 | b2 & 0xFF) / 32768f;
+					} else {
+						samples[i / 2] = (b2 << 8 | b1 & 0xFF) / 32768f;
+					}
+				}
+				double value = 0;
+				for (float sample : samples) {
+					value += sample * sample;
+				}
+				float rms = (float) Math.sqrt(value / (samples.length));
+				Recorder.this.inputChannel.setLevel(rms);
+				Recorder.this.eventManager.addEvent(new ChannelUpdated(Recorder.this.inputChannel));
+				monitoringCount = 0;
+				Recorder.this.monitoringSample = null;
+			}
+		} else {
+			Recorder.this.monitoringSample = null;
 		}
 	}
 

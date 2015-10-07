@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.Loop;
+import ch.sulco.yal.dm.Sample;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
@@ -15,6 +16,7 @@ import com.google.common.collect.FluentIterable;
 @Singleton
 public class DataStore {
 
+	private Long currentLoopId;
 	private List<Loop> loops = new ArrayList<>();
 	private List<Channel> channels = new ArrayList<>();
 
@@ -34,6 +36,10 @@ public class DataStore {
 	public void addLoop(Loop loop) {
 		this.loops.add(loop);
 	}
+	
+	public void addSample(Long loopId, Sample sample){
+		getLoop(loopId).getSamples().add(sample);
+	}
 
 	public List<Channel> getChannels() {
 		return this.channels;
@@ -50,6 +56,14 @@ public class DataStore {
 
 	public void addChannel(Channel channel) {
 		this.channels.add(channel);
+	}
+
+	public Long getCurrentLoopId() {
+		return this.currentLoopId;
+	}
+
+	public void setCurrentLoopId(Long currentLoopId) {
+		this.currentLoopId = currentLoopId;
 	}
 
 }

@@ -140,6 +140,10 @@ public class Recorder implements LoopListener {
 		}
 	}
 
+	public boolean isRecorder() {
+		return true;
+	}
+
 	private void updateMonitoring(int monitoringCount, byte[] buffer, int bytesRead) {
 		if (Recorder.this.inputChannel.isMonitoring()) {
 			if (Recorder.this.monitoringSample == null)

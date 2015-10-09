@@ -51,4 +51,8 @@ public class Player implements LoopListener {
 	public void loopStarted(boolean firstLoop) {
 		startAllSamples();
 	}
+
+	public boolean isRecorder() {
+		return false;
+	}
 }

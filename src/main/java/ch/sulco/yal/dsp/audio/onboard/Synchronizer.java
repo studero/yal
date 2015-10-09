@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineEvent.Type;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 
@@ -26,6 +27,7 @@ public class Synchronizer {
 
 	private LineListener lineListener;
 	private LinkedList<LoopListener> loopListeners = new LinkedList<LoopListener>();
+	private int recorderListeners = 0;
 	private Clip synchronizeClip;
 
 	public void initialize(int length) {
@@ -51,15 +53,23 @@ public class Synchronizer {
 				@Override
 				public void update(LineEvent event) {
 					log.info("Synchronization event [" + event + "]");
-					synchronizeClip.removeLineListener(this);
-					lineListener = null;
-					if (!loopListeners.isEmpty()) {
-						log.info("Synchronization loop playing");
-						synchronizeClip.setFramePosition(0);
-						synchronizeClip.loop(Clip.LOOP_CONTINUOUSLY);
-					}
-					for (LoopListener loopListener : loopListeners) {
-						loopListener.loopStarted(false);
+					if(event.getType() == Type.START){
+						for (LoopListener loopListener : loopListeners) {
+							loopListener.loopStarted(false);
+						}
+					}else if(event.getType() == Type.STOP){
+						if(recorderListeners == 0){
+							synchronizeClip.removeLineListener(this);
+							lineListener = null;
+							if (!loopListeners.isEmpty()) {
+								log.info("Synchronization loop playing");
+								synchronizeClip.setFramePosition(0);
+								synchronizeClip.loop(Clip.LOOP_CONTINUOUSLY);
+							}
+						}else{
+							synchronizeClip.setFramePosition(0);
+							synchronizeClip.loop(0);
+						}
 					}
 				}
 			};
@@ -76,12 +86,18 @@ public class Synchronizer {
 			this.checkLine();
 		}
 		this.loopListeners.add(loopListerer);
+		if(loopListerer.isRecorder()){
+			this.recorderListeners++;
+		}
 		log.info("Synchronization listener added, now has "
 				+ loopListeners.size());
 	}
 
 	public void removeLoopListerner(LoopListener loopListerer) {
 		this.loopListeners.remove(loopListerer);
+		if(loopListerer.isRecorder()){
+			this.recorderListeners--;
+		}
 		log.info("Synchronization listener removed, now has "
 				+ loopListeners.size());
 		if (loopListeners.isEmpty() && synchronizeClip != null) {

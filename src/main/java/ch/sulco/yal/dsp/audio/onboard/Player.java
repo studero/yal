@@ -24,6 +24,8 @@ public class Player implements LoopListener {
 				this.playingClips.add(clip);
 				if(playingClips.size() == 1){
 					synchronizer.addLoopListerner(this);
+				}else{
+					synchronizer.checkLine();
 				}
 			}
 		}
@@ -40,10 +42,12 @@ public class Player implements LoopListener {
 		log.info("Stop sample "+sample.getId());
 		Clip clip = sample.getClip();
 		if (clip != null) {
-			clip.loop(0);
-			this.playingClips.remove(clip);
-			if(playingClips.isEmpty()){
-				synchronizer.removeLoopListerner(this);
+			if (this.playingClips.contains(clip)) {
+				clip.loop(0);
+				this.playingClips.remove(clip);
+				if(playingClips.isEmpty()){
+					synchronizer.removeLoopListerner(this);
+				}
 			}
 		}
 	}

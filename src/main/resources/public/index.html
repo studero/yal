@@ -84,10 +84,10 @@
 				<div ng-repeat="(key, value) in samples" class="col-xs-1 sample">
 					<div class="panel panel-default sample">
 						<div class="sample-name">{{value.id}}</div>
-						<button ng-click="sampleMute(value.id, false)" class="btn btn-primary btn-xs" ng-show="value.mute == true">
-							<span class="glyphicon glyphicon-volume-up"></span>
-						</button>	
 						<button ng-click="sampleMute(value.id, true)" class="btn btn-primary btn-xs" ng-show="value.mute == false">
+							<span class="glyphicon glyphicon-volume-up"></span>
+						</button>
+						<button ng-click="sampleMute(value.id, false)" class="btn btn-primary btn-xs" ng-show="value.mute == true">
 							<span class="glyphicon glyphicon-volume-off"></span>
 						</button>
 					</div>	

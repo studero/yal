@@ -1,6 +1,5 @@
 package ch.sulco.yal.dsp.audio.onboard;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,7 +10,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.Clip;
 
 import org.slf4j.Logger;
@@ -45,27 +43,13 @@ public class LoopStore {
 	private Integer sampleLength;
 	private Map<Long, SampleClip> samples = new HashMap<>();
 
-	public Long addSample(String fileName) {
-		log.info("Add Sample [fileName=" + fileName + "]");
-		try {
-			File file = new File(fileName);
-			AudioInputStream ais = this.audioSystemProvider.getAudioInputStream(file);
-			byte[] data = new byte[(int) file.length()];
-			ais.read(data);
-			return this.addSample(ais.getFormat(), data);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
 	public Long addSample(byte[] data) {
 		Long id = this.addSample(this.appConfig.getAudioFormat(), data);
 		log.info("New Sample Id [" + id + "]");
 		return id;
 	}
 
-	private Long addSample(AudioFormat format, byte[] data) {
+	public Long addSample(AudioFormat format, byte[] data) {
 		log.info("Add Sample [ bytes=" + data.length + "]");
 		Long newId = null;
 		try {

@@ -8,25 +8,41 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.inject.Inject;
+import javax.sound.sampled.AudioInputStream;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ch.sulco.yal.Application;
+import ch.sulco.yal.PostConstructModule;
 import ch.sulco.yal.YalModule;
+import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
 import ch.sulco.yal.dsp.audio.onboard.OnboardProcessor;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 public class TestGui extends JPanel {
+
+	private final static Logger log = LoggerFactory.getLogger(TestGui.class);
+
 	private static final long serialVersionUID = 1L;
 
 	private static JFrame frame;
 
 	@Inject
+	private Application application;
+
+	@Inject
 	private OnboardProcessor controller;
+
+	@Inject
+	private AudioSystemProvider audioSystemProvider;
 
 	JComboBox<String> fileSelector;
 	JPanel loopsPanel;
@@ -66,12 +82,12 @@ public class TestGui extends JPanel {
 	}
 
 	public static void main(String[] args) {
-		Injector injector = Guice.createInjector(new YalModule());
-
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		TestGui contentPane = new TestGui();
+		Injector injector = Guice.createInjector(new YalModule(), new PostConstructModule());
+
+		TestGui contentPane = injector.getInstance(TestGui.class);
 
 		contentPane.setOpaque(true);
 
@@ -80,6 +96,8 @@ public class TestGui extends JPanel {
 
 		frame.setSize(600, 500);
 		frame.setVisible(true);
+
+		contentPane.application.start();
 	}
 
 	private class LoopPanel extends JPanel {
@@ -93,7 +111,7 @@ public class TestGui extends JPanel {
 			constraints.weighty = 1.0;
 			constraints.gridy = 0;
 
-			final Long id = TestGui.this.controller.getLoopStore().addSample(file);
+			final Long id = TestGui.this.addSample(file);
 			JLabel label = new JLabel(file);
 			constraints.gridx = 0;
 			this.add(label, constraints);
@@ -134,5 +152,20 @@ public class TestGui extends JPanel {
 		private JPanel getPanel() {
 			return this;
 		}
+
+	}
+
+	private Long addSample(String fileName) {
+		log.info("Add Sample [fileName=" + fileName + "]");
+		try {
+			File file = new File(TestGui.class.getClassLoader().getResource(fileName).getFile());
+			AudioInputStream ais = this.audioSystemProvider.getAudioInputStream(file);
+			byte[] data = new byte[(int) file.length()];
+			ais.read(data);
+			return this.controller.getLoopStore().addSample(ais.getFormat(), data);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

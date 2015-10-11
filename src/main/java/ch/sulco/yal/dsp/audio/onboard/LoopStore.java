@@ -66,6 +66,7 @@ public class LoopStore {
 	}
 
 	private Long addSample(AudioFormat format, byte[] data) {
+		log.info("Add Sample [ bytes=" + data.length + "]");
 		Long newId = null;
 		try {
 			if (this.samples.isEmpty()) {
@@ -82,6 +83,7 @@ public class LoopStore {
 			this.samples.put(newId, sampleClip);
 			Sample sample = new Sample();
 			sample.setId(newId);
+			sample.setMute(true);
 			this.eventManager.addEvent(new SampleCreated(sample));
 			log.info("Sample added [" + newId + "][" + clip + "]");
 		} catch (Exception e) {

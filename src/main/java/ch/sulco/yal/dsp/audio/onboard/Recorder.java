@@ -37,15 +37,14 @@ public class Recorder extends AudioSource {
 	@Override
 	protected Thread getRecordThread() {
 		try {
-			this.line = (TargetDataLine) this.audioSystemProvider.getLine(this.getInputChannel().getMixerInfo(), this.getInputChannel()
-					.getLineInfo());
+			this.line = (TargetDataLine) this.audioSystemProvider.getLine(this.getInputChannel().getLineInfo());
 			this.line.open(this.appConfig.getAudioFormat());
 			this.getLine().start();
 			return new RecordThread(this.line);
 		} catch (LineUnavailableException e) {
 			e.printStackTrace();
+			throw new RuntimeException("Unable to open line", e);
 		}
-		return null;
 	}
 
 	private class RecordThread extends Thread {

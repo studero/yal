@@ -52,34 +52,33 @@ public class AudioSystemProvider {
 	public List<Channel> getChannels() {
 		long id = 0;
 		List<Channel> channels = new ArrayList<>();
-		for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo()) {
-			for (Line.Info lineInfo : AudioSystem.getMixer(mixerInfo).getTargetLineInfo(this.getTargetLineInfo())) {
-				InputChannel channel = new InputChannel();
-				channel.setId(id);
-				channel.setMixerInfo(mixerInfo);
-				channel.setLineInfo(lineInfo);
-				channels.add(channel);
-				log.info("New Input Channel [" + channel + "]");
-				id++;
-			}
-			for (Line.Info lineInfo : AudioSystem.getMixer(mixerInfo).getSourceLineInfo(this.getSourceLineInfo())) {
-				OutputChannel channel = new OutputChannel();
-				channel.setId(id);
-				channel.setMixerInfo(mixerInfo);
-				channel.setLineInfo(lineInfo);
-				channels.add(channel);
-				log.info("New Output Channel [" + channel + "]");
-				id++;
-			}
+		Mixer mixer = AudioSystem.getMixer(null);
+		for (Line.Info lineInfo : mixer.getTargetLineInfo(this.getTargetLineInfo())) {
+			InputChannel channel = new InputChannel();
+			channel.setId(id);
+			channel.setLineInfo(lineInfo);
+			channels.add(channel);
+			log.info("New Input Channel [" + id + "]");
+			log.info(" LineInfo [" + lineInfo + "]");
+			id++;
+		}
+		for (Line.Info lineInfo : mixer.getSourceLineInfo(this.getSourceLineInfo())) {
+			OutputChannel channel = new OutputChannel();
+			channel.setId(id);
+			channel.setLineInfo(lineInfo);
+			channels.add(channel);
+			log.info("New Output Channel [" + id + "]");
+			log.info(" LineInfo [" + lineInfo + "]");
+			id++;
 		}
 		return channels;
 	}
 
-	public Line getLine(Mixer.Info mixerInfo, Line.Info info) throws LineUnavailableException {
+	public Line getLine(Line.Info info) throws LineUnavailableException {
 		if (info == null) {
 			info = this.getTargetLineInfo();
 		}
-		return AudioSystem.getMixer(mixerInfo).getLine(info);
+		return AudioSystem.getLine(info);
 	}
 
 	private Info getTargetLineInfo() {

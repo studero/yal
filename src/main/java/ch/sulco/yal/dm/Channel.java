@@ -1,14 +1,12 @@
 package ch.sulco.yal.dm;
 
 import javax.sound.sampled.Line;
-import javax.sound.sampled.Mixer;
 
 public class Channel {
 
 	private final ChannelDirection direction;
 	private Long id;
 	private String name;
-	private Mixer.Info mixerInfo;
 	private transient Line.Info lineInfo;
 	private boolean monitoring;
 
@@ -34,14 +32,6 @@ public class Channel {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public Mixer.Info getMixerInfo() {
-		return this.mixerInfo;
-	}
-
-	public void setMixerInfo(Mixer.Info mixerInfo) {
-		this.mixerInfo = mixerInfo;
 	}
 
 	public Line.Info getLineInfo() {

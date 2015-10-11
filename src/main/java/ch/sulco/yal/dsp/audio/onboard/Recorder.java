@@ -1,6 +1,5 @@
 package ch.sulco.yal.dsp.audio.onboard;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.inject.Inject;
@@ -11,13 +10,11 @@ import javax.sound.sampled.TargetDataLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.sulco.yal.dm.InputChannel;
 import ch.sulco.yal.dm.RecordingState;
 import ch.sulco.yal.dsp.AppConfig;
-import ch.sulco.yal.event.ChannelUpdated;
-import ch.sulco.yal.event.EventManager;
+import ch.sulco.yal.dsp.audio.AudioSource;
 
-public class Recorder implements LoopListener {
+public class Recorder extends AudioSource {
 	private final static Logger log = LoggerFactory.getLogger(Recorder.class);
 
 	@Inject
@@ -26,164 +23,55 @@ public class Recorder implements LoopListener {
 	@Inject
 	private AudioSystemProvider audioSystemProvider;
 
-	@Inject
-	private Synchronizer synchronizer;
-
-	@Inject
-	private LoopStore loopStore;
-
-	@Inject
-	private EventManager eventManager;
-
-	private InputChannel inputChannel;
-
-	private byte[] recordedSample;
-	private ByteArrayOutputStream recordingSample;
-	private ByteArrayOutputStream monitoringSample;
-
 	private TargetDataLine line;
-
-	public void setInputChannel(InputChannel inputChannel) {
-		this.inputChannel = inputChannel;
-	}
-
-	public void initialize() {
-		this.setRecordingState(RecordingState.STOPPED);
-	}
 
 	private TargetDataLine getLine() {
 		return this.line;
 	}
 
-	public RecordingState getRecordingState() {
-		return this.inputChannel.getRecordingState();
-	}
-
-	public void startRecord() {
-		if (this.inputChannel.getRecordingState() == RecordingState.STOPPED) {
-			this.setRecordingState(RecordingState.WAITING);
-			this.synchronizer.addLoopListerner(this);
-		}
-	}
-
-	public void stopRecord() {
-		this.setRecordingState(RecordingState.STOPPED);
-		this.synchronizer.removeLoopListerner(this);
-		if (!this.inputChannel.isOverdubbing()) {
-			this.recordedSample = this.recordingSample.toByteArray();
-		}
-		if (this.recordedSample != null) {
-			this.loopStore.addSample(this.recordedSample);
-			this.recordedSample = null;
-			this.recordingSample = null;
-		}
-	}
-
-	public boolean isMonitoring() {
-		return this.inputChannel.isMonitoring();
-	}
-
-	public void setMonitoring(boolean monitoring) {
-		if (monitoring)
-			Recorder.this.getLine().start();
-		else
-			Recorder.this.getLine().stop();
-		this.inputChannel.setMonitoring(monitoring);
-		this.eventManager.addEvent(new ChannelUpdated(this.inputChannel));
+	@Override
+	public void initialize() {
+		super.initialize();
 	}
 
 	@Override
-	public void loopStarted(boolean firstLoop) {
-		log.info("Loop Started [firstLoop=" + firstLoop + "]");
-		if (this.inputChannel.getRecordingState() == RecordingState.WAITING) {
-			this.inputChannel.setOverdubbing(!firstLoop);
-			this.setRecordingState(RecordingState.RECORDING);
-			this.recordedSample = null;
-			this.recordingSample = new ByteArrayOutputStream();
-			Thread recordThread = new Thread() {
-				@Override
-				public void run() {
-					try {
-						Recorder.this.line = (TargetDataLine) Recorder.this.audioSystemProvider.getLine(
-								Recorder.this.inputChannel.getMixerInfo(), Recorder.this.inputChannel.getLineInfo());
-						Recorder.this.line.open(Recorder.this.appConfig.getAudioFormat());
-						Recorder.this.getLine().start();
-						log.info("Start capturing...");
-						AudioInputStream ais = new AudioInputStream(Recorder.this.getLine());
-						log.info("Start recording...");
-						int monitoringCount = 0;
-						while (Recorder.this.inputChannel.getRecordingState() == RecordingState.RECORDING) {
-							byte[] buffer = new byte[4];
-							int bytesRead = ais.read(buffer);
-							if (Recorder.this.inputChannel.getRecordingState() == RecordingState.RECORDING) {
-								if (Recorder.this.recordingSample == null) {
-									Recorder.this.recordingSample = new ByteArrayOutputStream();
-								}
-								Recorder.this.recordingSample.write(buffer, 0, bytesRead);
-							}
-							// Recorder.this.updateMonitoring(monitoringCount,
-							// buffer, bytesRead);
-						}
-						log.info("Stop recording...");
-
-					} catch (IOException ioe) {
-						ioe.printStackTrace();
-					} catch (LineUnavailableException e) {
-						e.printStackTrace();
-					}
-				}
-			};
-			recordThread.start();
-		} else if (this.inputChannel.getRecordingState() == RecordingState.RECORDING) {
-			this.recordedSample = this.recordingSample.toByteArray();
-			this.recordingSample = new ByteArrayOutputStream();
-		} else {
-			this.synchronizer.removeLoopListerner(this);
+	protected Thread getRecordThread() {
+		try {
+			this.line = (TargetDataLine) this.audioSystemProvider.getLine(this.getInputChannel().getMixerInfo(), this.getInputChannel()
+					.getLineInfo());
+			this.line.open(this.appConfig.getAudioFormat());
+			this.getLine().start();
+			return new RecordThread(this.line);
+		} catch (LineUnavailableException e) {
+			e.printStackTrace();
 		}
+		return null;
 	}
 
-	@Override
-	public boolean isRecorder() {
-		return true;
-	}
+	private class RecordThread extends Thread {
 
-	private void updateMonitoring(int monitoringCount, byte[] buffer, int bytesRead) {
-		if (Recorder.this.inputChannel.isMonitoring()) {
-			if (Recorder.this.monitoringSample == null)
-				Recorder.this.monitoringSample = new ByteArrayOutputStream();
-			Recorder.this.monitoringSample.write(buffer, 0, bytesRead);
-			monitoringCount++;
-			int aggregation = 60000; // 2000;
-			if (monitoringCount % aggregation == 0) {
-				byte[] byteArray = Recorder.this.monitoringSample.toByteArray();
-				float[] samples = new float[byteArray.length / 2];
-				for (int i = 0; i < byteArray.length; i += 2) {
-					byte b1 = byteArray[i];
-					byte b2 = byteArray[i + 1];
-					if (Recorder.this.appConfig.getAudioFormat().isBigEndian()) {
-						samples[i / 2] = (b1 << 8 | b2 & 0xFF) / 32768f;
-					} else {
-						samples[i / 2] = (b2 << 8 | b1 & 0xFF) / 32768f;
-					}
+		private final TargetDataLine line;
+
+		RecordThread(TargetDataLine line) {
+			this.line = line;
+		}
+
+		@Override
+		public void run() {
+			try {
+				log.info("Start capturing...");
+				AudioInputStream ais = new AudioInputStream(this.line);
+				log.info("Start recording...");
+				while (Recorder.this.getInputChannel().getRecordingState() == RecordingState.RECORDING) {
+					byte[] buffer = new byte[4];
+					ais.read(buffer);
+					Recorder.this.newAudioData(buffer);
 				}
-				double value = 0;
-				for (float sample : samples) {
-					value += sample * sample;
-				}
-				float rms = (float) Math.sqrt(value / (samples.length));
-				Recorder.this.inputChannel.setLevel(rms);
-				Recorder.this.eventManager.addEvent(new ChannelUpdated(Recorder.this.inputChannel));
-				monitoringCount = 0;
-				Recorder.this.monitoringSample = null;
+				log.info("Stop recording...");
+
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
 			}
-		} else {
-			Recorder.this.monitoringSample = null;
 		}
-	}
-
-	private void setRecordingState(RecordingState recordingState) {
-		log.info("Change RecordingState [" + this.inputChannel.getId() + "][" + recordingState + "]");
-		this.inputChannel.setRecordingState(recordingState);
-		this.eventManager.addEvent(new ChannelUpdated(this.inputChannel));
 	}
 }

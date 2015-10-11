@@ -1,7 +1,6 @@
 package ch.sulco.yal;
 
 import ch.sulco.yal.controller.MidiControl;
-import ch.sulco.yal.dsp.AppConfig;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.TestGui;
 import ch.sulco.yal.dsp.audio.Processor;

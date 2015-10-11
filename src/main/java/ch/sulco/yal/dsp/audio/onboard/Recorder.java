@@ -10,8 +10,8 @@ import javax.sound.sampled.TargetDataLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.sulco.yal.AppConfig;
 import ch.sulco.yal.dm.RecordingState;
-import ch.sulco.yal.dsp.AppConfig;
 import ch.sulco.yal.dsp.audio.AudioSource;
 
 public class Recorder extends AudioSource {

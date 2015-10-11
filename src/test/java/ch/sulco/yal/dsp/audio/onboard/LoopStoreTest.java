@@ -15,7 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import ch.sulco.yal.dsp.AppConfig;
+import ch.sulco.yal.AppConfig;
 import ch.sulco.yal.dsp.dm.SampleClip;
 
 @RunWith(MockitoJUnitRunner.class)

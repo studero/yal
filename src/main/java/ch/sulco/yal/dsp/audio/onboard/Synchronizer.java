@@ -14,7 +14,7 @@ import javax.sound.sampled.LineUnavailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.sulco.yal.dsp.AppConfig;
+import ch.sulco.yal.AppConfig;
 
 @Singleton
 public class Synchronizer {

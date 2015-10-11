@@ -15,8 +15,8 @@ import javax.sound.sampled.Clip;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.sulco.yal.AppConfig;
 import ch.sulco.yal.dm.Sample;
-import ch.sulco.yal.dsp.AppConfig;
 import ch.sulco.yal.dsp.dm.SampleClip;
 import ch.sulco.yal.event.EventManager;
 import ch.sulco.yal.event.SampleCreated;

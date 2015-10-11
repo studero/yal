@@ -1,4 +1,4 @@
-package ch.sulco.yal.dsp;
+package ch.sulco.yal;
 
 import javax.inject.Singleton;
 import javax.sound.sampled.AudioFormat;
@@ -23,5 +23,9 @@ public class AppConfig {
 		boolean signed = true;
 		boolean bigEndian = true;
 		return new AudioFormat(this.getSampleRate(), this.getSampleSize(), channels, signed, bigEndian);
+	}
+
+	public boolean isTest() {
+		return false;
 	}
 }

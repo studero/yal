@@ -23,10 +23,10 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.sulco.yal.AppConfig;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.InputChannel;
 import ch.sulco.yal.dm.OutputChannel;
-import ch.sulco.yal.dsp.AppConfig;
 
 @Singleton
 public class AudioSystemProvider {

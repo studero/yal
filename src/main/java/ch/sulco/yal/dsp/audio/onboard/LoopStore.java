@@ -7,13 +7,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.Clip;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.AppConfig;
@@ -26,7 +28,7 @@ import com.google.common.collect.FluentIterable;
 
 @Singleton
 public class LoopStore {
-	private final static Logger log = Logger.getLogger(LoopStore.class.getName());
+	private final static Logger log = LoggerFactory.getLogger(LoopStore.class);
 
 	@Inject
 	private AppConfig appConfig;

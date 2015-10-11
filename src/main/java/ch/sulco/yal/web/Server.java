@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import spark.Spark;
 import ch.sulco.yal.dm.Channel;
@@ -27,7 +29,7 @@ import com.google.gson.Gson;
 
 @Singleton
 public class Server implements EventListener {
-	private final static Logger log = Logger.getLogger(Server.class.getName());
+	private final static Logger log = LoggerFactory.getLogger(Server.class);
 
 	@Inject
 	private AudioSystemProvider audioSystemProvider;

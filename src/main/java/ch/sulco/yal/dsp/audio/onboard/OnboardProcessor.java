@@ -3,7 +3,6 @@ package ch.sulco.yal.dsp.audio.onboard;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -11,6 +10,9 @@ import javax.inject.Singleton;
 import javax.sound.sampled.BooleanControl;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.FloatControl.Type;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.Application;
 import ch.sulco.yal.dm.Channel;
@@ -33,7 +35,7 @@ import com.google.common.collect.FluentIterable;
 @Singleton
 public class OnboardProcessor implements Processor, EventListener {
 
-	private final static Logger log = Logger.getLogger(OnboardProcessor.class.getName());
+	private final static Logger log = LoggerFactory.getLogger(OnboardProcessor.class);
 
 	@Inject
 	private LoopStore loopStore;

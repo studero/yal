@@ -1,7 +1,6 @@
 package ch.sulco.yal.controller;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -14,12 +13,15 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.sulco.yal.dsp.audio.Processor;
 
 @Singleton
 public class MidiControl {
 
-	private final static Logger log = Logger.getLogger(MidiControl.class.getName());
+	private final static Logger log = LoggerFactory.getLogger(MidiControl.class);
 
 	@Inject
 	private Processor audioProcessor;

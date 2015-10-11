@@ -2,12 +2,14 @@ package ch.sulco.yal.dsp.audio.onboard;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.dm.InputChannel;
 import ch.sulco.yal.dm.RecordingState;
@@ -16,7 +18,7 @@ import ch.sulco.yal.event.ChannelUpdated;
 import ch.sulco.yal.event.EventManager;
 
 public class Recorder implements LoopListener {
-	private final static Logger log = Logger.getLogger(Recorder.class.getName());
+	private final static Logger log = LoggerFactory.getLogger(Recorder.class);
 
 	@Inject
 	private AppConfig appConfig;
@@ -140,6 +142,7 @@ public class Recorder implements LoopListener {
 		}
 	}
 
+	@Override
 	public boolean isRecorder() {
 		return true;
 	}

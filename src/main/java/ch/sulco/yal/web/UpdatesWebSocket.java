@@ -1,17 +1,18 @@
 package ch.sulco.yal.web;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @WebSocket
 public class UpdatesWebSocket {
-	private final static Logger log = Logger.getLogger(UpdatesWebSocket.class.getName());
+	private final static Logger log = LoggerFactory.getLogger(UpdatesWebSocket.class);
 
 	private Session session;
 
@@ -22,7 +23,7 @@ public class UpdatesWebSocket {
 	}
 
 	public static UpdatesWebSocket getInstance() {
-		if(instance == null){
+		if (instance == null) {
 			new UpdatesWebSocket();
 		}
 		return instance;

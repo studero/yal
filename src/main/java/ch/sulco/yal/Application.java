@@ -1,9 +1,10 @@
 package ch.sulco.yal;
 
-import java.util.logging.Logger;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.controller.MidiControl;
 import ch.sulco.yal.dm.Channel;
@@ -21,7 +22,7 @@ import com.google.inject.Injector;
 @Singleton
 public class Application {
 
-	private final static Logger log = Logger.getLogger(Application.class.getName());
+	private final static Logger log = LoggerFactory.getLogger(Application.class);
 
 	@Inject
 	private AppConfig appConfig;
@@ -45,6 +46,7 @@ public class Application {
 	private AudioSystemProvider audioSystemProvider;
 
 	public void start() {
+		log.info("Start Application");
 		for (Channel channel : this.audioSystemProvider.getChannels()) {
 			this.dataStore.addChannel(channel);
 			this.eventManager.addEvent(new ChannelCreated(channel));

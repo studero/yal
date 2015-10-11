@@ -94,7 +94,7 @@ public class OnboardProcessor implements Processor, EventListener {
 		if (firstPlayer.isPresent())
 			firstPlayer.get().startSample(this.loopStore.getSample(0L));
 
-		this.eventManager.addEvent(new LoopLengthChanged(this.loopStore.getLoopLength()));
+		this.eventManager.addEvent(new LoopLengthChanged(Long.valueOf(this.loopStore.getLoopLength())));
 	}
 
 	@Override

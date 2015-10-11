@@ -1,18 +1,18 @@
 package ch.sulco.yal.event;
 
 public class LoopLengthChanged extends Event {
-	private Integer loopLength;
+	private Long loopLength;
 
-	public LoopLengthChanged(Integer loopLength) {
+	public LoopLengthChanged(Long loopLength) {
 		super();
 		this.setLoopLength(loopLength);
 	}
 
-	public Integer getLoopLength() {
+	public Long getLoopLength() {
 		return this.loopLength;
 	}
 
-	public void setLoopLength(Integer loopLength) {
+	public void setLoopLength(Long loopLength) {
 		this.loopLength = loopLength;
 	}
 }

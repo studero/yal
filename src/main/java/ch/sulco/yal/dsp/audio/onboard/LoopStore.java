@@ -68,6 +68,8 @@ public class LoopStore {
 			Sample sample = new Sample();
 			sample.setId(newId);
 			sample.setMute(true);
+			sample.setData(data);
+			sample.setChannelId(null);
 			this.eventManager.addEvent(new SampleCreated(sample));
 			log.info("Sample added [" + newId + "][" + clip + "]");
 		} catch (Exception e) {

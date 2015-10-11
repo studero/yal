@@ -36,9 +36,9 @@ public class DataStore {
 	public void addLoop(Loop loop) {
 		this.loops.add(loop);
 	}
-	
-	public void addSample(Long loopId, Sample sample){
-		getLoop(loopId).getSamples().add(sample);
+
+	public void addSample(Long loopId, Sample sample) {
+		this.getLoop(loopId).getSamples().add(sample);
 	}
 
 	public List<Channel> getChannels() {

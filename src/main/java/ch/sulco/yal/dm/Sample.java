@@ -6,6 +6,8 @@ public class Sample {
 	private Long length;
 	private Float gain;
 	private boolean mute;
+	private Long channelId;
+	private byte[] data;
 
 	public Long getId() {
 		return this.id;
@@ -45,5 +47,21 @@ public class Sample {
 
 	public void setMute(boolean mute) {
 		this.mute = mute;
+	}
+
+	public Long getChannelId() {
+		return this.channelId;
+	}
+
+	public void setChannelId(Long channelId) {
+		this.channelId = channelId;
+	}
+
+	public byte[] getData() {
+		return data;
+	}
+
+	public void setData(byte[] data) {
+		this.data = data;
 	}
 }

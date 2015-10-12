@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import spark.Spark;
 import ch.sulco.yal.PostConstructModule;
-import ch.sulco.yal.TestYalModule;
+import ch.sulco.yal.SimulationYalModule;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
@@ -136,7 +136,7 @@ public class Server implements EventListener {
 	}
 
 	public static void main(String[] args) {
-		Injector injector = Guice.createInjector(new TestYalModule(), new PostConstructModule());
+		Injector injector = Guice.createInjector(new SimulationYalModule(), new PostConstructModule());
 		Server server = injector.getInstance(Server.class);
 	}
 }

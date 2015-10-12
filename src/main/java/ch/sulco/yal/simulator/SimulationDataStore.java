@@ -1,4 +1,4 @@
-package ch.sulco.yal.dsp;
+package ch.sulco.yal.simulator;
 
 import javax.inject.Singleton;
 
@@ -9,17 +9,22 @@ import ch.sulco.yal.dm.InputChannel;
 import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dm.OutputChannel;
 import ch.sulco.yal.dm.Sample;
+import ch.sulco.yal.dsp.DataStore;
 
 @Singleton
-public class TestDataStore extends DataStore {
-	private final static Logger log = LoggerFactory.getLogger(TestDataStore.class);
+public class SimulationDataStore extends DataStore {
+	private final static Logger log = LoggerFactory.getLogger(SimulationDataStore.class);
 
-	public TestDataStore() {
+	public SimulationDataStore() {
 		log.info("Create Test Data");
 
 		this.addChannel(new InputChannel(0L));
+		this.addChannel(new InputChannel(1L));
+		this.addChannel(new InputChannel(2L));
+		this.addChannel(new InputChannel(3L));
 
-		this.addChannel(new OutputChannel(1L));
+		this.addChannel(new OutputChannel(4L));
+		this.addChannel(new OutputChannel(5L));
 
 		Loop loop = new Loop(0L);
 		loop.getSamples().add(new Sample(0L));

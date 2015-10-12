@@ -8,6 +8,7 @@ public class Loop {
 	private String name;
 	private List<Sample> samples = new ArrayList<>();
 	private Long length;
+	private boolean active;
 
 	public Loop() {
 
@@ -43,5 +44,13 @@ public class Loop {
 
 	public void setLength(Long length) {
 		this.length = length;
+	}
+
+	public boolean isActive() {
+		return this.active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 }

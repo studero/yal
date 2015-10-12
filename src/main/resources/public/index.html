@@ -27,22 +27,15 @@
 		</div>
 		
 		<div class="panel panel-default col-xs-12">
-			<h4>Loops</h4>
-			<div class="row loops">
-				<div ng-repeat="(key, value) in loops" class="col-xs-2 loop">	
-					<div class="panel panel-default">
-						<span class="loop-name" ng-class="{selected: value.id == currentLoopId}">{{value.id}} - {{value.name}}</span>
-						<button ng-click="activateLoop(value.id, true)" class="btn btn-primary btn-xs" ng-show="value.id != currentLoopId">
-							<span class="glyphicon glyphicon-record"></span>
-						</button> 
-					</div>
+			<div class="col-xs-2"><h4>Input</h4></div>
+			<div ng-repeat="(key, value) in loops" class="col-xs-2 loop">	
+				<div class="panel panel-default">
+					<span class="loop-name" ng-class="{selected: value.active == true}">{{value.id}} - {{value.name}}</span>
+					<button ng-click="activateLoop(value.id, true)" class="btn btn-primary btn-xs" ng-show="value.active == false">
+						<span class="glyphicon glyphicon-record"></span>
+					</button> 
 				</div>
 			</div>
-		</div>
-		
-		<div class="panel panel-default col-xs-12">
-			<div class="col-xs-2"><h4>Input</h4></div>
-			<div class="col-xs-10"><h4>Samples</h4></div>
 			<div class="row channels">
 				<div ng-repeat="(key, value) in channels | filter:{direction: 'IN'}" class="col-xs-12 channel">				
 					<div class="panel panel-default col-xs-2">
@@ -54,16 +47,18 @@
 							<span class="glyphicon glyphicon-stop"></span>
 						</button>
 					</div>
-					<div ng-repeat="(sampleKey, sampleValue) in loops[currentLoopId].samples | filter:{channelId: value.id}" class="col-xs-1 sample">
-						<div class="panel panel-default sample">
-							<span class="sample-name">{{sampleValue.id}}</span>
-							<button ng-click="sampleMute(sampleValue.id, true)" class="btn btn-primary btn-xs" ng-show="sampleValue.mute == false">
-								<span class="glyphicon glyphicon-volume-up"></span>
-							</button>
-							<button ng-click="sampleMute(sampleValue.id, false)" class="btn btn-primary btn-xs" ng-show="sampleValue.mute == true">
-								<span class="glyphicon glyphicon-volume-off"></span>
-							</button>
-						</div>	
+					<div ng-repeat="(loopKey, loopValue) in loops" class="col-xs-2">
+						<div ng-repeat="(sampleKey, sampleValue) in loopValue.samples | filter:{channelId: value.id}" class="col-xs-12 sample">
+							<div class="panel panel-default sample">
+								<span class="sample-name">{{sampleValue.id}}</span>
+								<button ng-click="sampleMute(sampleValue.id, true)" class="btn btn-primary btn-xs" ng-show="sampleValue.mute == false">
+									<span class="glyphicon glyphicon-volume-up"></span>
+								</button>
+								<button ng-click="sampleMute(sampleValue.id, false)" class="btn btn-primary btn-xs" ng-show="sampleValue.mute == true">
+									<span class="glyphicon glyphicon-volume-off"></span>
+								</button>
+							</div>	
+						</div>
 					</div>
 				</div>
 			</div>

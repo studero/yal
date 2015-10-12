@@ -48,6 +48,7 @@ public class Application {
 		log.info("Start Application");
 		Loop loop = new Loop();
 		loop.setId(0L);
+		loop.setActive(true);
 		this.dataStore.addLoop(loop);
 		for (Channel channel : this.audioSystemProvider.getChannels()) {
 			this.dataStore.addChannel(channel);

@@ -1,5 +1,6 @@
 package ch.sulco.yal.simulator;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -11,7 +12,8 @@ import ch.sulco.yal.dsp.DataStore;
 public class SimulationDataStore extends DataStore {
 	private final static Logger log = LoggerFactory.getLogger(SimulationDataStore.class);
 
-	public SimulationDataStore() {
+	@PostConstruct
+	public void setup() {
 		log.info("Create Test Data");
 
 		this.addChannel(anInputChannel().id(0L).name("Drum Module").build());
@@ -27,6 +29,7 @@ public class SimulationDataStore extends DataStore {
 				.name("Chorus")
 				.sample(aSample().id(0L).channelId(1L).build())
 				.sample(aSample().id(1L).channelId(2L).build())
+				.sample(aSample().id(4L).channelId(1L).build())
 				.build());
 		this.setCurrentLoopId(0L);
 
@@ -40,6 +43,7 @@ public class SimulationDataStore extends DataStore {
 				.id(2L)
 				.name("Bridge")
 				.sample(aSample().id(3L).channelId(0L).build())
+				.sample(aSample().id(5L).channelId(0L).build())
 				.build());
 	}
 

@@ -97,6 +97,7 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 			url : '/loops'
 		}).success(function(data, status, headers, config) {
 			$scope.loops = data;
+			$scope.currentLoop = data.filter(function(n){ return n.active === true; })[0];
 		}).error(function(data, status, headers, config) {
 		});
 	}

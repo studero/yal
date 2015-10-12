@@ -20,9 +20,6 @@ import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.dm.SampleClip;
 import ch.sulco.yal.event.EventManager;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.FluentIterable;
-
 @Singleton
 public class LoopStore {
 	private final static Logger log = LoggerFactory.getLogger(LoopStore.class);
@@ -106,17 +103,5 @@ public class LoopStore {
 
 	public SampleClip getSample(Long id) {
 		return this.samples.get(id);
-	}
-
-	public Integer getLoopLength() {
-		return this.sampleLength;
-	}
-
-	public Long getLoopPosition() {
-		Optional<SampleClip> first = FluentIterable.from(this.samples.values()).first();
-		if (first.isPresent()) {
-			return first.get().getClip().getMicrosecondPosition();
-		}
-		return null;
 	}
 }

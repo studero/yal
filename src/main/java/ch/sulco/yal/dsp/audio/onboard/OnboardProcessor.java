@@ -79,8 +79,6 @@ public class OnboardProcessor implements Processor, EventListener {
 		Optional<Player> firstPlayer = FluentIterable.from(this.players.values()).first();
 		if (firstPlayer.isPresent())
 			firstPlayer.get().startSample(this.loopStore.getSample(0L));
-
-		this.eventManager.changeLoopLength(Long.valueOf(this.loopStore.getLoopLength()));
 	}
 
 	@Override

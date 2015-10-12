@@ -1,6 +1,7 @@
 package ch.sulco.yal.web;
 
 import static spark.Spark.get;
+import static spark.Spark.put;
 
 import java.util.function.Consumer;
 
@@ -53,6 +54,8 @@ public class Server implements EventListener {
 		get("/channels", (req, res) -> this.getChannels());
 		get("/loops", (req, res) -> this.getLoops());
 
+		put("/activateLoop/:loopId", (req, res) -> this.activateLoop(Long.valueOf(req.params(":loopId"))));
+
 		get("/record/:channelId/:enabled",
 				(req, res) -> this.setRecord(Long.valueOf(req.params(":channelId")), Boolean.parseBoolean(req.params(":enabled"))));
 
@@ -71,6 +74,11 @@ public class Server implements EventListener {
 	@PostConstruct
 	public void setup() {
 		this.eventManager.addListener(this);
+	}
+
+	private String activateLoop(Long loopId) {
+		this.dataStore.setCurrentLoopId(loopId);
+		return "Success";
 	}
 
 	private String getLoops() {

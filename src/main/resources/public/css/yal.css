@@ -3,6 +3,11 @@ body {
 	color: #fff;
 }
 
+h4 {
+	margin-top:6px;
+	margin-bottom:2px;
+}
+
 .panel {
 	background-color: #333;
 	color: #fff;
@@ -15,29 +20,27 @@ body {
 }
 
 .channel {
-	height: 180px;
-	padding-left: 2px;
-	padding-right: 2px;
-}
-
-.meter {
-	width: 14px;
-	height: 10px;
-	background-color: #dedede;
-	bottom:0px;
-}
-
-.meter-back {
-	vertical-align: bottom;
-	text-align:bottom;
-	height: 110px;
-	width: 22px;
+	padding-left:0px;
 }
 
 .channel-name {
 	font-size:10px;
-	padding-top:6px;
-	text-align:center;
+}
+
+.loops {
+	margin-left:0px;
+}
+
+.loop {
+	padding-left:0px;
+}
+
+.loop-name {
+	font-size:10px;
+}
+
+.loop-name .selected {
+	font-weight:bold;
 }
 
 .samples {
@@ -51,6 +54,4 @@ body {
 
 .sample-name {
 	font-size:10px;
-	padding-top:6px;
-	text-align:center;
 }

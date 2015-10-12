@@ -7,9 +7,6 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.sound.sampled.BooleanControl;
-import javax.sound.sampled.FloatControl;
-import javax.sound.sampled.FloatControl.Type;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,16 +14,18 @@ import org.slf4j.LoggerFactory;
 import ch.sulco.yal.Application;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.InputChannel;
+import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dm.OutputChannel;
 import ch.sulco.yal.dm.RecordingState;
 import ch.sulco.yal.dm.Sample;
+import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
-import ch.sulco.yal.dsp.dm.SampleClip;
 import ch.sulco.yal.event.ChannelCreated;
 import ch.sulco.yal.event.Event;
 import ch.sulco.yal.event.EventListener;
 import ch.sulco.yal.event.EventManager;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
 
@@ -36,7 +35,7 @@ public class OnboardProcessor implements Processor, EventListener {
 	private final static Logger log = LoggerFactory.getLogger(OnboardProcessor.class);
 
 	@Inject
-	private LoopStore loopStore;
+	private DataStore dataStore;
 
 	@Inject
 	private EventManager eventManager;
@@ -50,13 +49,14 @@ public class OnboardProcessor implements Processor, EventListener {
 		this.eventManager.addListener(this);
 	}
 
-	public LoopStore getLoopStore() {
-		return this.loopStore;
-	}
-
 	@Override
 	public Set<Long> getSampleIds() {
-		return this.loopStore.getSampleIds();
+		return FluentIterable.from(this.dataStore.getCurrentLoop().getSamples()).transform(new Function<Sample, Long>() {
+			@Override
+			public Long apply(Sample input) {
+				return input.getId();
+			}
+		}).toSet();
 	}
 
 	@Override
@@ -75,10 +75,12 @@ public class OnboardProcessor implements Processor, EventListener {
 		}
 
 		log.info("Start Sample");
-		log.info("Player " + this.players.get(0));
 		Optional<Player> firstPlayer = FluentIterable.from(this.players.values()).first();
-		if (firstPlayer.isPresent())
-			firstPlayer.get().startSample(this.loopStore.getSample(0L));
+		if (firstPlayer.isPresent()) {
+			Loop currentLoop = this.dataStore.getCurrentLoop();
+			Sample sample = currentLoop.getSamples().get(0);
+			firstPlayer.get().startSample(sample);
+		}
 	}
 
 	@Override
@@ -94,7 +96,7 @@ public class OnboardProcessor implements Processor, EventListener {
 	public void setSampleMute(Long sampleId, boolean mute) {
 		Optional<Player> firstPlayer = FluentIterable.from(this.players.values()).first();
 		if (firstPlayer.isPresent()) {
-			SampleClip sample = this.loopStore.getSample(sampleId);
+			Sample sample = this.dataStore.getCurrentLoopSample(sampleId);
 			if (sample != null) {
 				if (mute) {
 					firstPlayer.get().stopSample(sample);
@@ -112,8 +114,7 @@ public class OnboardProcessor implements Processor, EventListener {
 
 	@Override
 	public void setSampleVolume(Long sampleId, float volume) {
-		FloatControl control = (FloatControl) this.loopStore.getSample(sampleId).getClip().getControl(Type.MASTER_GAIN);
-		control.setValue(volume);
+		this.dataStore.getCurrentLoopSample(sampleId).setGain(volume);
 	}
 
 	@Override
@@ -123,14 +124,12 @@ public class OnboardProcessor implements Processor, EventListener {
 
 	@Override
 	public boolean isSampleMute(Long sampleId) {
-		BooleanControl control = (BooleanControl) this.loopStore.getSample(sampleId).getClip().getControl(BooleanControl.Type.MUTE);
-		return control.getValue();
+		return this.dataStore.getCurrentLoopSample(sampleId).isMute();
 	}
 
 	@Override
 	public float getSampleVolume(Long sampleId) {
-		FloatControl control = (FloatControl) this.loopStore.getSample(sampleId).getClip().getControl(Type.MASTER_GAIN);
-		return control.getValue();
+		return this.dataStore.getCurrentLoopSample(sampleId).getGain();
 	}
 
 	@Override

@@ -16,7 +16,7 @@ import com.google.common.collect.FluentIterable;
 @Singleton
 public class DataStore {
 
-	private Long currentLoopId;
+	private Long currentLoopId = 0L;
 	private List<Loop> loops = new ArrayList<>();
 	private List<Channel> channels = new ArrayList<>();
 
@@ -26,6 +26,15 @@ public class DataStore {
 
 	public Loop getCurrentLoop() {
 		return this.getLoop(this.currentLoopId);
+	}
+
+	public Sample getCurrentLoopSample(long sampleId) {
+		return FluentIterable.from(this.getCurrentLoop().getSamples()).firstMatch(new Predicate<Sample>() {
+			@Override
+			public boolean apply(Sample input) {
+				return input.getId() == sampleId;
+			}
+		}).orNull();
 	}
 
 	public Loop getLoop(final Long id) {

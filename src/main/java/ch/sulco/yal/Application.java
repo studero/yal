@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.controller.MidiControl;
 import ch.sulco.yal.dm.Channel;
+import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
@@ -45,6 +46,9 @@ public class Application {
 
 	public void start() {
 		log.info("Start Application");
+		Loop loop = new Loop();
+		loop.setId(0L);
+		this.dataStore.addLoop(loop);
 		for (Channel channel : this.audioSystemProvider.getChannels()) {
 			this.dataStore.addChannel(channel);
 			this.eventManager.createChannel(channel);

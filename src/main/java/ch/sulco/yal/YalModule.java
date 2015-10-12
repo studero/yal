@@ -4,7 +4,6 @@ import ch.sulco.yal.controller.MidiControl;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
-import ch.sulco.yal.dsp.audio.onboard.LoopStore;
 import ch.sulco.yal.dsp.audio.onboard.OnboardProcessor;
 import ch.sulco.yal.dsp.audio.onboard.Player;
 import ch.sulco.yal.dsp.audio.onboard.Recorder;
@@ -23,7 +22,6 @@ public class YalModule extends AbstractModule {
 		this.bind(AudioSystemProvider.class);
 		this.bind(DataStore.class);
 		this.bind(EventManager.class);
-		this.bind(LoopStore.class);
 		this.bind(MidiControl.class);
 		this.bind(Processor.class).to(OnboardProcessor.class);
 		this.bind(Player.class);

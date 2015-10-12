@@ -11,8 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.dm.InputChannel;
 import ch.sulco.yal.dm.RecordingState;
+import ch.sulco.yal.dm.Sample;
+import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.onboard.LoopListener;
-import ch.sulco.yal.dsp.audio.onboard.LoopStore;
 import ch.sulco.yal.dsp.audio.onboard.Synchronizer;
 import ch.sulco.yal.event.EventManager;
 
@@ -24,7 +25,7 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 	private Synchronizer synchronizer;
 
 	@Inject
-	private LoopStore loopStore;
+	private DataStore dataStore;
 
 	@Inject
 	private EventManager eventManager;
@@ -84,7 +85,13 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 			this.recordedSample = this.recordingSample.toByteArray();
 		}
 		if (this.recordedSample != null) {
-			this.loopStore.addSample(this.recordedSample);
+			Sample sample = new Sample();
+			sample.setId(0L);
+			sample.setMute(false);
+			sample.setData(this.recordedSample);
+			sample.setChannelId(this.inputChannel.getId());
+			this.dataStore.getCurrentLoop().getSamples().add(sample);
+			this.eventManager.createSample(sample);
 			this.recordedSample = null;
 			this.recordingSample = null;
 		}

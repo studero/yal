@@ -117,11 +117,6 @@ public class OnboardProcessor implements Processor, EventListener {
 	}
 
 	@Override
-	public Long putData(byte[] data) {
-		return this.loopStore.addSample(data);
-	}
-
-	@Override
 	public RecordingState getChannelRecordingState(Long channelId) {
 		return this.recorders.get(channelId).getRecordingState();
 	}
@@ -136,11 +131,6 @@ public class OnboardProcessor implements Processor, EventListener {
 	public float getSampleVolume(Long sampleId) {
 		FloatControl control = (FloatControl) this.loopStore.getSample(sampleId).getClip().getControl(Type.MASTER_GAIN);
 		return control.getValue();
-	}
-
-	@Override
-	public Long getLoopLength() {
-		return this.loopStore.getSampleIds().isEmpty() ? null : this.loopStore.getSample(0L).getClip().getMicrosecondLength();
 	}
 
 	@Override

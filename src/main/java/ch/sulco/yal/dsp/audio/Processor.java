@@ -14,13 +14,6 @@ public interface Processor {
 	Set<Long> getSampleIds();
 
 	/**
-	 * @param data
-	 *            the sample data as byte array to be loaded.
-	 * @return the newly created sample id.
-	 */
-	Long putData(byte[] data);
-
-	/**
 	 * start playing current audio setup.
 	 */
 	void play();
@@ -65,8 +58,6 @@ public interface Processor {
 	void setSampleVolume(Long sampleId, float volume);
 
 	float getSampleVolume(Long sampleId);
-
-	Long getLoopLength();
 
 	boolean getChannelMonitoring(Long channelId);
 

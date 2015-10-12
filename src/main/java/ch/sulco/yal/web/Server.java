@@ -19,7 +19,6 @@ import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
-import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
 import ch.sulco.yal.event.Event;
 import ch.sulco.yal.event.EventListener;
 import ch.sulco.yal.event.EventManager;
@@ -30,9 +29,6 @@ import com.google.gson.Gson;
 @Singleton
 public class Server implements EventListener {
 	private final static Logger log = LoggerFactory.getLogger(Server.class);
-
-	@Inject
-	private AudioSystemProvider audioSystemProvider;
 
 	@Inject
 	private Processor audioProcessor;
@@ -83,8 +79,7 @@ public class Server implements EventListener {
 	}
 
 	private String getLoopLength() {
-		Long loopLength = this.audioProcessor.getLoopLength();
-		return loopLength == null ? "" : loopLength.toString();
+		return this.dataStore.getCurrentLoop().getLength().toString();
 	}
 
 	private String setRecord(Long channelId, boolean enabled) {

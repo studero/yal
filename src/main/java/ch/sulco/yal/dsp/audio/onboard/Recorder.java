@@ -25,10 +25,6 @@ public class Recorder extends AudioSource {
 
 	private TargetDataLine line;
 
-	private TargetDataLine getLine() {
-		return this.line;
-	}
-
 	@Override
 	public void initialize() {
 		super.initialize();
@@ -39,7 +35,7 @@ public class Recorder extends AudioSource {
 		try {
 			this.line = (TargetDataLine) this.audioSystemProvider.getLine(this.getInputChannel().getLineInfo());
 			this.line.open(this.appConfig.getAudioFormat());
-			this.getLine().start();
+			this.line.start();
 			return new RecordThread(this.line);
 		} catch (LineUnavailableException e) {
 			e.printStackTrace();

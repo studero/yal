@@ -1,65 +1,148 @@
 package ch.sulco.yal.dsp.audio;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ch.sulco.yal.Application;
+import ch.sulco.yal.dm.Channel;
+import ch.sulco.yal.dm.InputChannel;
+import ch.sulco.yal.dm.OutputChannel;
 import ch.sulco.yal.dm.RecordingState;
+import ch.sulco.yal.dm.Sample;
+import ch.sulco.yal.dsp.DataStore;
+import ch.sulco.yal.event.ChannelCreated;
+import ch.sulco.yal.event.Event;
+import ch.sulco.yal.event.EventListener;
+import ch.sulco.yal.event.EventManager;
 
-/**
- * provides method for audio processing.
- */
-public interface Processor {
-	/**
-	 * @return an array of sample ids.
-	 */
-	Set<Long> getSampleIds();
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.collect.FluentIterable;
 
-	/**
-	 * start playing current audio setup.
-	 */
-	void play();
+public class Processor implements EventListener {
 
-	/**
-	 * create loop.
-	 */
-	void loop();
+	private final static Logger log = LoggerFactory.getLogger(Processor.class);
 
-	/**
-	 * set provided channel id to provided recording state.
-	 * 
-	 * @param channelId
-	 *            the id of the channel.
-	 * @param recording
-	 *            true if channel should be recording.
-	 */
-	void setChannelRecording(Long channelId, boolean recording);
+	@Inject
+	private DataStore dataStore;
 
-	RecordingState getChannelRecordingState(Long channelId);
+	@Inject
+	private EventManager eventManager;
 
-	/**
-	 * set provided sample id to provided mute state.
-	 * 
-	 * @param sampleId
-	 *            the id of the sample.
-	 * @param mute
-	 *            true if the sample should be muted.
-	 */
-	void setSampleMute(Long sampleId, boolean mute);
+	private final Map<Long, AudioSource> audioSources = new HashMap<>();
+	private final Map<Long, AudioSink> audioSinks = new HashMap<>();
 
-	boolean isSampleMute(Long sampleId);
+	public Set<Long> getSampleIds() {
+		return FluentIterable.from(this.dataStore.getCurrentLoop().getSamples()).transform(new Function<Sample, Long>() {
+			@Override
+			public Long apply(Sample input) {
+				return input.getId();
+			}
+		}).toSet();
+	}
 
-	/**
-	 * set provided sample id to provided volume.
-	 * 
-	 * @param sampleId
-	 *            the id of the sample.
-	 * @param volume
-	 *            the volume the sample should be set to.
-	 */
-	void setSampleVolume(Long sampleId, float volume);
+	@PostConstruct
+	public void setup() {
+		log.info("Setup");
+		this.eventManager.addListener(this);
+	}
 
-	float getSampleVolume(Long sampleId);
+	public void play() {
+		log.info("Play");
+		for (AudioSource audioSource : this.audioSources.values()) {
+			audioSource.startRecord();
+		}
+	}
 
-	boolean getChannelMonitoring(Long channelId);
+	public void loop() {
+		log.info("Loop");
+		for (AudioSource audioSource : this.audioSources.values()) {
+			audioSource.stopRecord();
+		}
 
-	void setChannelMonitoring(Long channelId, boolean monitoring);
+		log.info("Start Sample");
+		Optional<AudioSink> firstPlayer = FluentIterable.from(this.audioSinks.values()).first();
+		if (firstPlayer.isPresent())
+			firstPlayer.get().startSample(this.dataStore.getCurrentLoopSample(0));
+	}
+
+	public void setChannelRecording(Long channelId, boolean recording) {
+		if (recording) {
+			this.audioSources.get(channelId).startRecord();
+		} else {
+			this.audioSources.get(channelId).stopRecord();
+		}
+	}
+
+	public RecordingState getChannelRecordingState(Long channelId) {
+		return this.audioSources.get(channelId).getRecordingState();
+	}
+
+	public void setSampleVolume(Long sampleId, float volume) {
+		this.dataStore.getCurrentLoopSample(sampleId).setGain(volume);
+	}
+
+	public boolean isSampleMute(Long sampleId) {
+		return this.dataStore.getCurrentLoopSample(sampleId).isMute();
+	}
+
+	public float getSampleVolume(Long sampleId) {
+		return this.dataStore.getCurrentLoopSample(sampleId).getGain();
+	}
+
+	public boolean getChannelMonitoring(Long channelId) {
+		return this.audioSources.get(channelId).isMonitoring();
+	}
+
+	public void setChannelMonitoring(Long channelId, boolean monitoring) {
+		this.audioSources.get(channelId).setMonitoring(monitoring);
+	}
+
+	public void setSampleMute(Long sampleId, boolean mute) {
+		Optional<AudioSink> firstPlayer = FluentIterable.from(this.audioSinks.values()).first();
+		if (firstPlayer.isPresent()) {
+			Sample sample = this.dataStore.getCurrentLoopSample(sampleId);
+			if (sample != null) {
+				if (mute) {
+					firstPlayer.get().stopSample(sample);
+				} else {
+					firstPlayer.get().startSample(sample);
+				}
+				Sample s = new Sample();
+				s.setId(sampleId);
+				s.setMute(mute);
+				this.eventManager.updateSample(s);
+			}
+		}
+	}
+
+	@Override
+	public void onEvent(Event event) {
+		if (event instanceof ChannelCreated) {
+			ChannelCreated channelCreated = (ChannelCreated) event;
+			Channel channel = channelCreated.getChannel();
+			if (channel instanceof InputChannel) {
+				InputChannel inputChannel = (InputChannel) channel;
+				if (!this.audioSources.containsKey(channel.getId())) {
+					AudioSource audioSource = Application.injector.getInstance(AudioSource.class);
+					audioSource.setInputChannel(inputChannel);
+					audioSource.initialize();
+					this.audioSources.put(inputChannel.getId(), audioSource);
+				}
+			} else if (channel instanceof OutputChannel) {
+				OutputChannel outputChannel = (OutputChannel) channel;
+				if (!this.audioSinks.containsKey(outputChannel.getId())) {
+					AudioSink audioSink = Application.injector.getInstance(AudioSink.class);
+					this.audioSinks.put(outputChannel.getId(), audioSink);
+				}
+			}
+		}
+	}
 }

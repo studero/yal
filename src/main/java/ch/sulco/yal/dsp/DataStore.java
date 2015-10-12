@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dm.Sample;
+import ch.sulco.yal.event.EventManager;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
@@ -16,7 +18,9 @@ import com.google.common.collect.FluentIterable;
 @Singleton
 public class DataStore {
 
-	private Long currentLoopId = 0L;
+	@Inject
+	private EventManager eventManager;
+
 	private List<Loop> loops = new ArrayList<>();
 	private List<Channel> channels = new ArrayList<>();
 
@@ -25,7 +29,12 @@ public class DataStore {
 	}
 
 	public Loop getCurrentLoop() {
-		return this.getLoop(this.currentLoopId);
+		return FluentIterable.from(this.loops).firstMatch(new Predicate<Loop>() {
+			@Override
+			public boolean apply(Loop input) {
+				return input.isActive();
+			}
+		}).orNull();
 	}
 
 	public Sample getCurrentLoopSample(long sampleId) {
@@ -41,7 +50,7 @@ public class DataStore {
 		return FluentIterable.from(this.loops).firstMatch(new Predicate<Loop>() {
 			@Override
 			public boolean apply(Loop input) {
-				return Objects.equals(id, input.getId());
+				return id == input.getId();
 			}
 		}).orNull();
 	}
@@ -71,12 +80,15 @@ public class DataStore {
 		this.channels.add(channel);
 	}
 
-	public Long getCurrentLoopId() {
-		return this.currentLoopId;
-	}
-
 	public void setCurrentLoopId(Long currentLoopId) {
-		this.currentLoopId = currentLoopId;
+		Loop before = this.getCurrentLoop();
+		Loop after = this.getLoop(currentLoopId);
+		if (before != null)
+			before.setActive(false);
+		after.setActive(true);
+		if (before != null)
+			this.eventManager.updateLoop(before);
+		this.eventManager.updateLoop(after);
 	}
 
 }

@@ -4,6 +4,10 @@ public class OutputChannel extends Channel {
 
 	private double volume;
 
+	public OutputChannel() {
+		this(null);
+	}
+
 	public OutputChannel(Long id) {
 		super(ChannelDirection.OUT);
 		this.setId(id);

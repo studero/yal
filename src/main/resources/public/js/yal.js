@@ -13,17 +13,18 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	  } else if(event.eventType == 'LoopPositionChanged'){
 	    $scope.loopPosition = event.loopLength;
 	    $scope.loopLocation = $scope.loopPosition + ' / ' + $scope.loopLength;
-	  } else if(event.eventType == 'ChannelMonitorValueChanged'){
-	    var level = event.value * 500;
-	    if(level > 100) level = 100;
-	    $scope.channels[event.id].level = level;
-	    $("#meter_" + event.id).css("height", level);
-	    console.log('level: ' + level);
 	  } else if(event.eventType == 'SampleCreated'){
 	    $scope.samples[event.sample.id] = event.sample;
 	  } else if(event.eventType == 'SampleUpdated'){
 	    $scope.samples[event.sample.id] = event.sample;
 	  }
+	};
+
+	$scope.activateLoop = function(loopId) {
+		$http({
+			method : 'PUT',
+			url : '/activateLoop/' + loopId
+		});
 	};
 
 	$scope.play = function() {
@@ -68,7 +69,7 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	
 	
 	updateChannels();
-	updateSamples();
+	updateLoops();
 	
 	function updateChannels(){
 		$http({
@@ -80,22 +81,23 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 		});
 	}
 	
-	function updateSamples(){
-		$http({
-			method : 'GET',
-			url : '/samples'
-		}).success(function(data, status, headers, config) {
-			$scope.samples = data;
-		}).error(function(data, status, headers, config) {
-		});
-	}
-	
 	function updateLoopLength(){
 		$http({
 			method : 'GET',
 			url : '/length'
 		}).success(function(data, status, headers, config) {
 			$scope.loopLength = data;
+		}).error(function(data, status, headers, config) {
+		});
+	}
+	
+	function updateLoops(){
+		$http({
+			method : 'GET',
+			url : '/loops'
+		}).success(function(data, status, headers, config) {
+			$scope.loops = data;
+			$scope.currentLoop = data.filter(function(n){ return n.active === true; })[0];
 		}).error(function(data, status, headers, config) {
 		});
 	}

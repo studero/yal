@@ -27,10 +27,10 @@ public class SampleProcessor {
 		Sample sample = new Sample();
 		sample.setChannelId(channelId);
 
-		Loop currentLoop = this.dataStore.getLoop(this.dataStore.getCurrentLoopId());
+		Loop currentLoop = this.dataStore.getCurrentLoop();
 		if (currentLoop.getLength() == null) {
 			currentLoop.setLength(Long.valueOf(data.length));
-			this.eventManager.changeLoopLength(currentLoop.getLength());
+			this.eventManager.updateLoop(currentLoop);
 		} else if (data.length < currentLoop.getLength()) {
 			byte[] longerData = Arrays.copyOf(data, currentLoop.getLength().intValue());
 			data = longerData;

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.dm.Channel;
+import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dm.Sample;
 
 @Singleton
@@ -24,23 +25,27 @@ public class EventManager {
 	}
 
 	public void createChannel(Channel channel) {
-		addEvent(new ChannelCreated(channel));
+		this.addEvent(new ChannelCreated(channel));
 	}
 
 	public void updateChannel(Channel channel) {
-		addEvent(new ChannelUpdated(channel));
+		this.addEvent(new ChannelUpdated(channel));
 	}
 
-	public void changeLoopLength(Long loopLength) {
-		addEvent(new LoopLengthChanged(loopLength));
+	public void createLoop(Loop loop) {
+		this.addEvent(new LoopCreated(loop));
+	}
+
+	public void updateLoop(Loop loop) {
+		this.addEvent(new LoopUpdated(loop));
 	}
 
 	public void createSample(Sample sample) {
-		addEvent(new SampleCreated(sample));
+		this.addEvent(new SampleCreated(sample));
 	}
 
 	public void updateSample(Sample sample) {
-		addEvent(new SampleUpdated(sample));
+		this.addEvent(new SampleUpdated(sample));
 	}
 
 	private void addEvent(Event event) {

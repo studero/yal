@@ -50,8 +50,8 @@ public class Server implements EventListener {
 		get("/play", (req, res) -> this.play());
 		get("/loop", (req, res) -> this.loop());
 		get("/length", (req, res) -> this.getLoopLength());
-		get("/samples", (req, res) -> this.getSamples());
 		get("/channels", (req, res) -> this.getChannels());
+		get("/loops", (req, res) -> this.getLoops());
 
 		get("/record/:channelId/:enabled",
 				(req, res) -> this.setRecord(Long.valueOf(req.params(":channelId")), Boolean.parseBoolean(req.params(":enabled"))));
@@ -71,6 +71,10 @@ public class Server implements EventListener {
 	@PostConstruct
 	public void setup() {
 		this.eventManager.addListener(this);
+	}
+
+	private String getLoops() {
+		return this.gson.toJson(this.dataStore.getLoops());
 	}
 
 	private String playSample(Long sampleId) {
@@ -103,10 +107,6 @@ public class Server implements EventListener {
 	private String setVolume(Long sampleId, float volume) {
 		this.audioProcessor.setSampleVolume(sampleId, volume);
 		return "Success";
-	}
-
-	private String getSamples() {
-		return this.gson.toJson(this.dataStore.getCurrentLoop().getSamples());
 	}
 
 	private String getChannels() {

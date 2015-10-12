@@ -78,10 +78,21 @@
 			</div>
 		</div>
 		
+		<div class="panel panel-default col-xs-8">
+			<h4>Loops</h4>
+			<div class="row loops">
+				<div ng-repeat="(key, value) in loops" class="col-xs-2 loop">	
+					<div class="panel panel-default loop">
+					{{value.id}} - {{value.name}}
+					</div>
+				</div>
+			</div>
+		</div>
+		
 		<div class="panel panel-default col-xs-12">
 			<h4>Samples</h4>
 			<div class="row samples">
-				<div ng-repeat="(key, value) in samples" class="col-xs-1 sample">
+				<div ng-repeat="(key, value) in loops[0].samples" class="col-xs-1 sample">
 					<div class="panel panel-default sample">
 						<div class="sample-name">{{value.id}}</div>
 						<button ng-click="sampleMute(value.id, true)" class="btn btn-primary btn-xs" ng-show="value.mute == false">

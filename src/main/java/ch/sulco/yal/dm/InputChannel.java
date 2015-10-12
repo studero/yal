@@ -7,6 +7,10 @@ public class InputChannel extends Channel {
 	private Float level;
 	private boolean overdubbing;
 
+	public InputChannel() {
+		this(null);
+	}
+
 	public InputChannel(Long id) {
 		super(ChannelDirection.IN);
 		this.setId(id);

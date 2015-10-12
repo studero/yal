@@ -2,17 +2,21 @@ package ch.sulco.yal.dsp.audio.onboard;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineEvent;
-import javax.sound.sampled.LineEvent.Type;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Stopwatch;
 
 import ch.sulco.yal.AppConfig;
 
@@ -28,79 +32,105 @@ public class Synchronizer {
 
 	private LineListener lineListener;
 	private LinkedList<LoopListener> loopListeners = new LinkedList<LoopListener>();
-	private int recorderListeners = 0;
-	private Clip synchronizeClip;
+	private long loopLength = 0;
+	private ScheduledExecutorService synchronizeService = Executors.newSingleThreadScheduledExecutor();
+	private ScheduledFuture<?> synchronizeTimer;
 
 	public void initialize(int length) {
 		try {
 			byte[] data = new byte[length];
 			Arrays.fill(data, 0, length, (byte) 0x00);
-			this.synchronizeClip = this.audioSystemProvider.getClip(this.appConfig.getAudioFormat(), data, 0, length);
-			log.info("Synchronizer loop initialized, length " + length);
+			Clip synchronizeClip = this.audioSystemProvider.getClip(appConfig.getAudioFormat(), data, 0, length);
+			loopLength = synchronizeClip.getMicrosecondLength();
+			log.info("Synchronizer loop initialized, length " + length+" "+loopLength);
 		} catch (LineUnavailableException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void reset() {
-		this.synchronizeClip = null;
+		loopLength = 0;
 		log.info("Synchronizer loop cleared");
 	}
 
 	public void checkLine() {
-		if (this.lineListener == null) {
-			this.lineListener = new LineListener() {
-				@Override
-				public void update(LineEvent event) {
-					log.info("Synchronization event [" + event + "]");
-					if (event.getType() == Type.START) {
-						for (LoopListener loopListener : Synchronizer.this.loopListeners) {
-							loopListener.loopStarted(false);
-						}
-					} else if (event.getType() == Type.STOP) {
-						if (Synchronizer.this.recorderListeners == 0) {
-							Synchronizer.this.synchronizeClip.removeLineListener(this);
-							Synchronizer.this.lineListener = null;
-							if (!Synchronizer.this.loopListeners.isEmpty()) {
-								log.info("Synchronization loop playing");
-								Synchronizer.this.synchronizeClip.setFramePosition(0);
-								Synchronizer.this.synchronizeClip.loop(Clip.LOOP_CONTINUOUSLY);
-							}
-						} else {
-							Synchronizer.this.synchronizeClip.setFramePosition(0);
-							Synchronizer.this.synchronizeClip.loop(0);
-						}
+		if(this.lineListener == null) {
+			if(synchronizeTimer == null ){
+				startTimer(loopLength);
+				log.info("Synchronization loop started");
+			}
+			log.info("Synchronization loop event set up "+synchronizeTimer.getDelay(TimeUnit.MICROSECONDS));
+		}
+	}
+	
+	private void startTimer(long time){
+		log.info("Start timer with "+time+"/"+loopLength);
+		synchronizeTimer = synchronizeService.schedule(new Runnable() {
+			public void run() {
+				synchronizeEvent();
+			}
+		}, time, TimeUnit.MICROSECONDS);
+	}
+	
+	private void synchronizeEvent(){
+		log.info("Synchronization event");
+		if (loopListeners.isEmpty()) {
+			synchronizeTimer.cancel(false);
+			synchronizeTimer = null;
+			log.info("Synchronization loop ended");
+		}else{
+			Stopwatch stopwatch = Stopwatch.createStarted();
+			int count = 0;
+			long halfLoopLength = getLoopLenght() / 2;
+			long position[] = {halfLoopLength,0,-halfLoopLength};
+			for (LoopListener loopListener : loopListeners) {
+				long loopPosition[] = loopListener.loopStarted(false);
+				if(loopPosition != null){
+					count++;
+					if(loopPosition[0] < position[0]){
+						position[0] = loopPosition[0];
+					}
+					position[1] += loopPosition[1];
+					if(loopPosition[2] > position[2]){
+						position[2] = loopPosition[2];
 					}
 				}
-			};
-			this.synchronizeClip.addLineListener(this.lineListener);
-			this.synchronizeClip.loop(0);
-			log.info("Synchronization loop event set up");
+			}
+			if(count > 0){
+				position[1] /= count;
+			}
+			long calculateTime = stopwatch.elapsed(TimeUnit.MICROSECONDS);
+			long newLenght = loopLength-position[1]/2-calculateTime-1500;
+			log.info("Synchronization position calculated in "+calculateTime+" [min="+position[0]+", avg="+position[1]+", max="+position[2]+"]");
+			startTimer(newLenght);
 		}
 	}
 
 	public void addLoopListerner(LoopListener loopListerer) {
-		if (this.synchronizeClip == null) {
+		if(!this.loopListeners.contains(loopListerer)){
+			this.loopListeners.add(loopListerer);
+			log.info("Synchronization listener added, now has " + loopListeners.size());
+		}
+		if (loopLength == 0) {
 			loopListerer.loopStarted(true);
 		} else {
 			this.checkLine();
 		}
-		this.loopListeners.add(loopListerer);
-		if (loopListerer.isRecorder()) {
-			this.recorderListeners++;
-		}
-		log.info("Synchronization listener added, now has " + this.loopListeners.size());
 	}
 
 	public void removeLoopListerner(LoopListener loopListerer) {
 		this.loopListeners.remove(loopListerer);
-		if (loopListerer.isRecorder()) {
-			this.recorderListeners--;
+		log.info("Synchronization listener removed, now has " + loopListeners.size());
+	}
+	
+	public long getCurrentPosition(){
+		if(synchronizeTimer != null){
+			return loopLength-synchronizeTimer.getDelay(TimeUnit.MICROSECONDS);
 		}
-		log.info("Synchronization listener removed, now has " + this.loopListeners.size());
-		if (this.loopListeners.isEmpty() && this.synchronizeClip != null) {
-			this.synchronizeClip.stop();
-			this.synchronizeClip.setFramePosition(0);
-		}
+		return 0;
+	}
+	
+	public long getLoopLenght(){
+		return loopLength;
 	}
 }

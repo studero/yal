@@ -22,14 +22,14 @@ public class Player extends AudioSink {
 	private Map<Long, Clip> idToClipMap = new HashMap<>();
 
 	@Override
-	protected void playSample(Sample sample, int position, int count) {
+	protected void playSample(Sample sample, long position, int count) {
 		log.info("Play sample [id=" + sample.getId() + "][position=" + position + "][count=" + count + "]");
 		Clip clip = this.idToClipMap.get(sample.getId());
 		try {
 			if (clip == null) {
 				clip = this.audioSystemProvider.getClip(null, sample.getData(), 0, sample.getData().length);
 			}
-			clip.setFramePosition(position);
+			clip.setMicrosecondPosition(position);
 			clip.loop(count);
 		} catch (LineUnavailableException e) {
 			log.error("Unable to play sample", e);
@@ -38,7 +38,23 @@ public class Player extends AudioSink {
 	}
 
 	@Override
-	protected void setSampleLoopCount(Sample sample, int count) {
-		this.idToClipMap.get(sample.getId()).loop(count);
+	protected long getSamplePosition(Sample sample) {
+		return this.idToClipMap.get(sample.getId()).getMicrosecondPosition();
+	}
+
+	@Override
+	protected void resetSamplePosition(Sample sample) {
+		this.idToClipMap.get(sample.getId()).setFramePosition(0);
+	}
+	
+	@Override
+	protected void endSample(Sample sample){
+		this.idToClipMap.get(sample.getId()).stop();
+		this.idToClipMap.get(sample.getId()).setFramePosition(0);
+	}
+
+	@Override
+	protected void finishSample(Sample sample) {
+		this.idToClipMap.get(sample.getId()).loop(0);
 	}
 }

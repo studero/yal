@@ -101,15 +101,10 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 		return this.inputChannel.isMonitoring();
 	}
 
-	@Override
-	public boolean isRecorder() {
-		return true;
-	}
-
 	protected abstract Thread getRecordThread();
 
 	@Override
-	public void loopStarted(boolean firstLoop) {
+	public long[] loopStarted(boolean firstLoop) {
 		log.info("Loop Started [firstLoop=" + firstLoop + "]");
 		if (this.inputChannel.getRecordingState() == RecordingState.WAITING) {
 			this.inputChannel.setOverdubbing(!firstLoop);
@@ -123,6 +118,7 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 		} else {
 			this.synchronizer.removeLoopListerner(this);
 		}
+		return null;
 	}
 
 	@Override

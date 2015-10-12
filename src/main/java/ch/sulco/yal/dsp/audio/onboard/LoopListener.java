@@ -1,6 +1,5 @@
 package ch.sulco.yal.dsp.audio.onboard;
 
 public interface LoopListener {
-	public void loopStarted(boolean firstLoop);
-	public boolean isRecorder();
+	public long[] loopStarted(boolean firstLoop);
 }

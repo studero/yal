@@ -19,32 +19,37 @@ public abstract class AudioSink implements LoopListener {
 
 	private LinkedList<Sample> playingSamples = new LinkedList<>();
 
-	public void startSample(Sample sample) {
+	public void startSample(Sample sample, boolean doSynchronization) {
 		log.info("Start sample [" + sample + "]");
 		if (!this.playingSamples.contains(sample)) {
 			this.playingSamples.add(sample);
-			if (this.playingSamples.size() == 1) {
-				this.synchronizer.addLoopListerner(this);
-			} else {
-				this.synchronizer.checkLine();
+			this.resetSamplePosition(sample);
+			synchronizer.addLoopListerner(this);
+			if(!doSynchronization){
+				log.info("Play position " + synchronizer.getCurrentPosition());
+				this.playSample(sample, synchronizer.getCurrentPosition(), -1);
 			}
 		}
 	}
 
-	private void startAllSamples() {
-		for (Sample sample : this.playingSamples) {
-			this.playSample(sample, 0, -1);
-		}
-	}
+	protected abstract void playSample(Sample sample, long position, int count);
+	
+	protected abstract long getSamplePosition(Sample sample);
+	
+	protected abstract void resetSamplePosition(Sample sample);
+	
+	protected abstract void endSample(Sample sample);
 
-	protected abstract void playSample(Sample sample, int position, int count);
+	protected abstract void finishSample(Sample sample);
 
-	protected abstract void setSampleLoopCount(Sample sample, int count);
-
-	public void stopSample(Sample sample) {
+	public void stopSample(Sample sample, boolean doSynchronization) {
 		log.info("Stop sample [" + sample + "]");
 		if (this.playingSamples.contains(sample)) {
-			this.setSampleLoopCount(sample, 0);
+			if(doSynchronization){
+				this.finishSample(sample);
+			}else{
+				this.endSample(sample);
+			}
 			this.playingSamples.remove(sample);
 			if (this.playingSamples.isEmpty()) {
 				this.synchronizer.removeLoopListerner(this);
@@ -53,12 +58,27 @@ public abstract class AudioSink implements LoopListener {
 	}
 
 	@Override
-	public void loopStarted(boolean firstLoop) {
-		this.startAllSamples();
-	}
-
-	@Override
-	public boolean isRecorder() {
-		return false;
+	public long[] loopStarted(boolean firstLoop) {
+		long halfLoopLength = synchronizer.getLoopLenght() / 2;
+		long position[] = {halfLoopLength,0,-halfLoopLength};
+		for (Sample sample : this.playingSamples) {
+			long samplePosition = this.getSamplePosition(sample);
+			if(samplePosition == 0){
+				this.playSample(sample, 0, -1);
+			}else{
+				samplePosition += halfLoopLength;
+				samplePosition = samplePosition % synchronizer.getLoopLenght();
+				samplePosition -= halfLoopLength;
+				if(samplePosition < position[0]){
+					position[0] = samplePosition;
+				}
+				position[1] += samplePosition;
+				if(samplePosition > position[2]){
+					position[2] = samplePosition;
+				}
+			}
+		}
+		position[1] /= this.playingSamples.size();
+		return position;
 	}
 }

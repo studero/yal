@@ -70,7 +70,7 @@ public class Processor implements EventListener {
 		log.info("Start Sample");
 		Optional<AudioSink> firstPlayer = FluentIterable.from(this.audioSinks.values()).first();
 		if (firstPlayer.isPresent())
-			firstPlayer.get().startSample(this.dataStore.getCurrentLoopSample(0));
+			firstPlayer.get().startSample(this.dataStore.getCurrentLoopSample(0), true);
 	}
 
 	public void setChannelRecording(Long channelId, boolean recording) {
@@ -111,9 +111,9 @@ public class Processor implements EventListener {
 			Sample sample = this.dataStore.getCurrentLoopSample(sampleId);
 			if (sample != null) {
 				if (mute) {
-					firstPlayer.get().stopSample(sample);
+					firstPlayer.get().stopSample(sample, true);
 				} else {
-					firstPlayer.get().startSample(sample);
+					firstPlayer.get().startSample(sample, true);
 				}
 				Sample s = new Sample();
 				s.setId(sampleId);

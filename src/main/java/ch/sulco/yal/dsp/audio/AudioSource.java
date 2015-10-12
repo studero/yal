@@ -14,7 +14,6 @@ import ch.sulco.yal.dm.RecordingState;
 import ch.sulco.yal.dsp.audio.onboard.LoopListener;
 import ch.sulco.yal.dsp.audio.onboard.LoopStore;
 import ch.sulco.yal.dsp.audio.onboard.Synchronizer;
-import ch.sulco.yal.event.ChannelUpdated;
 import ch.sulco.yal.event.EventManager;
 
 public abstract class AudioSource implements LoopListener, AudioDataListener {
@@ -60,7 +59,7 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 
 	public void setMonitoring(boolean monitoring) {
 		this.inputChannel.setMonitoring(monitoring);
-		this.eventManager.addEvent(new ChannelUpdated(this.inputChannel));
+		this.eventManager.updateChannel(this.inputChannel);
 	}
 
 	public void setInputChannel(InputChannel inputChannel) {
@@ -132,7 +131,7 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 	private void setRecordingState(RecordingState recordingState) {
 		log.info("Change RecordingState [" + this.inputChannel.getId() + "][" + recordingState + "]");
 		this.inputChannel.setRecordingState(recordingState);
-		this.eventManager.addEvent(new ChannelUpdated(this.inputChannel));
+		this.eventManager.updateChannel(this.inputChannel);
 	}
 
 	// private void updateMonitoring(int monitoringCount, byte[] buffer, int

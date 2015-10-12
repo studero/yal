@@ -3,7 +3,7 @@ package ch.sulco.yal.event;
 public class LoopPositionChanged extends Event {
 	private Integer loopPosition;
 
-	public LoopPositionChanged(Integer loopPosition) {
+	LoopPositionChanged(Integer loopPosition) {
 		super();
 		this.setLoopPosition(loopPosition);
 	}

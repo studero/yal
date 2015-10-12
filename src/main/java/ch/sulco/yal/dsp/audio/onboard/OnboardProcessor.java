@@ -26,8 +26,6 @@ import ch.sulco.yal.event.ChannelCreated;
 import ch.sulco.yal.event.Event;
 import ch.sulco.yal.event.EventListener;
 import ch.sulco.yal.event.EventManager;
-import ch.sulco.yal.event.LoopLengthChanged;
-import ch.sulco.yal.event.SampleUpdated;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
@@ -94,7 +92,7 @@ public class OnboardProcessor implements Processor, EventListener {
 		if (firstPlayer.isPresent())
 			firstPlayer.get().startSample(this.loopStore.getSample(0L));
 
-		this.eventManager.addEvent(new LoopLengthChanged(Long.valueOf(this.loopStore.getLoopLength())));
+		this.eventManager.changeLoopLength(Long.valueOf(this.loopStore.getLoopLength()));
 	}
 
 	@Override
@@ -120,7 +118,7 @@ public class OnboardProcessor implements Processor, EventListener {
 				Sample s = new Sample();
 				s.setId(sampleId);
 				s.setMute(mute);
-				this.eventManager.addEvent(new SampleUpdated(s));
+				this.eventManager.updateSample(s);
 			}
 		}
 

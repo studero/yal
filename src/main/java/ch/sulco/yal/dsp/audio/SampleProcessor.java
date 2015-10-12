@@ -11,7 +11,6 @@ import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.event.EventManager;
-import ch.sulco.yal.event.LoopLengthChanged;
 
 public class SampleProcessor {
 	private final static Logger log = LoggerFactory.getLogger(SampleProcessor.class);
@@ -31,7 +30,7 @@ public class SampleProcessor {
 		Loop currentLoop = this.dataStore.getLoop(this.dataStore.getCurrentLoopId());
 		if (currentLoop.getLength() == null) {
 			currentLoop.setLength(Long.valueOf(data.length));
-			this.eventManager.addEvent(new LoopLengthChanged(currentLoop.getLength()));
+			this.eventManager.changeLoopLength(currentLoop.getLength());
 		} else if (data.length < currentLoop.getLength()) {
 			byte[] longerData = Arrays.copyOf(data, currentLoop.getLength().intValue());
 			data = longerData;

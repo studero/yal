@@ -3,7 +3,7 @@ package ch.sulco.yal.event;
 public class LoopLengthChanged extends Event {
 	private Long loopLength;
 
-	public LoopLengthChanged(Long loopLength) {
+	LoopLengthChanged(Long loopLength) {
 		super();
 		this.setLoopLength(loopLength);
 	}

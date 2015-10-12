@@ -19,7 +19,6 @@ import ch.sulco.yal.AppConfig;
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.dm.SampleClip;
 import ch.sulco.yal.event.EventManager;
-import ch.sulco.yal.event.SampleCreated;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
@@ -70,7 +69,7 @@ public class LoopStore {
 			sample.setMute(true);
 			sample.setData(data);
 			sample.setChannelId(null);
-			this.eventManager.addEvent(new SampleCreated(sample));
+			this.eventManager.createSample(sample);
 			log.info("Sample added [" + newId + "][" + clip + "]");
 		} catch (Exception e) {
 			e.printStackTrace();

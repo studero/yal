@@ -5,7 +5,7 @@ import ch.sulco.yal.dm.Channel;
 public class ChannelCreated extends Event {
 	private final Channel channel;
 
-	public ChannelCreated(Channel channel) {
+	ChannelCreated(Channel channel) {
 		super();
 		this.channel = channel;
 	}

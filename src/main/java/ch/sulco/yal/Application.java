@@ -11,7 +11,6 @@ import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
-import ch.sulco.yal.event.ChannelCreated;
 import ch.sulco.yal.event.EventManager;
 import ch.sulco.yal.web.Server;
 
@@ -48,7 +47,7 @@ public class Application {
 		log.info("Start Application");
 		for (Channel channel : this.audioSystemProvider.getChannels()) {
 			this.dataStore.addChannel(channel);
-			this.eventManager.addEvent(new ChannelCreated(channel));
+			this.eventManager.createChannel(channel);
 		}
 	}
 

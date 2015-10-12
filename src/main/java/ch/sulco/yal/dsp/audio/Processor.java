@@ -14,13 +14,6 @@ public interface Processor {
 	Set<Long> getSampleIds();
 
 	/**
-	 * @param sampleId
-	 *            the id of the sample.
-	 * @return sample data as byte array for provided sample id.
-	 */
-	byte[] getData(int sampleId);
-
-	/**
 	 * @param data
 	 *            the sample data as byte array to be loaded.
 	 * @return the newly created sample id.
@@ -31,11 +24,6 @@ public interface Processor {
 	 * start playing current audio setup.
 	 */
 	void play();
-
-	/**
-	 * pause current audio setup.
-	 */
-	void pause();
 
 	/**
 	 * create loop.
@@ -77,14 +65,6 @@ public interface Processor {
 	void setSampleVolume(Long sampleId, float volume);
 
 	float getSampleVolume(Long sampleId);
-
-	/**
-	 * remove sample identified by provided sample id.
-	 * 
-	 * @param sampleId
-	 *            the id of the sample.
-	 */
-	void removeSample(Long sampleId);
 
 	Long getLoopLength();
 

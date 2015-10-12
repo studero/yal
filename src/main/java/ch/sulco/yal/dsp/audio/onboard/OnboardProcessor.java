@@ -60,23 +60,11 @@ public class OnboardProcessor implements Processor, EventListener {
 	}
 
 	@Override
-	public byte[] getData(int sampleId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void play() {
 		log.info("Play");
 		for (Recorder recorder : this.recorders.values()) {
 			recorder.startRecord();
 		}
-	}
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -128,12 +116,6 @@ public class OnboardProcessor implements Processor, EventListener {
 	public void setSampleVolume(Long sampleId, float volume) {
 		FloatControl control = (FloatControl) this.loopStore.getSample(sampleId).getClip().getControl(Type.MASTER_GAIN);
 		control.setValue(volume);
-	}
-
-	@Override
-	public void removeSample(Long sampleId) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

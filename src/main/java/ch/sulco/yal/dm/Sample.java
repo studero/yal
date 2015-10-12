@@ -9,6 +9,14 @@ public class Sample {
 	private Long channelId;
 	private byte[] data;
 
+	public Sample() {
+
+	}
+
+	public Sample(Long id) {
+		this.id = id;
+	}
+
 	public Long getId() {
 		return this.id;
 	}
@@ -58,7 +66,7 @@ public class Sample {
 	}
 
 	public byte[] getData() {
-		return data;
+		return this.data;
 	}
 
 	public void setData(byte[] data) {

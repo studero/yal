@@ -2,9 +2,6 @@ package ch.sulco.yal.web;
 
 import static spark.Spark.get;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
@@ -15,8 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spark.Spark;
+import ch.sulco.yal.PostConstructModule;
+import ch.sulco.yal.TestYalModule;
 import ch.sulco.yal.dm.Channel;
-import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.event.Event;
@@ -25,6 +23,8 @@ import ch.sulco.yal.event.EventManager;
 
 import com.google.common.collect.FluentIterable;
 import com.google.gson.Gson;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 @Singleton
 public class Server implements EventListener {
@@ -106,16 +106,7 @@ public class Server implements EventListener {
 	}
 
 	private String getSamples() {
-		Set<Long> sampleIds = this.audioProcessor.getSampleIds();
-		List<ch.sulco.yal.dm.Sample> samples = new ArrayList<>();
-		for (Long id : sampleIds) {
-			Sample sample = new Sample();
-			sample.setId(Long.valueOf(id));
-			sample.setMute(this.audioProcessor.isSampleMute(id));
-			sample.setGain(this.audioProcessor.getSampleVolume(id));
-			samples.add(sample);
-		}
-		return this.gson.toJson(samples);
+		return this.gson.toJson(this.dataStore.getCurrentLoop().getSamples());
 	}
 
 	private String getChannels() {
@@ -142,5 +133,10 @@ public class Server implements EventListener {
 	@Override
 	public void onEvent(Event event) {
 		UpdatesWebSocket.getInstance().send(this.gson.toJson(event));
+	}
+
+	public static void main(String[] args) {
+		Injector injector = Guice.createInjector(new TestYalModule(), new PostConstructModule());
+		Server server = injector.getInstance(Server.class);
 	}
 }

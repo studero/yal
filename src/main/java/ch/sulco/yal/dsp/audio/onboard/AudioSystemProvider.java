@@ -65,7 +65,7 @@ public class AudioSystemProvider {
 						thisLine.open();
 						System.out.println("  Source Port: " + thisLineInfo.toString());
 						for (Control thisControl : thisLine.getControls()) {
-							System.out.println(AnalyzeControl(thisControl));
+							System.out.println(this.AnalyzeControl(thisControl));
 						}
 						thisLine.close();
 					}
@@ -76,7 +76,7 @@ public class AudioSystemProvider {
 						thisLine.open();
 						System.out.println("  Target Port: " + thisLineInfo.toString());
 						for (Control thisControl : thisLine.getControls()) {
-							System.out.println(AnalyzeControl(thisControl));
+							System.out.println(this.AnalyzeControl(thisControl));
 						}
 						thisLine.close();
 					}
@@ -89,8 +89,7 @@ public class AudioSystemProvider {
 		List<Channel> channels = new ArrayList<>();
 		Mixer mixer = AudioSystem.getMixer(null);
 		for (Line.Info lineInfo : mixer.getTargetLineInfo(this.getTargetLineInfo())) {
-			InputChannel channel = new InputChannel();
-			channel.setId(id);
+			InputChannel channel = new InputChannel(id);
 			channel.setLineInfo(lineInfo);
 			channels.add(channel);
 			log.info("New Input Channel [" + id + "]");
@@ -98,8 +97,7 @@ public class AudioSystemProvider {
 			id++;
 		}
 		for (Line.Info lineInfo : mixer.getSourceLineInfo(this.getSourceLineInfo())) {
-			OutputChannel channel = new OutputChannel();
-			channel.setId(id);
+			OutputChannel channel = new OutputChannel(id);
 			channel.setLineInfo(lineInfo);
 			channels.add(channel);
 			log.info("New Output Channel [" + id + "]");
@@ -108,7 +106,7 @@ public class AudioSystemProvider {
 		}
 		return channels;
 	}
-	
+
 	public String AnalyzeControl(Control thisControl) {
 		String type = thisControl.getType().toString();
 		if (thisControl instanceof BooleanControl) {
@@ -118,7 +116,7 @@ public class AudioSystemProvider {
 			System.out.println("    Control: " + type + " (compound - values below)");
 			String toReturn = "";
 			for (Control children : ((CompoundControl) thisControl).getMemberControls()) {
-				toReturn += "  " + AnalyzeControl(children) + "\n";
+				toReturn += "  " + this.AnalyzeControl(children) + "\n";
 			}
 			return toReturn.substring(0, toReturn.length() - 1);
 		}

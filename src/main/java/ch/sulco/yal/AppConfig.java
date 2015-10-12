@@ -24,8 +24,4 @@ public class AppConfig {
 		boolean bigEndian = true;
 		return new AudioFormat(this.getSampleRate(), this.getSampleSize(), channels, signed, bigEndian);
 	}
-
-	public boolean isTest() {
-		return false;
-	}
 }

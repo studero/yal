@@ -85,7 +85,7 @@ public class Processor implements EventListener {
 		return this.audioSources.get(channelId).getRecordingState();
 	}
 
-	public void setSampleVolume(Long sampleId, float volume) {
+	public void setSampleVolume(Long sampleId, Float volume) {
 		this.dataStore.getCurrentLoopSample(sampleId).setGain(volume);
 	}
 
@@ -93,7 +93,7 @@ public class Processor implements EventListener {
 		return this.dataStore.getCurrentLoopSample(sampleId).isMute();
 	}
 
-	public float getSampleVolume(Long sampleId) {
+	public Float getSampleVolume(Long sampleId) {
 		return this.dataStore.getCurrentLoopSample(sampleId).getGain();
 	}
 

@@ -24,6 +24,10 @@ public class DataStore {
 		return this.loops;
 	}
 
+	public Loop getCurrentLoop() {
+		return this.getLoop(this.currentLoopId);
+	}
+
 	public Loop getLoop(final Long id) {
 		return FluentIterable.from(this.loops).firstMatch(new Predicate<Loop>() {
 			@Override

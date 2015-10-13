@@ -3,8 +3,6 @@ package ch.sulco.yal.web;
 import static spark.Spark.get;
 import static spark.Spark.put;
 
-import java.util.function.Consumer;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -15,14 +13,12 @@ import org.slf4j.LoggerFactory;
 import spark.Spark;
 import ch.sulco.yal.PostConstructModule;
 import ch.sulco.yal.SimulationYalModule;
-import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.event.Event;
 import ch.sulco.yal.event.EventListener;
 import ch.sulco.yal.event.EventManager;
 
-import com.google.common.collect.FluentIterable;
 import com.google.gson.Gson;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -118,14 +114,7 @@ public class Server implements EventListener {
 	}
 
 	private String getChannels() {
-		FluentIterable<Channel> channels = FluentIterable.from(this.dataStore.getChannels());
-		channels.forEach(new Consumer<Channel>() {
-			@Override
-			public void accept(Channel t) {
-				t.setName("Channel " + t.getId());
-			}
-		});
-		return this.gson.toJson(channels.toList());
+		return this.gson.toJson(this.dataStore.getChannels());
 	}
 
 	private String play() {

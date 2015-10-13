@@ -30,6 +30,7 @@ public class SimulationDataStore extends DataStore {
 				.sample(aSample().id(0L).channelId(1L).build())
 				.sample(aSample().id(1L).channelId(2L).build())
 				.sample(aSample().id(4L).channelId(1L).build())
+				.sample(aSample().id(6L).channelId(0L).build())
 				.build());
 		this.setCurrentLoopId(0L);
 

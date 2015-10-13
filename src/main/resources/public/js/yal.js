@@ -7,12 +7,10 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	  var event = angular.fromJson(e.data);
 	  if(event.eventType == 'ChannelUpdated'){
 	  	$scope.channels[event.channel.id] = event.channel;
-	  } else if(event.eventType == 'LoopLengthChanged'){
-	    $scope.loopLength = event.loopLength;
-	    $scope.loopLocation = $scope.loopPosition + ' / ' + $scope.loopLength;
-	  } else if(event.eventType == 'LoopPositionChanged'){
-	    $scope.loopPosition = event.loopLength;
-	    $scope.loopLocation = $scope.loopPosition + ' / ' + $scope.loopLength;
+	  } else if(event.eventType == 'LoopCreated'){
+	    $scope.loops[event.loop.id] = event.loop;
+	  } else if(event.eventType == 'LoopUpdated'){
+	    $scope.loops[event.loop.id] = event.loop;
 	  } else if(event.eventType == 'SampleCreated'){
 	    $scope.samples[event.sample.id] = event.sample;
 	  } else if(event.eventType == 'SampleUpdated'){

@@ -13,6 +13,12 @@ h4 {
 	color: #fff;
 	padding: 3px;
 	margin-bottom:1px;
+	border-radius:0px;
+	border:0px;
+}
+
+.title {
+	border-bottom:2px solid #ddd;
 }
 
 .channels {
@@ -21,6 +27,7 @@ h4 {
 
 .channel {
 	padding-left:0px;
+	border-bottom:1px solid #ddd;
 }
 
 .channel-name {
@@ -50,6 +57,7 @@ h4 {
 .sample {
 	padding-left: 2px;
 	padding-right: 2px;
+	background-color: #555;
 }
 
 .sample-name {

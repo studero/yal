@@ -14,38 +14,48 @@
 <body ng-controller="yalCtrl">
 	<div class="container" width="1024px">
 		<div class="page-header">
-			<h2>YAL</h2>
+			<h3>YAL</h3>
 		</div>
 		
 		<div class="panel panel-default">
 			<div class>{{loopLocation}}</div>
-			<button ng-click="play()" class="btn btn-primary btn-lg">
+			<button ng-click="play()" class="btn btn-primary btn-md">
 				<span class="glyphicon glyphicon-play"></span>
 			</button>
-			<button ng-click="loop()" class="btn btn-primary btn-lg">Loop</button>
-			<button ng-click="test()" class="btn btn-primary btn-lg">test</button>
+			<button ng-click="loop()" class="btn btn-primary btn-md">
+				<span class="glyphicon glyphicon-repeat"></span>
+			</button>
+			
+			<button ng-click="pause()" class="btn btn-primary btn-md">
+				<span class="glyphicon glyphicon-pause"></span>
+			</button>
+			<button ng-click="stop()" class="btn btn-primary btn-md">
+				<span class="glyphicon glyphicon-stop"></span>
+			</button>
 		</div>
 		
 		<div class="panel panel-default col-xs-12">
-			<div class="col-xs-2"><h4>Input</h4></div>
-			<div ng-repeat="(key, value) in loops" class="col-xs-2 loop">	
-				<div class="panel panel-default">
-					<span class="loop-name" ng-class="{selected: value.active == true}">{{value.id}} - {{value.name}}</span>
-					<button ng-click="activateLoop(value.id, true)" class="btn btn-primary btn-xs" ng-show="value.active == false">
-						<span class="glyphicon glyphicon-record"></span>
-					</button> 
+			<div class="panel panel-default col-xs-2"><h4>Input</h4></div>
+			<div ng-repeat="(key, value) in loops" class="panel panel-default col-xs-2">	
+				<div ng-click="activateLoop(value.id, true)">
+					<h4>{{value.id}} - {{value.name}}</h4>
+				</div>
+			</div>
+			<div class="panel panel-default col-xs-x title">
+				<div ng-click="createNewLoop()">
+					<h4><span class="glyphicon glyphicon-plus"></span></h4>
 				</div>
 			</div>
 			<div class="row channels">
 				<div ng-repeat="(key, value) in channels | filter:{direction: 'IN'}" class="col-xs-12 channel">				
 					<div class="panel panel-default col-xs-2">
-						<span class="channel-name">{{value.id}} - {{value.name}}</span>
 						<button ng-click="record(value.id, true)" class="btn btn-primary btn-xs" ng-show="value.recordingState == 'STOPPED'">
 							<span class="glyphicon glyphicon-record"></span>
 						</button> 
 						<button ng-click="record(value.id, false)" class="btn btn-primary btn-xs" ng-show="value.recordingState == 'RECORDING' || value.recordingState == 'WAITING'">
 							<span class="glyphicon glyphicon-stop"></span>
 						</button>
+						<span class="channel-name">{{value.id}} - {{value.name}}</span>
 					</div>
 					<div ng-repeat="(loopKey, loopValue) in loops" class="col-xs-2">
 						<div ng-repeat="(sampleKey, sampleValue) in loopValue.samples | filter:{channelId: value.id}" class="col-xs-12 sample">
@@ -62,10 +72,12 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-xs-2"><h4>Output</h4></div>
+		</div>
+		<div class="panel panel-default col-xs-2">
+			<div class="panel panel-default col-xs-12 title"><h4>Output</h4></div>
 			<div class="row channels">
-				<div ng-repeat="(key, value) in channels | filter:{direction: 'OUT'}" class="col-xs-12 channel">				
-					<div class="panel panel-default col-xs-2">
+				<div ng-repeat="(key, value) in channels | filter:{direction: 'OUT'}" class="col-xs-10 channel">				
+					<div class="panel panel-default col-xs-10">
 						<span class="channel-name">{{value.id}} - {{value.name}}</span>
 						<button ng-click="record(value.id, true)" class="btn btn-primary btn-xs" ng-show="value.recordingState == 'STOPPED'">
 							<span class="glyphicon glyphicon-record"></span>
@@ -75,6 +87,18 @@
 						</button>
 					</div>
 				</div>
+			</div>
+		</div>
+		<div class="panel panel-default col-xs-2">
+			<div class="panel panel-default col-xs-12 title"><h4>Songs</h4></div>
+			<div class="row songs">
+				
+			</div>
+		</div>
+		<div class="panel panel-default col-xs-4">
+			<div class="panel panel-default col-xs-12 title"><h4>Midi</h4></div>
+			<div class="row midi">
+				
 			</div>
 		</div>
 	</div>

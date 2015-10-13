@@ -14,9 +14,9 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	    $scope.loops[event.loop.id] = event.loop;
 	    updateCurrentLoop();	
 	  } else if(event.eventType == 'SampleCreated'){
-	    $scope.samples[event.sample.id] = event.sample;
+	    $scope.currentLoop.samples[event.sample.id] = event.sample;
 	  } else if(event.eventType == 'SampleUpdated'){
-	    $scope.samples[event.sample.id] = event.sample;
+	    $scope.currentLoop.samples[event.sample.id] = event.sample;
 	  }
 	};
 

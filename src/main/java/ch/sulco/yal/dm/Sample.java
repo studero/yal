@@ -7,7 +7,8 @@ public class Sample {
 	private Float gain;
 	private boolean mute;
 	private Long channelId;
-	private byte[] data;
+
+	private transient byte[] data;
 
 	public Sample() {
 

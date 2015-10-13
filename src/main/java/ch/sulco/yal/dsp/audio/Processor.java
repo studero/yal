@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import ch.sulco.yal.Application;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.InputChannel;
+import ch.sulco.yal.dm.LoopState;
 import ch.sulco.yal.dm.OutputChannel;
 import ch.sulco.yal.dm.RecordingState;
 import ch.sulco.yal.dm.Sample;
@@ -59,6 +60,20 @@ public class Processor implements EventListener {
 		for (AudioSource audioSource : this.audioSources.values()) {
 			audioSource.startRecord();
 		}
+		this.dataStore.getCurrentLoop().setLoopState(LoopState.PLAYING);
+		this.eventManager.updateLoop(this.dataStore.getCurrentLoop());
+	}
+
+	public void pause() {
+		// TODO pause players
+		this.dataStore.getCurrentLoop().setLoopState(LoopState.PAUSED);
+		this.eventManager.updateLoop(this.dataStore.getCurrentLoop());
+	}
+
+	public void stop() {
+		// TODO stop players
+		this.dataStore.getCurrentLoop().setLoopState(LoopState.STOPPED);
+		this.eventManager.updateLoop(this.dataStore.getCurrentLoop());
 	}
 
 	public void loop() {

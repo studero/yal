@@ -9,8 +9,10 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	  	$scope.channels[event.channel.id] = event.channel;
 	  } else if(event.eventType == 'LoopCreated'){
 	    $scope.loops[event.loop.id] = event.loop;
+	    updateCurrentLoop();	
 	  } else if(event.eventType == 'LoopUpdated'){
 	    $scope.loops[event.loop.id] = event.loop;
+	    updateCurrentLoop();	
 	  } else if(event.eventType == 'SampleCreated'){
 	    $scope.samples[event.sample.id] = event.sample;
 	  } else if(event.eventType == 'SampleUpdated'){
@@ -35,6 +37,18 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 		$http({
 			method : 'GET',
 			url : '/loop'
+		});
+	};
+	$scope.pause = function() {
+		$http({
+			method : 'GET',
+			url : '/pause'
+		});
+	};
+	$scope.stop = function() {
+		$http({
+			method : 'GET',
+			url : '/stop'
 		});
 	};
 	$scope.record = function(channelId, enabled) {
@@ -95,8 +109,12 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 			url : '/loops'
 		}).success(function(data, status, headers, config) {
 			$scope.loops = data;
-			$scope.currentLoop = data.filter(function(n){ return n.active === true; })[0];
+			updateCurrentLoop();			
 		}).error(function(data, status, headers, config) {
 		});
+	}
+	
+	function updateCurrentLoop(){
+		$scope.currentLoop = $scope.loops.filter(function(n){ return n.active === true; })[0];
 	}
 });

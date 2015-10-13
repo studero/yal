@@ -45,6 +45,8 @@ public class Server implements EventListener {
 		Spark.webSocket("/updates", UpdatesWebSocket.class);
 
 		get("/play", (req, res) -> this.play());
+		get("/pause", (req, res) -> this.pause());
+		get("/stop", (req, res) -> this.stop());
 		get("/loop", (req, res) -> this.loop());
 		get("/length", (req, res) -> this.getLoopLength());
 		get("/channels", (req, res) -> this.getChannels());
@@ -119,6 +121,16 @@ public class Server implements EventListener {
 
 	private String play() {
 		this.audioProcessor.play();
+		return "Success";
+	}
+
+	private String pause() {
+		this.audioProcessor.pause();
+		return "Success";
+	}
+
+	private String stop() {
+		this.audioProcessor.stop();
 		return "Success";
 	}
 

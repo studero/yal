@@ -9,6 +9,7 @@ public class Loop {
 	private List<Sample> samples = new ArrayList<>();
 	private Long length;
 	private boolean active;
+	private LoopState loopState;
 
 	public Loop() {
 
@@ -52,5 +53,13 @@ public class Loop {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public LoopState getLoopState() {
+		return loopState;
+	}
+
+	public void setLoopState(LoopState loopState) {
+		this.loopState = loopState;
 	}
 }

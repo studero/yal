@@ -19,17 +19,17 @@
 		
 		<div class="panel panel-default">
 			<div class>{{loopLocation}}</div>
-			<button ng-click="play()" class="btn btn-primary btn-md">
+			<button ng-click="play()" class="btn btn-primary btn-md" ng-show="currentLoop.loopState == 'STOPPED' || currentLoop.loopState == 'PAUSED'">
 				<span class="glyphicon glyphicon-play"></span>
 			</button>
-			<button ng-click="loop()" class="btn btn-primary btn-md">
+			<button ng-click="loop()" class="btn btn-primary btn-md" ng-show="currentLoop.loopState == 'PLAYING'">
 				<span class="glyphicon glyphicon-repeat"></span>
 			</button>
 			
-			<button ng-click="pause()" class="btn btn-primary btn-md">
+			<button ng-click="pause()" class="btn btn-primary btn-md" ng-show="currentLoop.loopState == 'PLAYING'">
 				<span class="glyphicon glyphicon-pause"></span>
 			</button>
-			<button ng-click="stop()" class="btn btn-primary btn-md">
+			<button ng-click="stop()" class="btn btn-primary btn-md" ng-show="currentLoop.loopState == 'PLAYING'">
 				<span class="glyphicon glyphicon-stop"></span>
 			</button>
 		</div>

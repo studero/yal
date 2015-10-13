@@ -1,6 +1,7 @@
 package ch.sulco.yal.simulator;
 
 import ch.sulco.yal.dm.Loop;
+import ch.sulco.yal.dm.LoopState;
 import ch.sulco.yal.dm.Sample;
 
 public class LoopBuilder {
@@ -8,6 +9,7 @@ public class LoopBuilder {
 
 	LoopBuilder() {
 		this.instance = new Loop();
+		this.instance.setLoopState(LoopState.STOPPED);
 	}
 
 	public LoopBuilder id(Long id) {

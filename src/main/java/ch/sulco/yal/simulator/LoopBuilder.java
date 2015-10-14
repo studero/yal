@@ -22,6 +22,11 @@ public class LoopBuilder {
 		return this;
 	}
 
+	public LoopBuilder length(Long length) {
+		this.instance.setLength(length);
+		return this;
+	}
+
 	public LoopBuilder active(boolean active) {
 		this.instance.setActive(active);
 		return this;

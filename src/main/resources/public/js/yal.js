@@ -1,4 +1,24 @@
-var app = angular.module('yalApp', []);
+var app = angular.module('yalApp', []).filter('timeformat', function() {
+    //Returns duration from milliseconds in hh:mm:ss.sss format.
+      return function(milliseconds) {
+        var s = 1000;
+        var seconds = Math.floor(milliseconds / s);
+        var h = 3600;
+        var m = 60;
+        var hours = Math.floor(seconds/h);
+        var minutes = Math.floor( (seconds % h)/m );
+        var seconds = Math.floor( (seconds % m) );
+        var millis = milliseconds - (seconds * s) - (minutes * s * m) - (hours * s * m * h);
+        var timeString = '';
+        if(millis < 10) millis = "00"+millis;
+        else if(millis < 100) millis = "0"+millis;
+        if(seconds < 10) seconds = "0"+seconds;
+        if(hours < 10) hours = "0"+hours;
+        if(minutes < 10) minutes = "0"+minutes;
+        timeString = hours +":"+ minutes +":"+seconds + "." + millis;
+        return timeString;
+    }
+});
 
 app.controller('yalCtrl', function($scope, $http, $interval) {
 	var socket = new WebSocket("ws://localhost:4567/updates");
@@ -116,5 +136,6 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	
 	function updateCurrentLoop(){
 		$scope.currentLoop = $scope.loops.filter(function(n){ return n.active === true; })[0];
+		$scope.currentLoop.position = 0;
 	}
 });

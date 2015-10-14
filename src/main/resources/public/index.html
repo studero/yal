@@ -18,7 +18,7 @@
 		</div>
 		
 		<div class="panel panel-default">
-			<div class>{{loopLocation}}</div>
+			<div class>{{currentLoop.position | timeformat}} / {{currentLoop.length | timeformat}}</div>
 			<button ng-click="play()" class="btn btn-primary btn-md" ng-show="currentLoop.loopState == 'STOPPED' || currentLoop.loopState == 'PAUSED'">
 				<span class="glyphicon glyphicon-play"></span>
 			</button>
@@ -37,8 +37,8 @@
 		<div class="panel panel-default col-xs-12 title">
 			<div class="panel panel-default col-xs-2"><h4>Input</h4></div>
 			<div ng-repeat="(key, value) in loops" class="panel panel-default col-xs-2">	
-				<div ng-click="activateLoop(value.id, true)">
-					<h4>{{value.id}} - {{value.name}}</h4>
+				<div ng-click="activateLoop(value.id, true)" style="cursor:pointer;">
+					<h4>{{value.id}} - {{value.name}} <span ng-show="value.active">*</span></h4>
 				</div>
 			</div>
 			<div class="panel panel-default col-xs-x">

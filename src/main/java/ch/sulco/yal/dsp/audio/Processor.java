@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
 
+@Singleton
 public class Processor implements EventListener {
 
 	private final static Logger log = LoggerFactory.getLogger(Processor.class);

@@ -18,6 +18,8 @@ public class SimulatedAudioSource extends AudioSource {
 	@Inject
 	private AppConfig appConfig;
 
+	private int dataSize;
+
 	@Override
 	protected long getSampleLength(Sample sample) {
 		// TODO Auto-generated method stub
@@ -26,6 +28,9 @@ public class SimulatedAudioSource extends AudioSource {
 
 	@Override
 	protected Thread getRecordThread() {
+		this.dataSize = (int) (SimulatedAudioSource.this.appConfig.getSampleRate()
+				* SimulatedAudioSource.this.appConfig.getSampleSize() / 2 / 1000);
+		log.info("dataSize " + this.dataSize);
 		return new RecordThread();
 	}
 
@@ -35,10 +40,7 @@ public class SimulatedAudioSource extends AudioSource {
 		public void run() {
 			while (SimulatedAudioSource.this.getInputChannel().getRecordingState() == RecordingState.RECORDING) {
 				try {
-					int size = (int) (SimulatedAudioSource.this.appConfig.getSampleRate()
-							* SimulatedAudioSource.this.appConfig.getSampleSize() / 2 / 1000);
-					log.info("size " + size);
-					byte[] buffer = new byte[size];
+					byte[] buffer = new byte[SimulatedAudioSource.this.dataSize];
 					Arrays.fill(buffer, (byte) 0x00);
 					SimulatedAudioSource.this.newAudioData(buffer);
 					Thread.sleep(1);

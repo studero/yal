@@ -10,6 +10,7 @@ import ch.sulco.yal.dsp.audio.onboard.Player;
 import ch.sulco.yal.dsp.audio.onboard.Synchronizer;
 import ch.sulco.yal.event.EventManager;
 import ch.sulco.yal.simulator.SimulatedAudioSource;
+import ch.sulco.yal.simulator.SimulationAudioSystemProvider;
 import ch.sulco.yal.simulator.SimulationDataStore;
 import ch.sulco.yal.web.Server;
 
@@ -21,7 +22,7 @@ public class SimulationYalModule extends AbstractModule {
 	protected void configure() {
 		this.bind(AppConfig.class);
 		this.bind(Application.class);
-		this.bind(AudioSystemProvider.class);
+		this.bind(AudioSystemProvider.class).to(SimulationAudioSystemProvider.class);
 		this.bind(DataStore.class).to(SimulationDataStore.class);
 		this.bind(EventManager.class);
 		this.bind(MidiControl.class);

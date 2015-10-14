@@ -20,20 +20,6 @@ public class SimulationDataStore extends DataStore {
 	public void setup() {
 		log.info("Create Test Data");
 
-		this.addChannel(anInputChannel().id(0L).name("Drum Module").build());
-		this.addChannel(anInputChannel().id(1L).name("Bass").build());
-		this.addChannel(anInputChannel().id(2L).name("Guitar").build());
-		this.addChannel(anInputChannel().id(3L).name("Piano").build());
-
-		this.addChannel(anOutputChannel().id(4L).name("Main").build());
-		this.addChannel(anOutputChannel().id(5L).name("Click").build());
-		this.eventManager.createChannel(this.getChannel(0L));
-		this.eventManager.createChannel(this.getChannel(1L));
-		this.eventManager.createChannel(this.getChannel(2L));
-		this.eventManager.createChannel(this.getChannel(3L));
-		this.eventManager.createChannel(this.getChannel(4L));
-		this.eventManager.createChannel(this.getChannel(5L));
-
 		this.addLoop(aLoop()
 				.id(0L)
 				.name("Chorus")
@@ -60,14 +46,6 @@ public class SimulationDataStore extends DataStore {
 		this.eventManager.createLoop(this.getLoop(0L));
 		this.eventManager.createLoop(this.getLoop(1L));
 		this.eventManager.createLoop(this.getLoop(2L));
-	}
-
-	private static InputChannelBuilder anInputChannel() {
-		return new InputChannelBuilder();
-	}
-
-	private static OutputChannelBuilder anOutputChannel() {
-		return new OutputChannelBuilder();
 	}
 
 	private static LoopBuilder aLoop() {

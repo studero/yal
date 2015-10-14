@@ -85,8 +85,9 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 			this.recordedSample = this.recordingSample.toByteArray();
 		}
 		if (this.recordedSample != null) {
+			
 			Sample sample = new Sample();
-			sample.setId(0L);
+			sample.setId(this.dataStore.getCurrentLoop().getNumSamples());
 			sample.setMute(false);
 			sample.setData(this.recordedSample);
 			sample.setChannelId(this.inputChannel.getId());

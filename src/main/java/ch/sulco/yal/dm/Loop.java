@@ -34,6 +34,10 @@ public class Loop {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public Long getNumSamples(){
+		return Long.valueOf(this.samples.size());
+	}
 
 	public List<Sample> getSamples() {
 		return this.samples;

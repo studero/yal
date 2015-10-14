@@ -55,54 +55,58 @@ public class AudioSystemProvider {
 	}
 
 	public List<Channel> getChannels() {
-		try {
-			for (Mixer.Info thisMixerInfo : AudioSystem.getMixerInfo()) {
-				System.out.println("Mixer: " + thisMixerInfo.getDescription() + " [" + thisMixerInfo.getName() + "]");
-				Mixer thisMixer = AudioSystem.getMixer(thisMixerInfo);
-				for (Line.Info thisLineInfo : thisMixer.getSourceLineInfo()) {
-					if (thisLineInfo.getLineClass().getName().equals("javax.sound.sampled.Port")) {
-						Line thisLine = thisMixer.getLine(thisLineInfo);
-						thisLine.open();
-						System.out.println("  Source Port: " + thisLineInfo.toString());
-						for (Control thisControl : thisLine.getControls()) {
-							System.out.println(this.AnalyzeControl(thisControl));
-						}
-						thisLine.close();
+		for (Mixer.Info thisMixerInfo : AudioSystem.getMixerInfo()) {
+			System.out.println("Mixer: " + thisMixerInfo.getDescription() + " [" + thisMixerInfo.getName() + "]");
+			Mixer thisMixer = AudioSystem.getMixer(thisMixerInfo);
+			for (Line.Info thisLineInfo : thisMixer.getSourceLineInfo()) {
+				try {
+					Line thisLine = thisMixer.getLine(thisLineInfo);
+					thisLine.open();
+					System.out.println("  Source Port: " + thisLineInfo.toString());
+					for (Control thisControl : thisLine.getControls()) {
+						System.out.println(this.AnalyzeControl(thisControl));
 					}
-				}
-				for (Line.Info thisLineInfo : thisMixer.getTargetLineInfo()) {
-					if (thisLineInfo.getLineClass().getName().equals("javax.sound.sampled.Port")) {
-						Line thisLine = thisMixer.getLine(thisLineInfo);
-						thisLine.open();
-						System.out.println("  Target Port: " + thisLineInfo.toString());
-						for (Control thisControl : thisLine.getControls()) {
-							System.out.println(this.AnalyzeControl(thisControl));
-						}
-						thisLine.close();
-					}
+					thisLine.close();
+				} catch (Exception e) {
 				}
 			}
-		} catch (LineUnavailableException e) {
-			e.printStackTrace();
+			for (Line.Info thisLineInfo : thisMixer.getTargetLineInfo()) {
+				try {
+					Line thisLine = thisMixer.getLine(thisLineInfo);
+					thisLine.open();
+					System.out.println("  Target Port: " + thisLineInfo.toString());
+					for (Control thisControl : thisLine.getControls()) {
+						System.out.println(this.AnalyzeControl(thisControl));
+					}
+					thisLine.close();
+				} catch (Exception e) {
+				}
+			}
 		}
 		long id = 0;
 		List<Channel> channels = new ArrayList<>();
-		Mixer mixer = AudioSystem.getMixer(null);
-		for (Line.Info lineInfo : mixer.getTargetLineInfo(this.getTargetLineInfo())) {
-			InputChannel channel = new InputChannel(id);
-			channel.setLineInfo(lineInfo);
-			channels.add(channel);
-			log.info("New Input Channel [" + id + "]");
-			log.info(" LineInfo [" + lineInfo + "]");
-			id++;
-		}
-		for (Line.Info lineInfo : mixer.getSourceLineInfo(this.getSourceLineInfo())) {
-			OutputChannel channel = new OutputChannel(id);
-			channel.setLineInfo(lineInfo);
-			channels.add(channel);
-			log.info("New Output Channel [" + id + "]");
-			log.info(" LineInfo [" + lineInfo + "]");
-			id++;
+		for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo()) {
+			Mixer mixer = AudioSystem.getMixer(mixerInfo);
+			if(mixer.getClass().getName().equals("com.sun.media.sound.DirectAudioDevice")){
+				for (Line.Info lineInfo : mixer.getTargetLineInfo(this.getTargetLineInfo())) {
+					InputChannel channel = new InputChannel(id);
+					channel.setLineInfo(lineInfo);
+					channels.add(channel);
+					log.info("New Input Channel [" + id + "]");
+					log.info(" MixerInfo [" + mixerInfo.getDescription() + "][" + mixerInfo.getName() + "]");
+					log.info(" LineInfo [" + lineInfo + "]");
+					id++;
+				}
+				for (Line.Info lineInfo : mixer.getSourceLineInfo(this.getSourceLineInfo())) {
+					OutputChannel channel = new OutputChannel(id);
+					channel.setLineInfo(lineInfo);
+					channels.add(channel);
+					log.info("New Output Channel [" + id + "]");
+					log.info(" MixerInfo [" + mixerInfo.getDescription() + "][" + mixerInfo.getName() + "]");
+					log.info(" LineInfo [" + lineInfo + "]");
+					id++;
+				}
+			}
 		}
 		return channels;
 	}

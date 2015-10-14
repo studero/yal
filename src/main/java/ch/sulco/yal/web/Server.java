@@ -11,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spark.Spark;
-import ch.sulco.yal.PostConstructModule;
-import ch.sulco.yal.SimulationYalModule;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.event.Event;
@@ -20,8 +18,6 @@ import ch.sulco.yal.event.EventListener;
 import ch.sulco.yal.event.EventManager;
 
 import com.google.gson.Gson;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 
 @Singleton
 public class Server implements EventListener {
@@ -142,10 +138,5 @@ public class Server implements EventListener {
 	@Override
 	public void onEvent(Event event) {
 		UpdatesWebSocket.getInstance().send(this.gson.toJson(event));
-	}
-
-	public static void main(String[] args) {
-		Injector injector = Guice.createInjector(new SimulationYalModule(), new PostConstructModule());
-		Server server = injector.getInstance(Server.class);
 	}
 }

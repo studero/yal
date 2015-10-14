@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.controller.MidiControl;
 import ch.sulco.yal.dm.Channel;
-import ch.sulco.yal.dm.Loop;
-import ch.sulco.yal.dm.LoopState;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
@@ -47,11 +45,7 @@ public class Application {
 
 	public void start() {
 		log.info("Start Application");
-		Loop loop = new Loop();
-		loop.setId(0L);
-		loop.setActive(true);
-		loop.setLoopState(LoopState.STOPPED);
-		this.dataStore.addLoop(loop);
+		this.dataStore.setup();
 		for (Channel channel : this.audioSystemProvider.getChannels()) {
 			this.dataStore.addChannel(channel);
 			this.eventManager.createChannel(channel);
@@ -62,7 +56,17 @@ public class Application {
 		return this.audioProcessor;
 	}
 
-	public static Injector injector = Guice.createInjector(new YalModule(), new PostConstructModule());
+	public static Injector injector;
+
+	static {
+		boolean simulation = Boolean.getBoolean("simulation");
+		if (simulation) {
+			log.info("Running as simulation");
+			injector = Guice.createInjector(new SimulationYalModule(), new PostConstructModule());
+		} else {
+			injector = Guice.createInjector(new YalModule(), new PostConstructModule());
+		}
+	}
 
 	public static void main(String[] args) {
 		Application application = injector.getInstance(Application.class);

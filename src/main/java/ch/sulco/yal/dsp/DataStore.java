@@ -7,8 +7,12 @@ import java.util.Objects;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.Loop;
+import ch.sulco.yal.dm.LoopState;
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.event.EventManager;
 
@@ -17,12 +21,22 @@ import com.google.common.collect.FluentIterable;
 
 @Singleton
 public class DataStore {
+	private final static Logger log = LoggerFactory.getLogger(DataStore.class);
 
 	@Inject
 	private EventManager eventManager;
 
 	private List<Loop> loops = new ArrayList<>();
 	private List<Channel> channels = new ArrayList<>();
+
+	public void setup() {
+		log.info("Setup");
+		Loop loop = new Loop();
+		loop.setId(0L);
+		loop.setActive(true);
+		loop.setLoopState(LoopState.STOPPED);
+		this.addLoop(loop);
+	}
 
 	public List<Loop> getLoops() {
 		return this.loops;

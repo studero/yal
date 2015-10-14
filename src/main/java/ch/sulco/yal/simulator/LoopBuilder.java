@@ -22,6 +22,11 @@ public class LoopBuilder {
 		return this;
 	}
 
+	public LoopBuilder active(boolean active) {
+		this.instance.setActive(active);
+		return this;
+	}
+
 	public LoopBuilder sample(Sample sample) {
 		this.instance.getSamples().add(sample);
 		return this;

@@ -130,10 +130,8 @@ public class Processor implements EventListener {
 				} else {
 					firstPlayer.get().startSample(sample, true);
 				}
-				Sample s = new Sample();
-				s.setId(sampleId);
-				s.setMute(mute);
-				this.eventManager.updateSample(s);
+				sample.setMute(mute);
+				this.eventManager.updateSample(sample);
 			}
 		}
 	}

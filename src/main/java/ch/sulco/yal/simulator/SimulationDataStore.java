@@ -23,7 +23,7 @@ public class SimulationDataStore extends DataStore {
 		this.addLoop(aLoop()
 				.id(0L)
 				.name("Chorus")
-				.length(5423L)
+				.length(5423120L)
 				.active(true)
 				.sample(aSample().id(0L).channelId(1L).build())
 				.sample(aSample().id(1L).channelId(2L).build())
@@ -34,14 +34,14 @@ public class SimulationDataStore extends DataStore {
 		this.addLoop(aLoop()
 				.id(1L)
 				.name("Verse")
-				.length(7234L)
+				.length(7234650L)
 				.sample(aSample().id(2L).channelId(3L).build())
 				.build());
 
 		this.addLoop(aLoop()
 				.id(2L)
 				.name("Bridge")
-				.length(5345L)
+				.length(5345780L)
 				.sample(aSample().id(3L).channelId(0L).build())
 				.sample(aSample().id(5L).channelId(0L).build())
 				.build());

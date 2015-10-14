@@ -7,7 +7,7 @@ public class Loop {
 	private Long id;
 	private String name;
 	private List<Sample> samples = new ArrayList<>();
-	private Long length;
+	private Long length = 0L;
 	private boolean active;
 	private LoopState loopState;
 
@@ -34,8 +34,8 @@ public class Loop {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	public Long getNumSamples(){
+
+	public Long getNumSamples() {
 		return Long.valueOf(this.samples.size());
 	}
 
@@ -60,7 +60,7 @@ public class Loop {
 	}
 
 	public LoopState getLoopState() {
-		return loopState;
+		return this.loopState;
 	}
 
 	public void setLoopState(LoopState loopState) {

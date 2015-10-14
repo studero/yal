@@ -1,6 +1,8 @@
 var app = angular.module('yalApp', []).filter('timeformat', function() {
-    //Returns duration from milliseconds in hh:mm:ss.sss format.
-      return function(milliseconds) {
+    //Returns duration from microseconds in hh:mm:ss.sss format.
+      return function(microseconds) {
+        var ms = 1000;
+        var milliseconds = microseconds / ms;
         var s = 1000;
         var seconds = Math.floor(milliseconds / s);
         var h = 3600;
@@ -8,7 +10,7 @@ var app = angular.module('yalApp', []).filter('timeformat', function() {
         var hours = Math.floor(seconds/h);
         var minutes = Math.floor( (seconds % h)/m );
         var seconds = Math.floor( (seconds % m) );
-        var millis = milliseconds - (seconds * s) - (minutes * s * m) - (hours * s * m * h);
+        var millis = Math.floor(milliseconds - (seconds * s) - (minutes * s * m) - (hours * s * m * h));
         var timeString = '';
         if(millis < 10) millis = "00"+millis;
         else if(millis < 100) millis = "0"+millis;

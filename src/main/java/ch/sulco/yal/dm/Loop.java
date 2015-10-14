@@ -1,6 +1,7 @@
 package ch.sulco.yal.dm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Loop {
@@ -65,5 +66,18 @@ public class Loop {
 
 	public void setLoopState(LoopState loopState) {
 		this.loopState = loopState;
+	}
+	
+	public void createClickTrack(int bars, int beats) {
+		byte[] clickBytes = new byte[this.length.intValue()];
+		Arrays.fill(clickBytes, (byte) 0);
+		int bytesPerBeat = this.length.intValue()/(bars*beats);
+		for(int beat=0; beat<bars*beats; beat++){
+			if(beat%beats == 0){
+				Arrays.fill(clickBytes, beat*bytesPerBeat, beat*bytesPerBeat+100, (byte) 80);
+			}else{
+				Arrays.fill(clickBytes, beat*bytesPerBeat, beat*bytesPerBeat+100, (byte) 20);
+			}
+		}
 	}
 }

@@ -40,6 +40,11 @@ public class EventManager {
 		this.addEvent(new LoopUpdated(loop));
 	}
 
+	public void startLoop() {
+		this.addEvent(new LoopStarted());
+		
+	}
+
 	public void createSample(Sample sample) {
 		this.addEvent(new SampleCreated(sample));
 	}

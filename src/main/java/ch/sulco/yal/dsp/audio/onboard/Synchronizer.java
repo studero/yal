@@ -6,6 +6,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sound.sampled.LineListener;
 
@@ -14,8 +15,14 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Stopwatch;
 
+import ch.sulco.yal.event.EventManager;
+
 @Singleton
 public class Synchronizer {
+	
+	@Inject
+	private EventManager eventManager;
+	
 	private final static Logger log = LoggerFactory.getLogger(Synchronizer.class);
 
 	private LineListener lineListener;
@@ -60,6 +67,7 @@ public class Synchronizer {
 			synchronizeTimer = null;
 			log.info("Synchronization loop ended");
 		}else{
+			eventManager.startLoop();
 			Stopwatch stopwatch = Stopwatch.createStarted();
 			int count = 0;
 			long halfLoopLength = getLoopLength() / 2;

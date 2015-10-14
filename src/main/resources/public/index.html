@@ -46,29 +46,28 @@
 					<h4><span class="glyphicon glyphicon-plus"></span></h4>
 				</div>
 			</div>
-			<div class="row channels">
-				<div ng-repeat="(key, value) in channels | filter:{direction: 'IN'}" class="col-xs-12 channel">				
-					<div class="panel panel-default col-xs-2">
-						<button ng-click="record(value.id, true)" class="btn btn-primary btn-xs" ng-show="value.recordingState == 'STOPPED'">
-							<span class="glyphicon glyphicon-record"></span>
-						</button> 
-						<button ng-click="record(value.id, false)" class="btn btn-primary btn-xs" ng-show="value.recordingState == 'RECORDING' || value.recordingState == 'WAITING'">
-							<span class="glyphicon glyphicon-stop"></span>
-						</button>
-						<span class="channel-name">{{value.id}} - {{value.name}}</span>
-					</div>
-					<div ng-repeat="(loopKey, loopValue) in loops" class="col-xs-2">
-						<div ng-repeat="(sampleKey, sampleValue) in loopValue.samples | filter:{channelId: value.id}" class="col-xs-12 sample">
-							<div class="panel panel-default sample">
-								<span class="sample-name">{{sampleValue.id}}</span>
-								<button ng-click="sampleMute(sampleValue.id, true)" class="btn btn-primary btn-xs" ng-show="sampleValue.mute == false">
-									<span class="glyphicon glyphicon-volume-up"></span>
-								</button>
-								<button ng-click="sampleMute(sampleValue.id, false)" class="btn btn-primary btn-xs" ng-show="sampleValue.mute == true">
-									<span class="glyphicon glyphicon-volume-off"></span>
-								</button>
-							</div>	
-						</div>
+			
+			<div ng-repeat="(key, value) in channels | filter:{direction: 'IN'}" class="col-xs-12 channel">				
+				<div class="panel panel-default col-xs-2">
+					<button ng-click="record(value.id, true)" class="btn btn-primary btn-xs" ng-show="value.recordingState == 'STOPPED'">
+						<span class="glyphicon glyphicon-record"></span>
+					</button> 
+					<button ng-click="record(value.id, false)" class="btn btn-primary btn-xs" ng-show="value.recordingState == 'RECORDING' || value.recordingState == 'WAITING'">
+						<span class="glyphicon glyphicon-stop"></span>
+					</button>
+					<span class="channel-name">{{value.id}} - {{value.name}}</span>
+				</div>
+				<div ng-repeat="(loopKey, loopValue) in loops" class="col-xs-2">
+					<div ng-repeat="(sampleKey, sampleValue) in loopValue.samples | filter:{channelId: value.id}" class="col-xs-12 sample">
+						<div class="panel panel-default sample">
+							<span class="sample-name">{{sampleValue.id}}</span>
+							<button ng-click="sampleMute(sampleValue.id, true)" class="btn btn-primary btn-xs" ng-show="sampleValue.mute == false">
+								<span class="glyphicon glyphicon-volume-up"></span>
+							</button>
+							<button ng-click="sampleMute(sampleValue.id, false)" class="btn btn-primary btn-xs" ng-show="sampleValue.mute == true">
+								<span class="glyphicon glyphicon-volume-off"></span>
+							</button>
+						</div>	
 					</div>
 				</div>
 			</div>

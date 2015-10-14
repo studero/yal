@@ -37,7 +37,7 @@ public class Synchronizer {
 	public void checkLine() {
 		if(this.lineListener == null) {
 			if(synchronizeTimer == null ){
-				startTimer(loopLength);
+				synchronizeEvent();
 				log.info("Synchronization loop started");
 			}
 			log.info("Synchronization loop event set up "+synchronizeTimer.getDelay(TimeUnit.MICROSECONDS));

@@ -34,19 +34,20 @@
 			</button>
 		</div>
 		
-		<div class="panel panel-default col-xs-12">
+		<div class="panel panel-default col-xs-12 title">
 			<div class="panel panel-default col-xs-2"><h4>Input</h4></div>
 			<div ng-repeat="(key, value) in loops" class="panel panel-default col-xs-2">	
 				<div ng-click="activateLoop(value.id, true)">
 					<h4>{{value.id}} - {{value.name}}</h4>
 				</div>
 			</div>
-			<div class="panel panel-default col-xs-x title">
-				<div ng-click="createNewLoop()">
-					<h4><span class="glyphicon glyphicon-plus"></span></h4>
-				</div>
+			<div class="panel panel-default col-xs-x">
+				<button ng-click="createNewLoop()" class="btn btn-primary btn-xs">
+					<span class="glyphicon glyphicon-plus"></span>
+				</button>
 			</div>
-			
+		</div>
+		<div class="panel panel-default col-xs-12">
 			<div ng-repeat="(key, value) in channels | filter:{direction: 'IN'}" class="col-xs-12 channel">				
 				<div class="panel panel-default col-xs-2">
 					<button ng-click="record(value.id, true)" class="btn btn-primary btn-xs" ng-show="value.recordingState == 'STOPPED'">

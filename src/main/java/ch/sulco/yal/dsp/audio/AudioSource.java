@@ -90,12 +90,17 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 			sample.setMute(false);
 			sample.setData(this.recordedSample);
 			sample.setChannelId(this.inputChannel.getId());
+			if(this.dataStore.getCurrentLoop().getSamples().isEmpty()){
+				synchronizer.initialize(getSampleLength(sample));
+			}
 			this.dataStore.getCurrentLoop().getSamples().add(sample);
 			this.eventManager.createSample(sample);
 			this.recordedSample = null;
 			this.recordingSample = null;
 		}
 	}
+	
+	protected abstract long getSampleLength(Sample sample);
 
 	public boolean isMonitoring() {
 		return this.inputChannel.isMonitoring();

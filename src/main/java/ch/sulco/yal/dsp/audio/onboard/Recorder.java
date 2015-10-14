@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.AppConfig;
 import ch.sulco.yal.dm.RecordingState;
+import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.audio.AudioSource;
 
 public class Recorder extends AudioSource {
@@ -28,6 +30,17 @@ public class Recorder extends AudioSource {
 	@Override
 	public void initialize() {
 		super.initialize();
+	}
+
+	@Override
+	protected long getSampleLength(Sample sample) {
+		try {
+			Clip clip = this.audioSystemProvider.getClip(null, sample.getData(), 0, sample.getData().length);
+			return clip.getMicrosecondLength();
+		} catch (LineUnavailableException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 
 	@Override

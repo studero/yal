@@ -59,7 +59,7 @@ public abstract class AudioSink implements LoopListener {
 
 	@Override
 	public long[] loopStarted(boolean firstLoop) {
-		long halfLoopLength = synchronizer.getLoopLenght() / 2;
+		long halfLoopLength = synchronizer.getLoopLength() / 2;
 		long position[] = {halfLoopLength,0,-halfLoopLength};
 		for (Sample sample : this.playingSamples) {
 			long samplePosition = this.getSamplePosition(sample);
@@ -67,7 +67,7 @@ public abstract class AudioSink implements LoopListener {
 				this.playSample(sample, 0, -1);
 			}else{
 				samplePosition += halfLoopLength;
-				samplePosition = samplePosition % synchronizer.getLoopLenght();
+				samplePosition = samplePosition % synchronizer.getLoopLength();
 				samplePosition -= halfLoopLength;
 				if(samplePosition < position[0]){
 					position[0] = samplePosition;

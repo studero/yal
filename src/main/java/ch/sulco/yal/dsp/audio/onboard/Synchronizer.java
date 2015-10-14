@@ -1,34 +1,22 @@
 package ch.sulco.yal.dsp.audio.onboard;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineListener;
-import javax.sound.sampled.LineUnavailableException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Stopwatch;
 
-import ch.sulco.yal.AppConfig;
-
 @Singleton
 public class Synchronizer {
 	private final static Logger log = LoggerFactory.getLogger(Synchronizer.class);
-
-	@Inject
-	private AppConfig appConfig;
-
-	@Inject
-	private AudioSystemProvider audioSystemProvider;
 
 	private LineListener lineListener;
 	private LinkedList<LoopListener> loopListeners = new LinkedList<LoopListener>();
@@ -36,16 +24,9 @@ public class Synchronizer {
 	private ScheduledExecutorService synchronizeService = Executors.newSingleThreadScheduledExecutor();
 	private ScheduledFuture<?> synchronizeTimer;
 
-	public void initialize(int length) {
-		try {
-			byte[] data = new byte[length];
-			Arrays.fill(data, 0, length, (byte) 0x00);
-			Clip synchronizeClip = this.audioSystemProvider.getClip(appConfig.getAudioFormat(), data, 0, length);
-			loopLength = synchronizeClip.getMicrosecondLength();
-			log.info("Synchronizer loop initialized, length " + length+" "+loopLength);
-		} catch (LineUnavailableException e) {
-			e.printStackTrace();
-		}
+	public void initialize(long length) {
+		loopLength = length;
+		log.info("Synchronizer loop initialized, length to "+loopLength);
 	}
 
 	public void reset() {
@@ -81,7 +62,7 @@ public class Synchronizer {
 		}else{
 			Stopwatch stopwatch = Stopwatch.createStarted();
 			int count = 0;
-			long halfLoopLength = getLoopLenght() / 2;
+			long halfLoopLength = getLoopLength() / 2;
 			long position[] = {halfLoopLength,0,-halfLoopLength};
 			for (LoopListener loopListener : loopListeners) {
 				long loopPosition[] = loopListener.loopStarted(false);
@@ -130,7 +111,7 @@ public class Synchronizer {
 		return 0;
 	}
 	
-	public long getLoopLenght(){
+	public long getLoopLength(){
 		return loopLength;
 	}
 }

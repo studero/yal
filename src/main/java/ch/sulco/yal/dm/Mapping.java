@@ -1,12 +1,14 @@
 package ch.sulco.yal.dm;
 
+import java.util.LinkedList;
 import java.util.Map;
 
 public class Mapping {
 	private String source;
 	private Map<String, Object> triggerValueMap;
-	private Map<String, String> valueMap;
+	private Map<String, String> valueExpressionMap;
 	private String processorMethod;
+	private LinkedList<MappingMethodArgument> processorMethodArguments;
 
 	public String getSource() {
 		return this.source;
@@ -14,14 +16,6 @@ public class Mapping {
 
 	public void setSource(String source) {
 		this.source = source;
-	}
-
-	public Map<String, String> getValueMap() {
-		return this.valueMap;
-	}
-
-	public void setValueMap(Map<String, String> valueMap) {
-		this.valueMap = valueMap;
 	}
 
 	public String getProcessorMethod() {
@@ -33,10 +27,27 @@ public class Mapping {
 	}
 
 	public Map<String, Object> getTriggerValueMap() {
-		return triggerValueMap;
+		return this.triggerValueMap;
 	}
 
 	public void setTriggerValueMap(Map<String, Object> triggerValueMap) {
 		this.triggerValueMap = triggerValueMap;
 	}
+
+	public Map<String, String> getValueExpressionMap() {
+		return this.valueExpressionMap;
+	}
+
+	public void setValueExpressionMap(Map<String, String> valueExpressionMap) {
+		this.valueExpressionMap = valueExpressionMap;
+	}
+
+	public LinkedList<MappingMethodArgument> getProcessorMethodArguments() {
+		return this.processorMethodArguments;
+	}
+
+	public void setProcessorMethodArguments(LinkedList<MappingMethodArgument> processorMethodArguments) {
+		this.processorMethodArguments = processorMethodArguments;
+	}
+
 }

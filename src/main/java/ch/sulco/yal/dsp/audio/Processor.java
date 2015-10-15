@@ -90,7 +90,7 @@ public class Processor implements EventListener {
 			firstPlayer.get().startSample(this.dataStore.getCurrentLoopSample(0), true);
 	}
 
-	public void setChannelRecording(Long channelId, boolean recording) {
+	public void setChannelRecording(Long channelId, Boolean recording) {
 		if (recording) {
 			this.audioSources.get(channelId).startRecord();
 		} else {

@@ -1,8 +1,6 @@
 package ch.sulco.yal.controller;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -18,7 +16,6 @@ import javax.sound.midi.Transmitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.sulco.yal.dm.Mapping;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
 
@@ -32,6 +29,9 @@ public class MidiControl {
 
 	@Inject
 	private DataStore dataStore;
+
+	@Inject
+	private ControlHandler controlHandler;
 
 	@PostConstruct
 	public void setup() {
@@ -92,20 +92,7 @@ public class MidiControl {
 					+ ", data1=" + m.getData1()
 					+ ", data2=" + m.getData2()
 					+ ", length=" + m.getLength());
-			for (Mapping mapping : this.dataStore.getMappings()) {
-				if (Objects.equals(mapping.getTriggerValueMap().get("command"), m.getCommand())
-						&& Objects.equals(mapping.getTriggerValueMap().get("channel"), m.getChannel())
-						&& Objects.equals(mapping.getTriggerValueMap().get("data1"), m.getData1())
-						&& Objects.equals(mapping.getTriggerValueMap().get("data2"), m.getData2())) {
-					log.info("Trigger Mapping [" + mapping + "]");
-					try {
-						Processor.class.getMethod(mapping.getProcessorMethod()).invoke(this.audioProcessor);
-					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-							| SecurityException e) {
-						log.error("Unable to trigger processor method [" + mapping.getProcessorMethod() + "]", e);
-					}
-				}
-			}
+			this.controlHandler.handleMessage(m.getCommand(), m.getChannel(), m.getData1(), m.getData2());
 		}
 	}
 

@@ -52,8 +52,8 @@ public class DataStore {
 		channelRecordingMapping.getTriggerValueMap().put("channel", 0);
 		channelRecordingMapping.getTriggerValueMap().put("data1", 64);
 		channelRecordingMapping.setValueExpressionMap(new HashMap<>());
-		channelRecordingMapping.getValueExpressionMap().put("channelId", "#{data1} * 10");
-		channelRecordingMapping.getValueExpressionMap().put("recording", "#{data2} == 4");
+		channelRecordingMapping.getValueExpressionMap().put("channelId", "#{data1} - 74");
+		channelRecordingMapping.getValueExpressionMap().put("recording", "#{data2} > 0");
 		channelRecordingMapping.setProcessorMethod("setChannelRecording");
 		this.mappings.add(channelRecordingMapping);
 

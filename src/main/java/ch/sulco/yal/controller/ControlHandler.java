@@ -1,7 +1,9 @@
 package ch.sulco.yal.controller;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -36,10 +38,10 @@ public class ControlHandler {
 
 	public void handleMessage(int command, int channel, int data1, int data2) {
 		for (Mapping mapping : this.dataStore.getMappings()) {
-			if (Objects.equals(mapping.getTriggerValueMap().get("command"), command)
-					&& Objects.equals(mapping.getTriggerValueMap().get("channel"), channel)
-					&& Objects.equals(mapping.getTriggerValueMap().get("data1"), data1)
-					&& Objects.equals(mapping.getTriggerValueMap().get("data2"), data2)) {
+			if ((Objects.equals(mapping.getTriggerValueMap().get("command"), command) || mapping.getTriggerValueMap().get("command") == null)
+					&& (Objects.equals(mapping.getTriggerValueMap().get("channel"), channel) || mapping.getTriggerValueMap().get("channel") == null)
+					&& (Objects.equals(mapping.getTriggerValueMap().get("data1"), data1) || mapping.getTriggerValueMap().get("data1") == null)
+					&& (Objects.equals(mapping.getTriggerValueMap().get("data2"), data2) || mapping.getTriggerValueMap().get("data2") == null)) {
 				log.info("Trigger Mapping [" + mapping + "]");
 				try {
 					if (mapping.getProcessorMethodArguments() != null) {
@@ -54,14 +56,19 @@ public class ControlHandler {
 										}
 									}
 								}).toList();
+						Map<String, Object> values = new HashMap<>();
+						values.put("command", command);
+						values.put("channel", channel);
+						values.put("data1", data1);
+						values.put("data2", data2);
 						List<Object> argumentValues = FluentIterable.from(mapping.getProcessorMethodArguments())
 								.transform(new Function<MappingMethodArgument, Object>() {
 									@Override
 									public Object apply(MappingMethodArgument input) {
 										String expression = mapping.getValueExpressionMap().get(input.getName());
-										for (String key : mapping.getTriggerValueMap().keySet()) {
+										for (String key : values.keySet()) {
 											ControlHandler.this.evaluator
-													.putVariable(key, mapping.getTriggerValueMap().get(key).toString());
+													.putVariable(key, values.get(key).toString());
 										}
 										try {
 											String response = ControlHandler.this.evaluator.evaluate(expression);

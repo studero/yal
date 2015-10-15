@@ -1,6 +1,8 @@
 package ch.sulco.yal.controller;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -16,6 +18,8 @@ import javax.sound.midi.Transmitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.sulco.yal.dm.Mapping;
+import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
 
 @Singleton
@@ -25,6 +29,9 @@ public class MidiControl {
 
 	@Inject
 	private Processor audioProcessor;
+
+	@Inject
+	private DataStore dataStore;
 
 	@PostConstruct
 	public void setup() {
@@ -66,15 +73,67 @@ public class MidiControl {
 			} catch (MidiUnavailableException e) {
 			}
 		}
+
+		try {
+			this.sendMidiMessage(new ShortMessage(176, 0, 64, 0));
+			this.sendMidiMessage(new ShortMessage(176, 0, 64, 127));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void handleMidiMessage(MidiMessage message) {
 		if (message instanceof ShortMessage) {
 			ShortMessage m = (ShortMessage) message;
-			if (m.getData1() == 41)
-				this.audioProcessor.play();
-			if (m.getData1() == 42)
-				this.audioProcessor.loop();
+			log.info("new message channel=" + m.getChannel()
+					+ ", status=" + m.getStatus()
+					+ ", command=" + m.getCommand()
+					+ ", data1=" + m.getData1()
+					+ ", data2=" + m.getData2()
+					+ ", length=" + m.getLength());
+			for (Mapping mapping : this.dataStore.getMappings()) {
+				if (Objects.equals(mapping.getTriggerValueMap().get("command"), m.getCommand())
+						&& Objects.equals(mapping.getTriggerValueMap().get("channel"), m.getChannel())
+						&& Objects.equals(mapping.getTriggerValueMap().get("data1"), m.getData1())
+						&& Objects.equals(mapping.getTriggerValueMap().get("data2"), m.getData2())) {
+					log.info("Trigger Mapping [" + mapping + "]");
+					try {
+						Processor.class.getMethod(mapping.getProcessorMethod()).invoke(this.audioProcessor);
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+							| SecurityException e) {
+						log.error("Unable to trigger processor method [" + mapping.getProcessorMethod() + "]", e);
+					}
+				}
+			}
+		}
+	}
+
+	private void sendMidiMessage(MidiMessage message) {
+		ShortMessage m = (ShortMessage) message;
+		log.info("send message channel=" + m.getChannel()
+				+ ", status=" + m.getStatus()
+				+ ", command=" + m.getCommand()
+				+ ", data1=" + m.getData1()
+				+ ", data2=" + m.getData2()
+				+ ", length=" + m.getLength());
+		MidiDevice device;
+		MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
+		for (int i = 0; i < infos.length; i++) {
+			try {
+				device = MidiSystem.getMidiDevice(infos[i]);
+				log.info("Device: " + infos[i]);
+				List<Receiver> receivers = device.getReceivers();
+				for (int j = 0; j < receivers.size(); j++) {
+					receivers.get(j).send(message, System.currentTimeMillis());
+				}
+
+				device.open();
+				Receiver receiver = device.getReceiver();
+				receiver.send(message, System.currentTimeMillis());
+
+			} catch (MidiUnavailableException e) {
+			}
 		}
 	}
 }

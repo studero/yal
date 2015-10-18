@@ -63,10 +63,14 @@ public class Sample {
 		if(player != null){
 			if(mute && players.contains(player)){
 				players.remove(player);
-				player.stopSample(this, doSynchronization);
+				if(loop.isActive()){
+					player.stopSample(this, doSynchronization);
+				}
 			}else if(!mute && !players.contains(player)){
 				players.add(player);
-				player.startSample(this, doSynchronization);
+				if(loop.isActive()){
+					player.startSample(this, doSynchronization);
+				}
 			}
 		}
 	}

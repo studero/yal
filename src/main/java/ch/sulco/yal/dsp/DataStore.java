@@ -137,11 +137,13 @@ public class DataStore {
 	public void setCurrentLoopId(Long currentLoopId) {
 		Loop before = this.getCurrentLoop();
 		Loop after = this.getLoop(currentLoopId);
-		if (before != null)
+		if (before != null){
 			before.setActive(false);
+		}
 		after.setActive(true);
-		if (before != null)
+		if (before != null){
 			this.eventManager.updateLoop(before);
+		}
 		this.eventManager.updateLoop(after);
 	}
 

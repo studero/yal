@@ -1,6 +1,6 @@
 package ch.sulco.yal.dm;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import ch.sulco.yal.dsp.audio.AudioSink;
@@ -11,7 +11,7 @@ public class Sample {
 	private String description;
 	private Float gain;
 	private Long channelId;
-	private List<AudioSink> players = new ArrayList<>();
+	private List<AudioSink> players = new LinkedList<>();
 
 	private transient byte[] data;
 
@@ -69,6 +69,10 @@ public class Sample {
 				player.startSample(this, doSynchronization);
 			}
 		}
+	}
+	
+	public List<AudioSink> getPlayers(){
+		return players;
 	}
 
 	public Long getChannelId() {

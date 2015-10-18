@@ -129,6 +129,11 @@ public class Processor implements EventListener {
 			setSampleMute(this.dataStore.getCurrentLoop().getId(), sampleId, firstPlayer.get(), mute);
 		}
 	}
+	
+	public void setSampleMute(Long loopId, Long sampleId, Long playerId, boolean mute) {
+		AudioSink player = audioSinks.get(playerId);
+		setSampleMute(loopId, sampleId, player, mute);
+	}
 
 	public void setSampleMute(Long loopId, Long sampleId, AudioSink player, boolean mute) {
 		if(player != null){

@@ -54,6 +54,7 @@ public class Loop {
 
 	public void addSample(Sample sample) {
 		this.samples.add(sample);
+		sample.setLoop(this);
 	}
 
 	public List<Sample> getSamples() {

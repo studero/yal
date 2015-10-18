@@ -19,11 +19,6 @@ public class SampleBuilder {
 		return this;
 	}
 
-	public SampleBuilder mute(boolean mute) {
-		this.instance.setMute(mute);
-		return this;
-	}
-
 	public Sample build() {
 		return this.instance;
 	}

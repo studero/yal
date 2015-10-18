@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
+
 public class Loop {
 	private Long id;
 	private String name;
@@ -47,6 +50,15 @@ public class Loop {
 
 	public List<Sample> getSamples() {
 		return this.samples;
+	}	
+	
+	public Sample getSample(long sampleId) {
+		return FluentIterable.from(this.samples).firstMatch(new Predicate<Sample>() {
+			@Override
+			public boolean apply(Sample input) {
+				return input.getId() == sampleId;
+			}
+		}).orNull();
 	}
 
 	public Long getTimeLength() {

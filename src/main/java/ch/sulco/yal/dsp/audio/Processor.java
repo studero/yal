@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import ch.sulco.yal.Application;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.InputChannel;
+import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dm.LoopState;
 import ch.sulco.yal.dm.OutputChannel;
 import ch.sulco.yal.dm.RecordingState;
@@ -121,19 +122,23 @@ public class Processor implements EventListener {
 	public void setChannelMonitoring(Long channelId, boolean monitoring) {
 		this.audioSources.get(channelId).setMonitoring(monitoring);
 	}
-
+	
 	public void setSampleMute(Long sampleId, boolean mute) {
 		Optional<AudioSink> firstPlayer = FluentIterable.from(this.audioSinks.values()).first();
 		if (firstPlayer.isPresent()) {
-			Sample sample = this.dataStore.getCurrentLoopSample(sampleId);
-			if (sample != null) {
-				if (mute) {
-					firstPlayer.get().stopSample(sample, true);
-				} else {
-					firstPlayer.get().startSample(sample, true);
+			setSampleMute(this.dataStore.getCurrentLoop().getId(), sampleId, firstPlayer.get(), mute);
+		}
+	}
+
+	public void setSampleMute(Long loopId, Long sampleId, AudioSink player, boolean mute) {
+		if(player != null){
+			Loop loop = this.dataStore.getLoop(loopId);
+			if(loop != null){
+				Sample sample = loop.getSample(sampleId);
+				if (sample != null) {
+					sample.setMute(mute, player, true);
+					this.eventManager.updateSample(sample);
 				}
-				sample.setMute(mute);
-				this.eventManager.updateSample(sample);
 			}
 		}
 	}

@@ -12,6 +12,10 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
+
+import ch.sulco.yal.Application;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dm.LoopState;
@@ -19,9 +23,6 @@ import ch.sulco.yal.dm.Mapping;
 import ch.sulco.yal.dm.MappingMethodArgument;
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.event.EventManager;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.FluentIterable;
 
 @Singleton
 public class DataStore {
@@ -36,7 +37,8 @@ public class DataStore {
 
 	public void setup() {
 		log.info("Setup");
-		Loop loop = new Loop();
+		Loop loop = Application.injector.getInstance(Loop.class);
+//		Loop loop = new Loop();
 		loop.setId(0L);
 		loop.setActive(true);
 		loop.setLoopState(LoopState.STOPPED);

@@ -11,10 +11,14 @@ import com.google.common.collect.FluentIterable;
 
 import ch.sulco.yal.dsp.audio.AudioSink;
 import ch.sulco.yal.dsp.audio.onboard.Synchronizer;
+import ch.sulco.yal.event.EventManager;
 
 public class Loop {
 	@Inject
-	private Synchronizer synchronizer;
+	private transient Synchronizer synchronizer;
+
+	@Inject
+	private transient EventManager eventManager;
 	
 	private Long id;
 	private String name;
@@ -51,10 +55,25 @@ public class Loop {
 	public Long getNumSamples() {
 		return Long.valueOf(this.samples.size());
 	}
-
+	
 	public void addSample(Sample sample) {
-		this.samples.add(sample);
+		addSample(sample, false);
+	}
+
+	private void addSample(Sample sample, boolean addToFront) {
 		sample.setLoop(this);
+		if(addToFront){
+			this.samples.add(0, sample);
+		}else{
+			this.samples.add(sample);
+		}
+		if(this.samples.size() == 1){
+			sample.setId(1L);
+			//TODO define click track bars and beats somewhere
+			createClickTrack(1, 4);
+		}
+		this.eventManager.createSample(sample);
+		this.eventManager.updateLoop(this);
 	}
 
 	public List<Sample> getSamples() {
@@ -115,9 +134,9 @@ public class Loop {
 	}
 	
 	public void createClickTrack(int bars, int beats) {
-		byte[] clickBytes = new byte[this.timeLength.intValue()];
+		byte[] clickBytes = new byte[this.dataLength];
 		Arrays.fill(clickBytes, (byte) 0);
-		int bytesPerBeat = this.timeLength.intValue()/(bars*beats);
+		int bytesPerBeat = this.dataLength/(bars*beats);
 		for(int beat=0; beat<bars*beats; beat++){
 			if(beat%beats == 0){
 				Arrays.fill(clickBytes, beat*bytesPerBeat, beat*bytesPerBeat+100, (byte) 80);
@@ -125,5 +144,10 @@ public class Loop {
 				Arrays.fill(clickBytes, beat*bytesPerBeat, beat*bytesPerBeat+100, (byte) 20);
 			}
 		}
+		Sample clickSample = new Sample();
+		clickSample.setId(SpecialSample.CLICK.getId());
+		clickSample.setChannelId(this.samples.get(0).getChannelId());
+		clickSample.setData(clickBytes);
+		addSample(clickSample, true);
 	}
 }

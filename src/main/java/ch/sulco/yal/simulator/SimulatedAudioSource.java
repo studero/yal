@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.AppConfig;
 import ch.sulco.yal.dm.RecordingState;
-import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.audio.AudioSource;
 
 public class SimulatedAudioSource extends AudioSource {
@@ -21,7 +20,7 @@ public class SimulatedAudioSource extends AudioSource {
 	private int dataSize;
 
 	@Override
-	protected long getSampleLength(Sample sample) {
+	protected long getSampleLength() {
 		// TODO Auto-generated method stub
 		return 0;
 	}

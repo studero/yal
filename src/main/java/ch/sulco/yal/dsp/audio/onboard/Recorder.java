@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.AppConfig;
 import ch.sulco.yal.dm.RecordingState;
-import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.audio.AudioSource;
 
 public class Recorder extends AudioSource {
@@ -33,9 +32,9 @@ public class Recorder extends AudioSource {
 	}
 
 	@Override
-	protected long getSampleLength(Sample sample) {
+	protected long getSampleLength() {
 		try {
-			Clip clip = this.audioSystemProvider.getClip(null, sample.getData(), 0, sample.getData().length);
+			Clip clip = this.audioSystemProvider.getClip(null, getRecordedSample(), 0, getRecordedSample().length);
 			return clip.getMicrosecondLength();
 		} catch (LineUnavailableException e) {
 			e.printStackTrace();

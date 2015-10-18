@@ -53,6 +53,10 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 	protected InputChannel getInputChannel() {
 		return this.inputChannel;
 	}
+	
+	protected byte[] getRecordedSample(){
+		return this.recordedSample;
+	}
 
 	public void initialize() {
 		this.addAudioDataListener(this);
@@ -92,7 +96,7 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 			sample.setId(currentLoop.getNumSamples());
 			sample.setChannelId(this.inputChannel.getId());
 			if (currentLoop.getSamples().isEmpty()) {
-				long sampleLength = this.getSampleLength(sample);
+				long sampleLength = this.getSampleLength();
 				this.synchronizer.initialize(sampleLength);
 				currentLoop.setTimeLength(sampleLength);
 				currentLoop.setDataLength(this.recordedSample.length);
@@ -109,7 +113,7 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 		}
 	}
 
-	protected abstract long getSampleLength(Sample sample);
+	protected abstract long getSampleLength();
 
 	public boolean isMonitoring() {
 		return this.inputChannel.isMonitoring();

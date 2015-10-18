@@ -1,9 +1,9 @@
 package ch.sulco.yal.dm;
 
 public class Sample {
+	private Loop loop;
 	private Long id;
 	private String description;
-	private Long length;
 	private Float gain;
 	private boolean mute;
 	private Long channelId;
@@ -34,12 +34,12 @@ public class Sample {
 		this.description = description;
 	}
 
-	public Long getLength() {
-		return this.length;
+	public Loop getLoop() {
+		return this.loop;
 	}
 
-	public void setLength(Long length) {
-		this.length = length;
+	public void setLoop(Loop loop) {
+		this.loop = loop;
 	}
 
 	public Float getGain() {

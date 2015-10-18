@@ -2,6 +2,7 @@ package ch.sulco.yal.dsp.audio;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.dm.InputChannel;
+import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dm.RecordingState;
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.DataStore;
@@ -85,18 +87,22 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 			this.recordedSample = this.recordingSample.toByteArray();
 		}
 		if (this.recordedSample != null) {
-
+			Loop currentLoop = this.dataStore.getCurrentLoop();
 			Sample sample = new Sample();
-			sample.setId(this.dataStore.getCurrentLoop().getNumSamples());
+			sample.setId(currentLoop.getNumSamples());
 			sample.setMute(false);
-			sample.setData(this.recordedSample);
 			sample.setChannelId(this.inputChannel.getId());
-			if (this.dataStore.getCurrentLoop().getSamples().isEmpty()) {
+			if (currentLoop.getSamples().isEmpty()) {
 				long sampleLength = this.getSampleLength(sample);
 				this.synchronizer.initialize(sampleLength);
-				this.dataStore.getCurrentLoop().setLength(sampleLength);
+				currentLoop.setTimeLength(sampleLength);
+				currentLoop.setDataLength(this.recordedSample.length);
+				sample.setData(this.recordedSample);
+			}else{
+				byte[] adaptedData = Arrays.copyOf(this.recordedSample, currentLoop.getDataLength());
+				sample.setData(adaptedData);
 			}
-			this.dataStore.getCurrentLoop().getSamples().add(sample);
+			currentLoop.getSamples().add(sample);
 			this.eventManager.createSample(sample);
 			this.eventManager.updateLoop(this.dataStore.getCurrentLoop());
 			this.recordedSample = null;

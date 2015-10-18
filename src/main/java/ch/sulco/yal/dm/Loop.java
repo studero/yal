@@ -8,7 +8,8 @@ public class Loop {
 	private Long id;
 	private String name;
 	private List<Sample> samples = new ArrayList<>();
-	private Long length = 0L;
+	private Long timeLength = 0L;
+	private int dataLength = 0;
 	private boolean active;
 	private LoopState loopState;
 
@@ -40,16 +41,28 @@ public class Loop {
 		return Long.valueOf(this.samples.size());
 	}
 
+	public void addSample(Sample sample) {
+		this.samples.add(sample);
+	}
+
 	public List<Sample> getSamples() {
 		return this.samples;
 	}
 
-	public Long getLength() {
-		return this.length;
+	public Long getTimeLength() {
+		return this.timeLength;
 	}
 
-	public void setLength(Long length) {
-		this.length = length;
+	public void setTimeLength(Long timeLength) {
+		this.timeLength = timeLength;
+	}
+
+	public int getDataLength() {
+		return this.dataLength;
+	}
+
+	public void setDataLength(int dataLength) {
+		this.dataLength = dataLength;
 	}
 
 	public boolean isActive() {
@@ -69,9 +82,9 @@ public class Loop {
 	}
 	
 	public void createClickTrack(int bars, int beats) {
-		byte[] clickBytes = new byte[this.length.intValue()];
+		byte[] clickBytes = new byte[this.timeLength.intValue()];
 		Arrays.fill(clickBytes, (byte) 0);
-		int bytesPerBeat = this.length.intValue()/(bars*beats);
+		int bytesPerBeat = this.timeLength.intValue()/(bars*beats);
 		for(int beat=0; beat<bars*beats; beat++){
 			if(beat%beats == 0){
 				Arrays.fill(clickBytes, beat*bytesPerBeat, beat*bytesPerBeat+100, (byte) 80);

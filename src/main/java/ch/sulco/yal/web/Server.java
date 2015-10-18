@@ -85,7 +85,7 @@ public class Server implements EventListener {
 	}
 
 	private String getLoopLength() {
-		return this.dataStore.getCurrentLoop().getLength().toString();
+		return this.dataStore.getCurrentLoop().getTimeLength().toString();
 	}
 
 	private String setRecord(Long channelId, boolean enabled) {

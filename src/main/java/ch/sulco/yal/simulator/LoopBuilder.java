@@ -23,7 +23,7 @@ public class LoopBuilder {
 	}
 
 	public LoopBuilder length(Long length) {
-		this.instance.setLength(length);
+		this.instance.setTimeLength(length);
 		return this;
 	}
 

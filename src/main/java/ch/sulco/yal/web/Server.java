@@ -111,7 +111,7 @@ public class Server implements EventListener {
 	}
 
 	private String setVolume(Long sampleId, float volume) {
-		this.audioProcessor.setSampleVolume(sampleId, volume);
+		this.dataStore.getCurrentLoopSample(sampleId).setGain(volume);
 		return "Success";
 	}
 

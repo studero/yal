@@ -11,6 +11,10 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.collect.FluentIterable;
+
 import ch.sulco.yal.Application;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.InputChannel;
@@ -24,10 +28,6 @@ import ch.sulco.yal.event.ChannelCreated;
 import ch.sulco.yal.event.Event;
 import ch.sulco.yal.event.EventListener;
 import ch.sulco.yal.event.EventManager;
-
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.collect.FluentIterable;
 
 @Singleton
 public class Processor implements EventListener {
@@ -87,9 +87,9 @@ public class Processor implements EventListener {
 
 		log.info("Start Sample");
 		Optional<AudioSink> firstPlayer = FluentIterable.from(this.audioSinks.values()).first();
-		if (firstPlayer.isPresent()){
+		if (firstPlayer.isPresent()) {
 			firstPlayer.get().startSample(this.dataStore.getCurrentLoopSample(0), true);
-			if(!this.dataStore.getCurrentLoop().isClickTrackMuted())
+			if (!this.dataStore.getCurrentLoop().isClickTrackMuted())
 				firstPlayer.get().startSample(this.dataStore.getCurrentLoop().getClickTrack(), false);
 		}
 	}
@@ -106,18 +106,6 @@ public class Processor implements EventListener {
 		return this.audioSources.get(channelId).getRecordingState();
 	}
 
-	public void setSampleVolume(Long sampleId, Float volume) {
-		this.dataStore.getCurrentLoopSample(sampleId).setGain(volume);
-	}
-
-	public boolean isSampleMute(Long sampleId) {
-		return this.dataStore.getCurrentLoopSample(sampleId).isMute();
-	}
-
-	public Float getSampleVolume(Long sampleId) {
-		return this.dataStore.getCurrentLoopSample(sampleId).getGain();
-	}
-
 	public boolean getChannelMonitoring(Long channelId) {
 		return this.audioSources.get(channelId).isMonitoring();
 	}
@@ -125,23 +113,23 @@ public class Processor implements EventListener {
 	public void setChannelMonitoring(Long channelId, boolean monitoring) {
 		this.audioSources.get(channelId).setMonitoring(monitoring);
 	}
-	
+
 	public void setSampleMute(Long sampleId, boolean mute) {
 		Optional<AudioSink> firstPlayer = FluentIterable.from(this.audioSinks.values()).first();
 		if (firstPlayer.isPresent()) {
 			setSampleMute(this.dataStore.getCurrentLoop().getId(), sampleId, firstPlayer.get(), mute);
 		}
 	}
-	
+
 	public void setSampleMute(Long loopId, Long sampleId, Long playerId, boolean mute) {
 		AudioSink player = audioSinks.get(playerId);
 		setSampleMute(loopId, sampleId, player, mute);
 	}
 
 	public void setSampleMute(Long loopId, Long sampleId, AudioSink player, boolean mute) {
-		if(player != null){
+		if (player != null) {
 			Loop loop = this.dataStore.getLoop(loopId);
-			if(loop != null){
+			if (loop != null) {
 				Sample sample = loop.getSample(sampleId);
 				if (sample != null) {
 					sample.setMute(mute, player, true);

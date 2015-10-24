@@ -87,8 +87,11 @@ public class Processor implements EventListener {
 
 		log.info("Start Sample");
 		Optional<AudioSink> firstPlayer = FluentIterable.from(this.audioSinks.values()).first();
-		if (firstPlayer.isPresent())
+		if (firstPlayer.isPresent()){
 			firstPlayer.get().startSample(this.dataStore.getCurrentLoopSample(0), true);
+			if(!this.dataStore.getCurrentLoop().isClickTrackMuted())
+				firstPlayer.get().startSample(this.dataStore.getCurrentLoop().getClickTrack(), false);
+		}
 	}
 
 	public void setChannelRecording(Long channelId, Boolean recording) {

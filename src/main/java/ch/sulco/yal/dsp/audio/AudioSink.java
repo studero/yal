@@ -20,7 +20,7 @@ public abstract class AudioSink implements LoopListener {
 	private LinkedList<Sample> playingSamples = new LinkedList<>();
 
 	public void startSample(Sample sample, boolean doSynchronization) {
-		log.info("Start sample [" + sample + "]");
+		log.info("Start sample [" + sample.getId() + "]");
 		if (!this.playingSamples.contains(sample)) {
 			this.playingSamples.add(sample);
 			this.resetSamplePosition(sample);
@@ -43,7 +43,7 @@ public abstract class AudioSink implements LoopListener {
 	protected abstract void finishSample(Sample sample);
 
 	public void stopSample(Sample sample, boolean doSynchronization) {
-		log.info("Stop sample [" + sample + "]");
+		log.info("Stop sample [" + sample.getId() + "]");
 		if (this.playingSamples.contains(sample)) {
 			if(doSynchronization){
 				this.finishSample(sample);

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.controller.MidiControl;
 import ch.sulco.yal.dm.Channel;
+import ch.sulco.yal.dsp.ClickTrackGenerator;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
@@ -42,6 +43,9 @@ public class Application {
 
 	@Inject
 	private AudioSystemProvider audioSystemProvider;
+	
+	@Inject
+	private ClickTrackGenerator clickTrackGenerator;
 
 	public void start() {
 		log.info("Start Application");

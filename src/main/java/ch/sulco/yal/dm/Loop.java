@@ -1,7 +1,6 @@
 package ch.sulco.yal.dm;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,6 +26,11 @@ public class Loop {
 	private int dataLength = 0;
 	private boolean active;
 	private LoopState loopState;
+	
+	private transient Sample clickTrack;
+	private Integer bars = 1;
+	private Integer beats = 4;
+	private boolean clickTrackMuted;
 
 	public Loop() {
 
@@ -66,11 +70,6 @@ public class Loop {
 			this.samples.add(0, sample);
 		}else{
 			this.samples.add(sample);
-		}
-		if(this.samples.size() == 1){
-			sample.setId(1L);
-			//TODO define click track bars and beats somewhere
-			createClickTrack(1, 4);
 		}
 		this.eventManager.createSample(sample);
 		this.eventManager.updateLoop(this);
@@ -132,22 +131,36 @@ public class Loop {
 	public void setLoopState(LoopState loopState) {
 		this.loopState = loopState;
 	}
-	
-	public void createClickTrack(int bars, int beats) {
-		byte[] clickBytes = new byte[this.dataLength];
-		Arrays.fill(clickBytes, (byte) 0);
-		int bytesPerBeat = this.dataLength/(bars*beats);
-		for(int beat=0; beat<bars*beats; beat++){
-			if(beat%beats == 0){
-				Arrays.fill(clickBytes, beat*bytesPerBeat, beat*bytesPerBeat+100, (byte) 80);
-			}else{
-				Arrays.fill(clickBytes, beat*bytesPerBeat, beat*bytesPerBeat+100, (byte) 20);
-			}
-		}
-		Sample clickSample = new Sample();
-		clickSample.setId(SpecialSample.CLICK.getId());
-		clickSample.setChannelId(this.samples.get(0).getChannelId());
-		clickSample.setData(clickBytes);
-		addSample(clickSample, true);
+
+	public Sample getClickTrack() {
+		return clickTrack;
+	}
+
+	public void setClickTrack(Sample clickTrack) {
+		this.clickTrack = clickTrack;
+	}
+
+	public Integer getBars() {
+		return bars;
+	}
+
+	public void setBars(Integer bars) {
+		this.bars = bars;
+	}
+
+	public Integer getBeats() {
+		return beats;
+	}
+
+	public void setBeats(Integer beats) {
+		this.beats = beats;
+	}
+
+	public boolean isClickTrackMuted() {
+		return clickTrackMuted;
+	}
+
+	public void setClickTrackMuted(boolean clickTrackMuted) {
+		this.clickTrackMuted = clickTrackMuted;
 	}
 }

@@ -10,14 +10,15 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spark.Spark;
+import com.google.gson.Gson;
+
 import ch.sulco.yal.dsp.DataStore;
+import ch.sulco.yal.dsp.LoopActivator;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.event.Event;
 import ch.sulco.yal.event.EventListener;
 import ch.sulco.yal.event.EventManager;
-
-import com.google.gson.Gson;
+import spark.Spark;
 
 @Singleton
 public class Server implements EventListener {
@@ -31,6 +32,9 @@ public class Server implements EventListener {
 
 	@Inject
 	private DataStore dataStore;
+
+	@Inject
+	private LoopActivator loopActivator;
 
 	private final Gson gson = new Gson();
 
@@ -71,7 +75,7 @@ public class Server implements EventListener {
 	}
 
 	private String activateLoop(Long loopId) {
-		this.dataStore.setCurrentLoopId(loopId);
+		this.loopActivator.setCurrentLoopId(loopId);
 		return "Success";
 	}
 

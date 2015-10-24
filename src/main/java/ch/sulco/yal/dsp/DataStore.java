@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -22,14 +21,10 @@ import ch.sulco.yal.dm.LoopState;
 import ch.sulco.yal.dm.Mapping;
 import ch.sulco.yal.dm.MappingMethodArgument;
 import ch.sulco.yal.dm.Sample;
-import ch.sulco.yal.event.EventManager;
 
 @Singleton
 public class DataStore {
 	private final static Logger log = LoggerFactory.getLogger(DataStore.class);
-
-	@Inject
-	private EventManager eventManager;
 
 	private final List<Loop> loops = new ArrayList<>();
 	private final List<Channel> channels = new ArrayList<>();
@@ -38,7 +33,7 @@ public class DataStore {
 	public void setup() {
 		log.info("Setup");
 		Loop loop = Application.injector.getInstance(Loop.class);
-//		Loop loop = new Loop();
+		// Loop loop = new Loop();
 		loop.setId(0L);
 		loop.setActive(true);
 		loop.setLoopState(LoopState.STOPPED);
@@ -134,19 +129,6 @@ public class DataStore {
 
 	public void addChannel(Channel channel) {
 		this.channels.add(channel);
-	}
-
-	public void setCurrentLoopId(Long currentLoopId) {
-		Loop before = this.getCurrentLoop();
-		Loop after = this.getLoop(currentLoopId);
-		if (before != null){
-			before.setActive(false);
-		}
-		after.setActive(true);
-		if (before != null){
-			this.eventManager.updateLoop(before);
-		}
-		this.eventManager.updateLoop(after);
 	}
 
 	public List<Mapping> getMappings() {

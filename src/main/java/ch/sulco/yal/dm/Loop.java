@@ -3,17 +3,10 @@ package ch.sulco.yal.dm;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 
-import ch.sulco.yal.dsp.audio.AudioSink;
-import ch.sulco.yal.dsp.audio.onboard.Synchronizer;
-
 public class Loop {
-	@Inject
-	private transient Synchronizer synchronizer;
 
 	private Long id;
 	private String name;
@@ -96,18 +89,6 @@ public class Loop {
 
 	public void setActive(boolean active) {
 		this.active = active;
-		for (Sample sample : this.samples) {
-			for (AudioSink player : sample.getPlayers()) {
-				if (active) {
-					player.startSample(sample, true);
-				} else {
-					player.stopSample(sample, true);
-				}
-			}
-		}
-		if (active && !this.samples.isEmpty()) {
-			this.synchronizer.initialize(timeLength);
-		}
 	}
 
 	public LoopState getLoopState() {

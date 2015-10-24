@@ -10,15 +10,11 @@ import com.google.common.collect.FluentIterable;
 
 import ch.sulco.yal.dsp.audio.AudioSink;
 import ch.sulco.yal.dsp.audio.onboard.Synchronizer;
-import ch.sulco.yal.event.EventManager;
 
 public class Loop {
 	@Inject
 	private transient Synchronizer synchronizer;
 
-	@Inject
-	private transient EventManager eventManager;
-	
 	private Long id;
 	private String name;
 	private List<Sample> samples = new ArrayList<>();
@@ -26,7 +22,7 @@ public class Loop {
 	private int dataLength = 0;
 	private boolean active;
 	private LoopState loopState;
-	
+
 	private transient Sample clickTrack;
 	private Integer bars = 1;
 	private Integer beats = 4;
@@ -59,26 +55,16 @@ public class Loop {
 	public Long getNumSamples() {
 		return Long.valueOf(this.samples.size());
 	}
-	
-	public void addSample(Sample sample) {
-		addSample(sample, false);
-	}
 
-	private void addSample(Sample sample, boolean addToFront) {
+	public void addSample(Sample sample) {
 		sample.setLoop(this);
-		if(addToFront){
-			this.samples.add(0, sample);
-		}else{
-			this.samples.add(sample);
-		}
-		this.eventManager.createSample(sample);
-		this.eventManager.updateLoop(this);
+		this.samples.add(sample);
 	}
 
 	public List<Sample> getSamples() {
 		return this.samples;
-	}	
-	
+	}
+
 	public Sample getSample(long sampleId) {
 		return FluentIterable.from(this.samples).firstMatch(new Predicate<Sample>() {
 			@Override
@@ -110,16 +96,16 @@ public class Loop {
 
 	public void setActive(boolean active) {
 		this.active = active;
-		for(Sample sample : this.samples){
-			for(AudioSink player : sample.getPlayers()){
-				if(active){
+		for (Sample sample : this.samples) {
+			for (AudioSink player : sample.getPlayers()) {
+				if (active) {
 					player.startSample(sample, true);
-				}else{
+				} else {
 					player.stopSample(sample, true);
 				}
 			}
 		}
-		if(active && !this.samples.isEmpty()){
+		if (active && !this.samples.isEmpty()) {
 			this.synchronizer.initialize(timeLength);
 		}
 	}

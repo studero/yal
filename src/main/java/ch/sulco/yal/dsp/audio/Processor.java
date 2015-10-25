@@ -136,7 +136,7 @@ public class Processor implements EventListener {
 				Sample sample = loop.getSample(sampleId);
 				if (sample != null) {
 					sample.setMute(mute, player, true);
-					this.eventManager.updateSample(sample);
+					this.dataStore.updateSample(sample);
 				}
 			}
 		}

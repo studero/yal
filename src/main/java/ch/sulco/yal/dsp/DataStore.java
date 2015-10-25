@@ -35,6 +35,7 @@ public class DataStore {
 	private EventManager eventManager;
 
 	private final List<Loop> loops = new ArrayList<>();
+	private final List<Sample> samples = new ArrayList<>();
 	private final List<Channel> channels = new ArrayList<>();
 	private final List<Mapping> mappings = new ArrayList<>();
 
@@ -100,8 +101,24 @@ public class DataStore {
 		this.eventManager.updateLoop(loop);
 	}
 
-	public void addSample(Long loopId, Sample sample) {
-		this.getLoop(loopId).getSamples().add(sample);
+	public Sample getSample(Long id) {
+		return FluentIterable.from(this.samples).firstMatch(new Predicate<Sample>() {
+			@Override
+			public boolean apply(Sample input) {
+				return id == input.getId();
+			}
+		}).orNull();
+	}
+
+	public void createSample(Sample sample) {
+		samples.add(sample);
+		eventManager.createSample(sample);
+	}
+
+	public void updateSample(Sample sample) {
+		this.samples.remove(getSample(sample.getId()));
+		this.samples.add(sample);
+		this.eventManager.updateSample(sample);
 	}
 
 	public List<Channel> getChannels() {

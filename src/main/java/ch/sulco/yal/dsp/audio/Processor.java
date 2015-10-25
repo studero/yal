@@ -63,20 +63,23 @@ public class Processor implements EventListener {
 		for (AudioSource audioSource : this.audioSources.values()) {
 			audioSource.startRecord();
 		}
-		this.dataStore.getCurrentLoop().setLoopState(LoopState.PLAYING);
-		this.eventManager.updateLoop(this.dataStore.getCurrentLoop());
+		Loop currentLoop = this.dataStore.getCurrentLoop();
+		currentLoop.setLoopState(LoopState.PLAYING);
+		this.dataStore.updateLoop(currentLoop);
 	}
 
 	public void pause() {
 		// TODO pause players
-		this.dataStore.getCurrentLoop().setLoopState(LoopState.PAUSED);
-		this.eventManager.updateLoop(this.dataStore.getCurrentLoop());
+		Loop currentLoop = this.dataStore.getCurrentLoop();
+		currentLoop.setLoopState(LoopState.PAUSED);
+		this.dataStore.updateLoop(currentLoop);
 	}
 
 	public void stop() {
 		// TODO stop players
-		this.dataStore.getCurrentLoop().setLoopState(LoopState.STOPPED);
-		this.eventManager.updateLoop(this.dataStore.getCurrentLoop());
+		Loop currentLoop = this.dataStore.getCurrentLoop();
+		currentLoop.setLoopState(LoopState.STOPPED);
+		this.dataStore.updateLoop(currentLoop);
 	}
 
 	public void loop() {

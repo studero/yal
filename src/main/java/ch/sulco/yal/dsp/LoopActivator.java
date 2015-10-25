@@ -6,15 +6,11 @@ import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.audio.AudioSink;
 import ch.sulco.yal.dsp.audio.onboard.Synchronizer;
-import ch.sulco.yal.event.EventManager;
 
 public class LoopActivator {
 
 	@Inject
 	private DataStore dataStore;
-
-	@Inject
-	private EventManager eventManager;
 
 	@Inject
 	private transient Synchronizer synchronizer;
@@ -29,9 +25,9 @@ public class LoopActivator {
 		after.setActive(true);
 		updateLoopSamples(after, true);
 		if (before != null) {
-			this.eventManager.updateLoop(before);
+			this.dataStore.updateLoop(before);
 		}
-		this.eventManager.updateLoop(after);
+		this.dataStore.updateLoop(after);
 	}
 
 	private void updateLoopSamples(Loop loop, boolean active) {

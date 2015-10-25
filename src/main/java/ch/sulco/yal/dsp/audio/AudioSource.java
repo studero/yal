@@ -53,8 +53,8 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 	protected InputChannel getInputChannel() {
 		return this.inputChannel;
 	}
-	
-	protected byte[] getRecordedSample(){
+
+	protected byte[] getRecordedSample() {
 		return this.recordedSample;
 	}
 
@@ -107,7 +107,7 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 			}
 			currentLoop.addSample(sample);
 			eventManager.createSample(sample);
-			eventManager.updateLoop(currentLoop);
+			dataStore.updateLoop(currentLoop);
 			this.recordedSample = null;
 			this.recordingSample = null;
 		}

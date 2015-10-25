@@ -20,7 +20,7 @@ public class SimulationDataStore extends DataStore {
 	public void setup() {
 		log.info("Create Test Data");
 
-		this.addLoop(aLoop()
+		this.createLoop(aLoop()
 				.id(0L)
 				.name("Chorus")
 				.length(5423120L)
@@ -31,24 +31,20 @@ public class SimulationDataStore extends DataStore {
 				.sample(aSample().id(6L).channelId(0L).build())
 				.build());
 
-		this.addLoop(aLoop()
+		this.createLoop(aLoop()
 				.id(1L)
 				.name("Verse")
 				.length(7234650L)
 				.sample(aSample().id(2L).channelId(3L).build())
 				.build());
 
-		this.addLoop(aLoop()
+		this.createLoop(aLoop()
 				.id(2L)
 				.name("Bridge")
 				.length(5345780L)
 				.sample(aSample().id(3L).channelId(0L).build())
 				.sample(aSample().id(5L).channelId(0L).build())
 				.build());
-
-		this.eventManager.createLoop(this.getLoop(0L));
-		this.eventManager.createLoop(this.getLoop(1L));
-		this.eventManager.createLoop(this.getLoop(2L));
 	}
 
 	private static LoopBuilder aLoop() {

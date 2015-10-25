@@ -13,14 +13,14 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 import ch.sulco.yal.dsp.DataStore;
+import ch.sulco.yal.dsp.DataStore.DataEvent;
+import ch.sulco.yal.dsp.DataStore.DataEventListener;
 import ch.sulco.yal.dsp.LoopActivator;
 import ch.sulco.yal.dsp.audio.Processor;
-import ch.sulco.yal.event.Event;
-import ch.sulco.yal.event.EventListener;
 import spark.Spark;
 
 @Singleton
-public class Server implements EventListener {
+public class Server implements DataEventListener {
 	private final static Logger log = LoggerFactory.getLogger(Server.class);
 
 	@Inject
@@ -136,7 +136,7 @@ public class Server implements EventListener {
 	}
 
 	@Override
-	public void onEvent(Event event) {
+	public void onDataEvent(DataEvent event) {
 		UpdatesWebSocket.getInstance().send(this.gson.toJson(event));
 	}
 }

@@ -25,11 +25,11 @@ import ch.sulco.yal.dm.RecordingState;
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.DataStore.ChannelCreated;
-import ch.sulco.yal.event.Event;
-import ch.sulco.yal.event.EventListener;
+import ch.sulco.yal.dsp.DataStore.DataEvent;
+import ch.sulco.yal.dsp.DataStore.DataEventListener;
 
 @Singleton
-public class Processor implements EventListener {
+public class Processor implements DataEventListener {
 
 	private final static Logger log = LoggerFactory.getLogger(Processor.class);
 
@@ -139,7 +139,7 @@ public class Processor implements EventListener {
 	}
 
 	@Override
-	public void onEvent(Event event) {
+	public void onDataEvent(DataEvent event) {
 		if (event instanceof ChannelCreated) {
 			ChannelCreated channelCreated = (ChannelCreated) event;
 			Channel channel = channelCreated.getChannel();

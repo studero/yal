@@ -3,6 +3,7 @@ package ch.sulco.yal.dsp;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,8 +25,6 @@ import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dm.LoopState;
 import ch.sulco.yal.dm.Mapping;
 import ch.sulco.yal.dm.Sample;
-import ch.sulco.yal.event.Event;
-import ch.sulco.yal.event.EventListener;
 
 @Singleton
 public class DataStore {
@@ -36,7 +35,7 @@ public class DataStore {
 	private final List<Channel> channels = new ArrayList<>();
 	private final List<Mapping> mappings = new ArrayList<>();
 
-	private final List<EventListener> listeners = new ArrayList<>();
+	private final List<DataEventListener> listeners = new ArrayList<>();
 
 	public void setup() {
 		log.info("Setup");
@@ -148,17 +147,35 @@ public class DataStore {
 		return this.mappings;
 	}
 
-	public void addListener(EventListener listener) {
+	public void addListener(DataEventListener listener) {
 		this.listeners.add(listener);
 	}
 
-	private void addEvent(Event event) {
-		for (EventListener listener : this.listeners) {
-			listener.onEvent(event);
+	private void addEvent(DataEvent event) {
+		for (DataEventListener listener : this.listeners) {
+			listener.onDataEvent(event);
 		}
 	}
 
-	public final class ChannelCreated extends Event {
+	public interface DataEventListener {
+		void onDataEvent(DataEvent event);
+	}
+
+	public class DataEvent {
+		private final Date creationDate = new Date();
+
+		private final String eventType = this.getClass().getSimpleName();
+
+		public Date getCreationDate() {
+			return this.creationDate;
+		}
+
+		public String getEventType() {
+			return eventType;
+		}
+	}
+
+	public final class ChannelCreated extends DataEvent {
 		private final Channel channel;
 
 		ChannelCreated(Channel channel) {
@@ -171,7 +188,7 @@ public class DataStore {
 		}
 	}
 
-	public final class ChannelUpdated extends Event {
+	public final class ChannelUpdated extends DataEvent {
 		private final Channel channel;
 
 		ChannelUpdated(Channel channel) {
@@ -184,7 +201,7 @@ public class DataStore {
 		}
 	}
 
-	public final class LoopCreated extends Event {
+	public final class LoopCreated extends DataEvent {
 		private final Loop loop;
 
 		LoopCreated(Loop loop) {
@@ -197,7 +214,7 @@ public class DataStore {
 		}
 	}
 
-	public final class LoopUpdated extends Event {
+	public final class LoopUpdated extends DataEvent {
 		private final Loop loop;
 
 		LoopUpdated(Loop loop) {
@@ -210,7 +227,7 @@ public class DataStore {
 		}
 	}
 
-	public final class SampleCreated extends Event {
+	public final class SampleCreated extends DataEvent {
 		private final Sample sample;
 
 		SampleCreated(Sample sample) {
@@ -223,7 +240,7 @@ public class DataStore {
 		}
 	}
 
-	public final class SampleUpdated extends Event {
+	public final class SampleUpdated extends DataEvent {
 		private final Sample sample;
 
 		SampleUpdated(Sample sample) {

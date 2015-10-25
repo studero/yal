@@ -1,0 +1,57 @@
+[
+	{
+		"source": "nanoKontrol2",
+		"triggerValueMap": 
+		{
+			"channel": 0,
+			"data1": 64,
+			"command": 176
+		},
+
+		"valueExpressionMap": 
+		{
+			"recording": "#{data2} \u003e 0",
+			"channelId": "#{data1} - 64"
+		},
+
+		"processorMethod": "setChannelRecording",
+		"processorMethodArguments": 
+		[
+			{
+				"name": "channelId",
+				"type": "java.lang.Long"
+			},
+
+			{
+				"name": "recording",
+				"type": "java.lang.Boolean"
+			}
+		]
+	},
+
+	{
+		"source": "nanoKontrol2",
+		"triggerValueMap": 
+		{
+			"data2": 0,
+			"channel": 0,
+			"data1": 41,
+			"command": 176
+		},
+
+		"processorMethod": "play"
+	},
+
+	{
+		"source": "nanoKontrol2",
+		"triggerValueMap": 
+		{
+			"data2": 0,
+			"channel": 0,
+			"data1": 42,
+			"command": 176
+		},
+
+		"processorMethod": "loop"
+	}
+]

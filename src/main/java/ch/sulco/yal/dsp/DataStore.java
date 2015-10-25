@@ -1,8 +1,8 @@
 package ch.sulco.yal.dsp;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,13 +13,16 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 import ch.sulco.yal.Application;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dm.LoopState;
 import ch.sulco.yal.dm.Mapping;
-import ch.sulco.yal.dm.MappingMethodArgument;
 import ch.sulco.yal.dm.Sample;
 
 @Singleton
@@ -39,40 +42,15 @@ public class DataStore {
 		loop.setLoopState(LoopState.STOPPED);
 		this.addLoop(loop);
 
-		Mapping channelRecordingMapping = new Mapping();
-		channelRecordingMapping.setSource("nanoKontrol2");
-		channelRecordingMapping.setProcessorMethodArguments(new LinkedList<>());
-		channelRecordingMapping.getProcessorMethodArguments().add(new MappingMethodArgument("channelId", Long.class.getName()));
-		channelRecordingMapping.getProcessorMethodArguments().add(new MappingMethodArgument("recording", Boolean.class.getName()));
-		channelRecordingMapping.setTriggerValueMap(new HashMap<>());
-		channelRecordingMapping.getTriggerValueMap().put("command", 176);
-		channelRecordingMapping.getTriggerValueMap().put("channel", 0);
-		channelRecordingMapping.getTriggerValueMap().put("data1", 64);
-		channelRecordingMapping.setValueExpressionMap(new HashMap<>());
-		channelRecordingMapping.getValueExpressionMap().put("channelId", "#{data1} - 64");
-		channelRecordingMapping.getValueExpressionMap().put("recording", "#{data2} > 0");
-		channelRecordingMapping.setProcessorMethod("setChannelRecording");
-		this.mappings.add(channelRecordingMapping);
-
-		Mapping playMapping = new Mapping();
-		playMapping.setSource("nanoKontrol2");
-		playMapping.setTriggerValueMap(new HashMap<>());
-		playMapping.getTriggerValueMap().put("command", 176);
-		playMapping.getTriggerValueMap().put("channel", 0);
-		playMapping.getTriggerValueMap().put("data1", 41);
-		playMapping.getTriggerValueMap().put("data2", 0);
-		playMapping.setProcessorMethod("play");
-		this.mappings.add(playMapping);
-
-		Mapping loopMapping = new Mapping();
-		loopMapping.setSource("nanoKontrol2");
-		loopMapping.setTriggerValueMap(new HashMap<>());
-		loopMapping.getTriggerValueMap().put("command", 176);
-		loopMapping.getTriggerValueMap().put("channel", 0);
-		loopMapping.getTriggerValueMap().put("data1", 42);
-		loopMapping.getTriggerValueMap().put("data2", 0);
-		loopMapping.setProcessorMethod("loop");
-		this.mappings.add(loopMapping);
+		try {
+			this.mappings.addAll(Lists.newArrayList(
+					new Gson().fromJson(
+							new FileReader(DataStore.class.getResource("/data/mappings.json").getFile()),
+							Mapping[].class)));
+		} catch (JsonIOException | JsonSyntaxException | FileNotFoundException e) {
+			log.error("Unable to load mapping", e);
+			throw new RuntimeException("Unable to load mapping", e);
+		}
 	}
 
 	public List<Loop> getLoops() {

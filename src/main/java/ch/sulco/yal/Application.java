@@ -15,7 +15,6 @@ import ch.sulco.yal.dsp.ClickTrackGenerator;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
-import ch.sulco.yal.event.EventManager;
 import ch.sulco.yal.web.Server;
 
 @Singleton
@@ -37,9 +36,6 @@ public class Application {
 
 	@Inject
 	private DataStore dataStore;
-
-	@Inject
-	private EventManager eventManager;
 
 	@Inject
 	private AudioSystemProvider audioSystemProvider;

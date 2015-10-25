@@ -17,7 +17,6 @@ import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.onboard.LoopListener;
 import ch.sulco.yal.dsp.audio.onboard.Synchronizer;
-import ch.sulco.yal.event.EventManager;
 
 public abstract class AudioSource implements LoopListener, AudioDataListener {
 
@@ -28,9 +27,6 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 
 	@Inject
 	private DataStore dataStore;
-
-	@Inject
-	private EventManager eventManager;
 
 	private InputChannel inputChannel;
 

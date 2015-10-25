@@ -1,20 +1,15 @@
 package ch.sulco.yal.simulator;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.dsp.DataStore;
-import ch.sulco.yal.event.EventManager;
 
 @Singleton
 public class SimulationDataStore extends DataStore {
 	private final static Logger log = LoggerFactory.getLogger(SimulationDataStore.class);
-
-	@Inject
-	private EventManager eventManager;
 
 	@Override
 	public void setup() {

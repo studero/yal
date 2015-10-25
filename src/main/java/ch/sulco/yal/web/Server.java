@@ -17,7 +17,6 @@ import ch.sulco.yal.dsp.LoopActivator;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.event.Event;
 import ch.sulco.yal.event.EventListener;
-import ch.sulco.yal.event.EventManager;
 import spark.Spark;
 
 @Singleton
@@ -26,9 +25,6 @@ public class Server implements EventListener {
 
 	@Inject
 	private Processor audioProcessor;
-
-	@Inject
-	private EventManager eventManager;
 
 	@Inject
 	private DataStore dataStore;
@@ -71,7 +67,7 @@ public class Server implements EventListener {
 
 	@PostConstruct
 	public void setup() {
-		this.eventManager.addListener(this);
+		this.dataStore.addListener(this);
 	}
 
 	private String activateLoop(Long loopId) {

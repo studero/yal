@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -25,19 +24,19 @@ import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dm.LoopState;
 import ch.sulco.yal.dm.Mapping;
 import ch.sulco.yal.dm.Sample;
-import ch.sulco.yal.event.EventManager;
+import ch.sulco.yal.event.Event;
+import ch.sulco.yal.event.EventListener;
 
 @Singleton
 public class DataStore {
 	private final static Logger log = LoggerFactory.getLogger(DataStore.class);
 
-	@Inject
-	private EventManager eventManager;
-
 	private final List<Loop> loops = new ArrayList<>();
 	private final List<Sample> samples = new ArrayList<>();
 	private final List<Channel> channels = new ArrayList<>();
 	private final List<Mapping> mappings = new ArrayList<>();
+
+	private final List<EventListener> listeners = new ArrayList<>();
 
 	public void setup() {
 		log.info("Setup");
@@ -92,13 +91,13 @@ public class DataStore {
 
 	public void createLoop(Loop loop) {
 		this.loops.add(loop);
-		this.eventManager.createLoop(loop);
+		this.addEvent(new LoopCreated(loop));
 	}
 
 	public void updateLoop(Loop loop) {
 		this.loops.remove(getLoop(loop.getId()));
 		this.loops.add(loop);
-		this.eventManager.updateLoop(loop);
+		this.addEvent(new LoopUpdated(loop));
 	}
 
 	public Sample getSample(Long id) {
@@ -112,13 +111,13 @@ public class DataStore {
 
 	public void createSample(Sample sample) {
 		samples.add(sample);
-		eventManager.createSample(sample);
+		this.addEvent(new SampleCreated(sample));
 	}
 
 	public void updateSample(Sample sample) {
 		this.samples.remove(getSample(sample.getId()));
 		this.samples.add(sample);
-		this.eventManager.updateSample(sample);
+		this.addEvent(new SampleUpdated(sample));
 	}
 
 	public List<Channel> getChannels() {
@@ -136,17 +135,104 @@ public class DataStore {
 
 	public void createChannel(Channel channel) {
 		this.channels.add(channel);
-		this.eventManager.createChannel(channel);
+		this.addEvent(new ChannelCreated(channel));
 	}
 
 	public void updateChannel(Channel channel) {
 		this.channels.remove(getChannel(channel.getId()));
 		this.channels.add(channel);
-		this.eventManager.updateChannel(channel);
+		this.addEvent(new ChannelUpdated(channel));
 	}
 
 	public List<Mapping> getMappings() {
 		return this.mappings;
 	}
 
+	public void addListener(EventListener listener) {
+		this.listeners.add(listener);
+	}
+
+	private void addEvent(Event event) {
+		for (EventListener listener : this.listeners) {
+			listener.onEvent(event);
+		}
+	}
+
+	public final class ChannelCreated extends Event {
+		private final Channel channel;
+
+		ChannelCreated(Channel channel) {
+			super();
+			this.channel = channel;
+		}
+
+		public Channel getChannel() {
+			return channel;
+		}
+	}
+
+	public final class ChannelUpdated extends Event {
+		private final Channel channel;
+
+		ChannelUpdated(Channel channel) {
+			super();
+			this.channel = channel;
+		}
+
+		public Channel getChannel() {
+			return channel;
+		}
+	}
+
+	public final class LoopCreated extends Event {
+		private final Loop loop;
+
+		LoopCreated(Loop loop) {
+			super();
+			this.loop = loop;
+		}
+
+		public Loop getLoop() {
+			return this.loop;
+		}
+	}
+
+	public final class LoopUpdated extends Event {
+		private final Loop loop;
+
+		LoopUpdated(Loop loop) {
+			super();
+			this.loop = loop;
+		}
+
+		public Loop getLoop() {
+			return loop;
+		}
+	}
+
+	public final class SampleCreated extends Event {
+		private final Sample sample;
+
+		SampleCreated(Sample sample) {
+			super();
+			this.sample = sample;
+		}
+
+		public Sample getSample() {
+			return sample;
+		}
+	}
+
+	public final class SampleUpdated extends Event {
+		private final Sample sample;
+
+		SampleUpdated(Sample sample) {
+			super();
+			this.sample = sample;
+		}
+
+		public Sample getSample() {
+			return sample;
+		}
+	}
 }

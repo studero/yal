@@ -24,10 +24,9 @@ import ch.sulco.yal.dm.OutputChannel;
 import ch.sulco.yal.dm.RecordingState;
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.DataStore;
-import ch.sulco.yal.event.ChannelCreated;
+import ch.sulco.yal.dsp.DataStore.ChannelCreated;
 import ch.sulco.yal.event.Event;
 import ch.sulco.yal.event.EventListener;
-import ch.sulco.yal.event.EventManager;
 
 @Singleton
 public class Processor implements EventListener {
@@ -36,9 +35,6 @@ public class Processor implements EventListener {
 
 	@Inject
 	private DataStore dataStore;
-
-	@Inject
-	private EventManager eventManager;
 
 	private final Map<Long, AudioSource> audioSources = new HashMap<>();
 	private final Map<Long, AudioSink> audioSinks = new HashMap<>();
@@ -55,7 +51,7 @@ public class Processor implements EventListener {
 	@PostConstruct
 	public void setup() {
 		log.info("Setup");
-		this.eventManager.addListener(this);
+		this.dataStore.addListener(this);
 	}
 
 	public void play() {

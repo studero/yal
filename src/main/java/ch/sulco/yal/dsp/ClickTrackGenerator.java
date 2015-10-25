@@ -11,10 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dm.SpecialSample;
+import ch.sulco.yal.dsp.DataStore.LoopUpdated;
 import ch.sulco.yal.event.Event;
 import ch.sulco.yal.event.EventListener;
-import ch.sulco.yal.event.EventManager;
-import ch.sulco.yal.event.LoopUpdated;
 
 @Singleton
 public class ClickTrackGenerator implements EventListener {
@@ -22,14 +21,11 @@ public class ClickTrackGenerator implements EventListener {
 	private final static Logger log = LoggerFactory.getLogger(ClickTrackGenerator.class);
 
 	@Inject
-	private EventManager eventManager;
-
-	@Inject
 	private DataStore dataStore;
 
 	@PostConstruct
 	public void setup() {
-		this.eventManager.addListener(this);
+		this.dataStore.addListener(this);
 	}
 
 	@Override

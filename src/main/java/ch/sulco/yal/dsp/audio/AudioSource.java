@@ -66,7 +66,7 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 
 	public void setMonitoring(boolean monitoring) {
 		this.inputChannel.setMonitoring(monitoring);
-		this.eventManager.updateChannel(this.inputChannel);
+		this.dataStore.updateChannel(this.inputChannel);
 	}
 
 	public void setInputChannel(InputChannel inputChannel) {
@@ -152,7 +152,7 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 	private void setRecordingState(RecordingState recordingState) {
 		log.info("Change RecordingState [" + this.inputChannel.getId() + "][" + recordingState + "]");
 		this.inputChannel.setRecordingState(recordingState);
-		this.eventManager.updateChannel(this.inputChannel);
+		this.dataStore.updateChannel(this.inputChannel);
 	}
 
 	// private void updateMonitoring(int monitoringCount, byte[] buffer, int

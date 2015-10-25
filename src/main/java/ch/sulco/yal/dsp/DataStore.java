@@ -117,8 +117,15 @@ public class DataStore {
 		}).orNull();
 	}
 
-	public void addChannel(Channel channel) {
+	public void createChannel(Channel channel) {
 		this.channels.add(channel);
+		this.eventManager.createChannel(channel);
+	}
+
+	public void updateChannel(Channel channel) {
+		this.channels.remove(getChannel(channel.getId()));
+		this.channels.add(channel);
+		this.eventManager.updateChannel(channel);
 	}
 
 	public List<Mapping> getMappings() {

@@ -6,6 +6,9 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import ch.sulco.yal.controller.MidiControl;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dsp.ClickTrackGenerator;
@@ -14,9 +17,6 @@ import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
 import ch.sulco.yal.event.EventManager;
 import ch.sulco.yal.web.Server;
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 
 @Singleton
 public class Application {
@@ -43,7 +43,7 @@ public class Application {
 
 	@Inject
 	private AudioSystemProvider audioSystemProvider;
-	
+
 	@Inject
 	private ClickTrackGenerator clickTrackGenerator;
 
@@ -51,8 +51,7 @@ public class Application {
 		log.info("Start Application");
 		this.dataStore.setup();
 		for (Channel channel : this.audioSystemProvider.getChannels()) {
-			this.dataStore.addChannel(channel);
-			this.eventManager.createChannel(channel);
+			this.dataStore.createChannel(channel);
 		}
 	}
 

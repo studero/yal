@@ -1,11 +1,25 @@
 body {
 	background-color: #333;
 	color: #fff;
+	font-size:12px;
 }
 
 h4 {
 	margin-top:6px;
 	margin-bottom:2px;
+}
+
+h5 {
+	margin-top:6px;
+	margin-bottom:2px;
+}
+
+select {
+	color: #333;
+}
+
+label {
+	font-weight: normal;
 }
 
 .panel {
@@ -62,4 +76,7 @@ h4 {
 
 .sample-name {
 	font-size:10px;
+}
+
+.audio-settings {
 }

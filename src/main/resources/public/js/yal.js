@@ -100,10 +100,37 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	$scope.test = function(){
 		socket.send("test");
 	};
+	$scope.updateAudioSettings = function(){
+		console.log($scope.selectedAudioSettings);
+		$scope.settings.audioSettings = angular.fromJson($scope.selectedAudioSettings);
+		console.log($scope.settings);
+	};
 	
+	updateSettings();
+	updateAvailableAudioSettings();
 	
 	updateChannels();
 	updateLoops();
+	
+	function updateSettings(){
+		$http({
+			method : 'GET',
+			url : '/settings'
+		}).success(function(data, status, headers, config) {
+			$scope.settings = data;
+		}).error(function(data, status, headers, config) {
+		});
+	}
+	
+	function updateAvailableAudioSettings(){
+		$http({
+			method : 'GET',
+			url : '/settings/available/audio'
+		}).success(function(data, status, headers, config) {
+			$scope.availableAudioSettings = data;
+		}).error(function(data, status, headers, config) {
+		});
+	}
 	
 	function updateChannels(){
 		$http({

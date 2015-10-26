@@ -101,6 +101,24 @@
 				
 			</div>
 		</div>
+		<div class="panel panel-default col-xs-4">
+			<div class="panel panel-default col-xs-12 title"><h4>Settings</h4></div>
+			<b>Audio</b><br />
+			<label for="soundcardSelect">Soundcard: </label><br>
+		    <select name="soundcardSelect" ng-model="selectedAudioSettings" ng-change="updateAudioSettings()">
+		      <option ng-repeat="audioSetting in availableAudioSettings" value="{{audioSetting}}">{{audioSetting.soundCardId}}</option>
+		    </select>
+		    <br />
+	    	<label>Input Channels:</label>
+			<div ng-repeat="id in settings.audioSettings.inputChannelIds" class="col-xs-12">
+				{{id}}
+			</div>
+		    <br />
+			<label>Output Channels:</label>
+			<div ng-repeat="id in settings.audioSettings.outputChannelIds" class="col-xs-12">
+				{{id}}
+			</div>
+		</div>
 	</div>
 </body>
 </html>

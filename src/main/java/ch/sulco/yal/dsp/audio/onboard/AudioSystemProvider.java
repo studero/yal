@@ -32,6 +32,7 @@ import ch.sulco.yal.AppConfig;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.InputChannel;
 import ch.sulco.yal.dm.OutputChannel;
+import ch.sulco.yal.settings.AudioSettings;
 
 @Singleton
 public class AudioSystemProvider {
@@ -52,6 +53,27 @@ public class AudioSystemProvider {
 
 	public AudioInputStream getAudioInputStream(File file) throws UnsupportedAudioFileException, IOException {
 		return AudioSystem.getAudioInputStream(file);
+	}
+
+	public List<AudioSettings> getAvailableAudioSettings() {
+		List<AudioSettings> audioSettings = new ArrayList<>();
+		for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo()) {
+			Mixer mixer = AudioSystem.getMixer(mixerInfo);
+			AudioSettings audioSetting = new AudioSettings();
+			audioSetting.setSoundCardId(mixerInfo.getName());
+			audioSetting.setInputChannelIds(new ArrayList<>());
+			audioSetting.setOutputChannelIds(new ArrayList<>());
+			if (mixer.getClass().getName().equals("com.sun.media.sound.DirectAudioDevice")) {
+				for (Line.Info lineInfo : mixer.getTargetLineInfo(this.getTargetLineInfo())) {
+					audioSetting.getInputChannelIds().add(lineInfo.toString());
+				}
+				for (Line.Info lineInfo : mixer.getSourceLineInfo(this.getSourceLineInfo())) {
+					audioSetting.getOutputChannelIds().add(lineInfo.toString());
+				}
+			}
+			audioSettings.add(audioSetting);
+		}
+		return audioSettings;
 	}
 
 	public List<Channel> getChannels() {
@@ -87,7 +109,7 @@ public class AudioSystemProvider {
 		List<Channel> channels = new ArrayList<>();
 		for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo()) {
 			Mixer mixer = AudioSystem.getMixer(mixerInfo);
-			if(mixer.getClass().getName().equals("com.sun.media.sound.DirectAudioDevice")){
+			if (mixer.getClass().getName().equals("com.sun.media.sound.DirectAudioDevice")) {
 				for (Line.Info lineInfo : mixer.getTargetLineInfo(this.getTargetLineInfo())) {
 					InputChannel channel = new InputChannel(id);
 					channel.setLineInfo(lineInfo);

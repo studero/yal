@@ -12,16 +12,25 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+import ch.sulco.yal.AppConfig;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.DataStore.DataEvent;
 import ch.sulco.yal.dsp.DataStore.DataEventListener;
 import ch.sulco.yal.dsp.LoopActivator;
 import ch.sulco.yal.dsp.audio.Processor;
+import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
+import ch.sulco.yal.settings.Settings;
 import spark.Spark;
 
 @Singleton
 public class Server implements DataEventListener {
 	private final static Logger log = LoggerFactory.getLogger(Server.class);
+
+	@Inject
+	private AppConfig appConfig;
+
+	@Inject
+	private AudioSystemProvider audioSystemProvider;
 
 	@Inject
 	private Processor audioProcessor;
@@ -47,6 +56,10 @@ public class Server implements DataEventListener {
 		get("/length", (req, res) -> this.getLoopLength());
 		get("/channels", (req, res) -> this.getChannels());
 		get("/loops", (req, res) -> this.getLoops());
+		get("/settings", (req, res) -> this.getSettings());
+		get("/settings/available/audio", (req, res) -> this.gson.toJson(this.audioSystemProvider.getAvailableAudioSettings()));
+
+		Spark.post("/settings/new", (req, res) -> this.updateSettings(gson.fromJson(req.body(), Settings.class)));
 
 		put("/activateLoop/:loopId", (req, res) -> this.activateLoop(Long.valueOf(req.params(":loopId"))));
 
@@ -70,6 +83,10 @@ public class Server implements DataEventListener {
 		this.dataStore.addListener(this);
 	}
 
+	private String getSettings() {
+		return this.gson.toJson(this.appConfig.getSettings());
+	}
+
 	private String activateLoop(Long loopId) {
 		this.loopActivator.setCurrentLoopId(loopId);
 		return "Success";
@@ -77,6 +94,11 @@ public class Server implements DataEventListener {
 
 	private String getLoops() {
 		return this.gson.toJson(this.dataStore.getLoops());
+	}
+
+	private String updateSettings(Settings settings) {
+		this.appConfig.setSettings(settings);
+		return "Success";
 	}
 
 	private String playSample(Long sampleId) {

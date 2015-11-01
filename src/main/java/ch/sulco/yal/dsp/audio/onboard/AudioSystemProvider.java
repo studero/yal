@@ -3,6 +3,7 @@ package ch.sulco.yal.dsp.audio.onboard;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -61,14 +62,22 @@ public class AudioSystemProvider {
 			Mixer mixer = AudioSystem.getMixer(mixerInfo);
 			AudioSettings audioSetting = new AudioSettings();
 			audioSetting.setSoundCardId(mixerInfo.getName());
-			audioSetting.setInputChannelIds(new ArrayList<>());
-			audioSetting.setOutputChannelIds(new ArrayList<>());
+			audioSetting.setInputChannels(new HashMap<>());
+			audioSetting.setOutputChannels(new HashMap<>());
 			if (mixer.getClass().getName().equals("com.sun.media.sound.DirectAudioDevice")) {
 				for (Line.Info lineInfo : mixer.getTargetLineInfo(this.getTargetLineInfo())) {
-					audioSetting.getInputChannelIds().add(lineInfo.toString());
+					try {
+						audioSetting.getInputChannels().put(mixer.getLine(lineInfo).hashCode(), lineInfo.toString());
+					} catch (LineUnavailableException e) {
+						log.error("Unable to load channel [" + lineInfo.toString() + "]", e);
+					}
 				}
 				for (Line.Info lineInfo : mixer.getSourceLineInfo(this.getSourceLineInfo())) {
-					audioSetting.getOutputChannelIds().add(lineInfo.toString());
+					try {
+						audioSetting.getOutputChannels().put(mixer.getLine(lineInfo).hashCode(), lineInfo.toString());
+					} catch (LineUnavailableException e) {
+						log.error("Unable to load channel [" + lineInfo.toString() + "]", e);
+					}
 				}
 			}
 			audioSettings.add(audioSetting);
@@ -117,6 +126,13 @@ public class AudioSystemProvider {
 					log.info("New Input Channel [" + id + "]");
 					log.info(" MixerInfo [" + mixerInfo.getDescription() + "][" + mixerInfo.getName() + "]");
 					log.info(" LineInfo [" + lineInfo + "]");
+					log.info(" LineInfo LineClass [" + lineInfo.getLineClass().getName() + "]");
+					try {
+						log.info(" Line HashCode [" + mixer.getLine(lineInfo).hashCode() + "]");
+					} catch (LineUnavailableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					id++;
 				}
 				for (Line.Info lineInfo : mixer.getSourceLineInfo(this.getSourceLineInfo())) {
@@ -126,6 +142,13 @@ public class AudioSystemProvider {
 					log.info("New Output Channel [" + id + "]");
 					log.info(" MixerInfo [" + mixerInfo.getDescription() + "][" + mixerInfo.getName() + "]");
 					log.info(" LineInfo [" + lineInfo + "]");
+					log.info(" LineInfo LineClass [" + lineInfo.getLineClass().getName() + "]");
+					try {
+						log.info(" Line HashCode [" + mixer.getLine(lineInfo).hashCode() + "]");
+					} catch (LineUnavailableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					id++;
 				}
 			}

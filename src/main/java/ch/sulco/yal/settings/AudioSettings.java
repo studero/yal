@@ -1,11 +1,11 @@
 package ch.sulco.yal.settings;
 
-import java.util.List;
+import java.util.Map;
 
 public class AudioSettings {
 	private String soundCardId;
-	private List<String> inputChannelIds;
-	private List<String> outputChannelIds;
+	private Map<Integer, String> inputChannels;
+	private Map<Integer, String> outputChannels;
 
 	public String getSoundCardId() {
 		return soundCardId;
@@ -15,19 +15,19 @@ public class AudioSettings {
 		this.soundCardId = soundCardId;
 	}
 
-	public List<String> getInputChannelIds() {
-		return inputChannelIds;
+	public Map<Integer, String> getInputChannels() {
+		return inputChannels;
 	}
 
-	public void setInputChannelIds(List<String> inputChannelIds) {
-		this.inputChannelIds = inputChannelIds;
+	public void setInputChannels(Map<Integer, String> inputChannels) {
+		this.inputChannels = inputChannels;
 	}
 
-	public List<String> getOutputChannelIds() {
-		return outputChannelIds;
+	public Map<Integer, String> getOutputChannels() {
+		return outputChannels;
 	}
 
-	public void setOutputChannelIds(List<String> outputChannelIds) {
-		this.outputChannelIds = outputChannelIds;
+	public void setOutputChannels(Map<Integer, String> outputChannels) {
+		this.outputChannels = outputChannels;
 	}
 }

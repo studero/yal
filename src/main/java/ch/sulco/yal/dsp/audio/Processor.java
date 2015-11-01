@@ -11,10 +11,6 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.collect.FluentIterable;
-
 import ch.sulco.yal.Application;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.InputChannel;
@@ -27,6 +23,10 @@ import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.DataStore.ChannelCreated;
 import ch.sulco.yal.dsp.DataStore.DataEvent;
 import ch.sulco.yal.dsp.DataStore.DataEventListener;
+
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.collect.FluentIterable;
 
 @Singleton
 public class Processor implements DataEventListener {
@@ -56,9 +56,6 @@ public class Processor implements DataEventListener {
 
 	public void play() {
 		log.info("Play");
-		for (AudioSource audioSource : this.audioSources.values()) {
-			audioSource.startRecord();
-		}
 		Loop currentLoop = this.dataStore.getCurrentLoop();
 		currentLoop.setLoopState(LoopState.PLAYING);
 		this.dataStore.updateLoop(currentLoop);
@@ -129,7 +126,7 @@ public class Processor implements DataEventListener {
 		if (player != null) {
 			Loop loop = this.dataStore.getLoop(loopId);
 			if (loop != null) {
-				Sample sample = loop.getSample(sampleId);
+				Sample sample = dataStore.getSample(sampleId);
 				if (sample != null) {
 					sample.setMute(mute, player, true);
 					this.dataStore.updateSample(sample);

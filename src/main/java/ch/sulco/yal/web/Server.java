@@ -10,8 +10,8 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spark.Spark;
-import ch.sulco.yal.AppConfig;
+import com.google.gson.Gson;
+
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.DataStore.DataEvent;
 import ch.sulco.yal.dsp.DataStore.DataEventListener;
@@ -19,15 +19,11 @@ import ch.sulco.yal.dsp.LoopActivator;
 import ch.sulco.yal.dsp.audio.Processor;
 import ch.sulco.yal.dsp.audio.onboard.AudioSystemProvider;
 import ch.sulco.yal.settings.Settings;
-
-import com.google.gson.Gson;
+import spark.Spark;
 
 @Singleton
 public class Server implements DataEventListener {
 	private final static Logger log = LoggerFactory.getLogger(Server.class);
-
-	@Inject
-	private AppConfig appConfig;
 
 	@Inject
 	private AudioSystemProvider audioSystemProvider;
@@ -86,7 +82,7 @@ public class Server implements DataEventListener {
 	}
 
 	private String getSettings() {
-		return this.gson.toJson(this.appConfig.getSettings());
+		return this.gson.toJson(this.dataStore.getSettings());
 	}
 
 	private String activateLoop(Long loopId) {
@@ -104,7 +100,7 @@ public class Server implements DataEventListener {
 	}
 
 	private String updateSettings(Settings settings) {
-		this.appConfig.setSettings(settings);
+		this.dataStore.setSettings(settings);
 		return "Success";
 	}
 

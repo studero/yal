@@ -8,22 +8,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ch.sulco.yal.Application;
-import ch.sulco.yal.dm.Channel;
-import ch.sulco.yal.dm.Loop;
-import ch.sulco.yal.dm.LoopState;
-import ch.sulco.yal.dm.Mapping;
-import ch.sulco.yal.dm.Sample;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
@@ -32,19 +27,39 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
+import ch.sulco.yal.AppConfig;
+import ch.sulco.yal.Application;
+import ch.sulco.yal.dm.Channel;
+import ch.sulco.yal.dm.Loop;
+import ch.sulco.yal.dm.LoopState;
+import ch.sulco.yal.dm.Mapping;
+import ch.sulco.yal.dm.Sample;
+import ch.sulco.yal.settings.AudioSettings;
+import ch.sulco.yal.settings.Settings;
+
 @Singleton
 public class DataStore {
 	private final static Logger log = LoggerFactory.getLogger(DataStore.class);
+
+	private static final String AUDIO_SETTINGS_FILENAME = "audio.json";
+
+	@Inject
+	private AppConfig appConfig;
 
 	private final List<Loop> loops = new ArrayList<>();
 	private final List<Sample> samples = new ArrayList<>();
 	private final List<Channel> channels = new ArrayList<>();
 	private final List<Mapping> mappings = new ArrayList<>();
 
+	private Settings settings;
+
 	private final List<DataEventListener> listeners = new ArrayList<>();
 
 	public void setup() {
 		log.info("Setup");
+
+		this.getSettings()
+				.setAudioSettings(load(Paths.get(this.appConfig.getSettingsPath(), AUDIO_SETTINGS_FILENAME), AudioSettings.class));
 
 		try {
 			this.mappings.addAll(Lists.newArrayList(
@@ -130,6 +145,36 @@ public class DataStore {
 			}
 		}
 
+		save(Paths.get(this.appConfig.getSettingsPath(), AUDIO_SETTINGS_FILENAME), this.settings.getAudioSettings());
+	}
+
+	public Settings getSettings() {
+		if (settings == null) {
+			settings = new Settings();
+		}
+		return settings;
+	}
+
+	public void setSettings(Settings settings) {
+		this.settings = settings;
+	}
+
+	private <T> T load(Path path, Class<T> clazz) {
+		try {
+			return new Gson().fromJson(Files.newBufferedReader(path), clazz);
+		} catch (Exception e) {
+			log.error("Unable to load data: " + e.getMessage());
+			return null;
+		}
+	}
+
+	public <T> void save(Path path, T data) {
+		try {
+			Files.write(path, new Gson().toJson(data).getBytes(),
+					StandardOpenOption.TRUNCATE_EXISTING);
+		} catch (IOException e) {
+			log.error("Unable to save data", e);
+		}
 	}
 
 	public List<Loop> getLoops() {

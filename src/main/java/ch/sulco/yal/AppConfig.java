@@ -6,25 +6,8 @@ import java.nio.file.Paths;
 import javax.inject.Singleton;
 import javax.sound.sampled.AudioFormat;
 
-import ch.sulco.yal.settings.Settings;
-
 @Singleton
 public class AppConfig {
-
-	private Settings settings;
-
-	public Settings getSettings() {
-		if (settings == null) {
-			settings = new Settings();
-			settings.load(getSettingsPath());
-		}
-		return settings;
-	}
-
-	public void setSettings(Settings settings) {
-		this.settings = settings;
-		this.settings.save(getSettingsPath());
-	}
 
 	public float getSampleRate() {
 		return 44100;

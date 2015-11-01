@@ -107,9 +107,12 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 		});
 	};
 	$scope.updateAudioSettings = function(){
-		console.log($scope.selectedAudioSettings);
 		$scope.settings.audioSettings = angular.fromJson($scope.selectedAudioSettings);
-		console.log($scope.settings);
+		$http({
+			method : 'POST',
+			url : '/settings/new',
+			data: $scope.settings
+		});
 	};
 	
 	updateSettings();

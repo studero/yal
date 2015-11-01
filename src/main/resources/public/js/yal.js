@@ -100,6 +100,12 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	$scope.test = function(){
 		socket.send("test");
 	};
+	$scope.save = function(){
+		$http({
+			method: 'GET',
+			url: '/save'
+		});
+	};
 	$scope.updateAudioSettings = function(){
 		console.log($scope.selectedAudioSettings);
 		$scope.settings.audioSettings = angular.fromJson($scope.selectedAudioSettings);

@@ -30,7 +30,7 @@ public class Settings {
 	public void save(String basePath) {
 		try {
 			Files.write(Paths.get(basePath, AUDIO_SETTINGS_FILENAME), new Gson().toJson(audioSettings).getBytes(),
-					StandardOpenOption.CREATE_NEW);
+					StandardOpenOption.TRUNCATE_EXISTING);
 		} catch (IOException e) {
 			log.error("Unable to save settings", e);
 		}

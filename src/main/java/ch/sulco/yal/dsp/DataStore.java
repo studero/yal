@@ -1,7 +1,13 @@
 package ch.sulco.yal.dsp;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,19 +18,19 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-
 import ch.sulco.yal.Application;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dm.LoopState;
 import ch.sulco.yal.dm.Mapping;
 import ch.sulco.yal.dm.Sample;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 @Singleton
 public class DataStore {
@@ -39,12 +45,6 @@ public class DataStore {
 
 	public void setup() {
 		log.info("Setup");
-		Loop loop = Application.injector.getInstance(Loop.class);
-		// Loop loop = new Loop();
-		loop.setId(0L);
-		loop.setActive(true);
-		loop.setLoopState(LoopState.STOPPED);
-		this.createLoop(loop);
 
 		try {
 			this.mappings.addAll(Lists.newArrayList(
@@ -55,6 +55,81 @@ public class DataStore {
 			log.error("Unable to load mapping", e);
 			throw new RuntimeException("Unable to load mapping", e);
 		}
+		try {
+			this.loops.addAll(Lists.newArrayList(
+					new Gson().fromJson(
+							new FileReader(new File("loops.json")),
+							Loop[].class)));
+			log.info("loops loaded: " + loops);
+		} catch (JsonIOException | JsonSyntaxException | FileNotFoundException e) {
+			log.error("Unable to load loop", e);
+		}
+		try {
+			this.samples.addAll(Lists.newArrayList(
+					new Gson().fromJson(
+							new FileReader(new File("samples.json")),
+							Sample[].class)));
+			log.info("samples loaded: " + samples);
+		} catch (JsonIOException | JsonSyntaxException | FileNotFoundException e) {
+			log.error("Unable to load sample", e);
+		}
+		for (Sample sample : this.samples) {
+			Path path = Paths.get(sample.getId() + ".sample");
+			try {
+				sample.setData(Files.readAllBytes(path));
+				loops.stream().filter(l -> l.getSample(sample.getId()) != null)
+						.forEach(l -> l.getSample(sample.getId()).setData(sample.getData()));
+				sample.setLoop(loops.stream().filter(l -> l.getSample(sample.getId()) != null).findFirst().get());
+				log.info("sample data [" + sample.getId() + "][" + sample.getData().length + "]");
+			} catch (IOException e) {
+				log.error("Unable to load data for sample [" + sample.getId() + "]");
+			}
+		}
+		if (loops.isEmpty()) {
+			Loop loop = Application.injector.getInstance(Loop.class);
+			loop.setId(0L);
+			loop.setActive(true);
+			loop.setLoopState(LoopState.STOPPED);
+			this.createLoop(loop);
+		}
+	}
+
+	@SuppressWarnings("resource")
+	public void persistData() {
+		log.info("Persist data");
+		Gson gson = new Gson();
+		try {
+			String loopsJson = gson.toJson(this.loops);
+			log.info("persist loops: " + loopsJson);
+			FileWriter fileWriter = new FileWriter(new File("loops.json"));
+			fileWriter.write(loopsJson);
+			fileWriter.close();
+		} catch (IOException e) {
+			log.error("Unable to persist loops", e);
+		}
+		try {
+			String json = gson.toJson(this.samples);
+			log.info("persist samples: " + json);
+			FileWriter fileWriter = new FileWriter(new File("samples.json"));
+			fileWriter.write(json);
+			fileWriter.close();
+		} catch (IOException e) {
+			log.error("Unable to persist samples", e);
+		}
+
+		for (Sample sample : samples) {
+			try {
+				log.info("Store sample data [" + sample.getId() + "]");
+				char[] data = new char[sample.getData().length];
+				for (int i = 0; i < sample.getData().length; i++) {
+					data[i] = (char) sample.getData()[i];
+				}
+				new FileWriter(new File(sample.getId() + ".sample")).write(data);
+			} catch (IOException e) {
+				log.error("Unable to persist samples [" + sample.getId() + "]", e);
+			}
+		}
+
 	}
 
 	public List<Loop> getLoops() {

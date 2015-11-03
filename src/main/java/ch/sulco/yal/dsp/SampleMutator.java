@@ -21,7 +21,7 @@ public class SampleMutator {
 	private Map<Long, List<AudioSink>> samplePlayers = new HashMap<>();
 
 	public List<AudioSink> getSamplePlayers(Long sampleId) {
-		return samplePlayers.get(sampleId);
+		return samplePlayers.containsKey(sampleId) ? samplePlayers.get(sampleId) : new ArrayList<>();
 	}
 
 	public void setMute(Long loopId, Long sampleId, boolean mute, AudioSink player, boolean doSynchronization) {

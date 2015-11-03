@@ -13,6 +13,9 @@ public class LoopActivator {
 	private DataStore dataStore;
 
 	@Inject
+	private SampleMutator sampleMutator;
+
+	@Inject
 	private transient Synchronizer synchronizer;
 
 	public void setCurrentLoopId(Long currentLoopId) {
@@ -32,7 +35,7 @@ public class LoopActivator {
 
 	private void updateLoopSamples(Loop loop, boolean active) {
 		for (Sample sample : loop.getSamples()) {
-			for (AudioSink player : sample.getPlayers()) {
+			for (AudioSink player : sampleMutator.getSamplePlayers(sample.getId())) {
 				if (active) {
 					player.startSample(sample, true);
 				} else {

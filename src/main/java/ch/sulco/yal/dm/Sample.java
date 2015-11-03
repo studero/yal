@@ -1,10 +1,5 @@
 package ch.sulco.yal.dm;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import ch.sulco.yal.dsp.audio.AudioSink;
-
 public class Sample {
 	private transient Loop loop;
 	private Long id;
@@ -12,7 +7,6 @@ public class Sample {
 	private Float gain;
 	private Long channelId;
 	private boolean mute = true;
-	private transient List<AudioSink> players = new LinkedList<>();
 
 	private transient byte[] data;
 
@@ -60,28 +54,8 @@ public class Sample {
 		return this.mute;
 	}
 
-	public void setMute(boolean mute, AudioSink player, boolean doSynchronization) {
-		if(player != null){
-			if(mute && players.contains(player)){
-				players.remove(player);
-				if(loop != null && loop.isActive()){
-					player.stopSample(this, doSynchronization);
-				}
-				if(players.isEmpty()){
-					this.mute = true;
-				}
-			}else if(!mute && !players.contains(player)){
-				players.add(player);
-				if(loop != null && loop.isActive()){
-					player.startSample(this, doSynchronization);
-				}
-				this.mute = false;
-			}
-		}
-	}
-	
-	public List<AudioSink> getPlayers(){
-		return players;
+	public void setMute(boolean mute) {
+		this.mute = mute;
 	}
 
 	public Long getChannelId() {

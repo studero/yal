@@ -70,10 +70,12 @@ public class Server implements DataEventListener {
 		get("/volume/:sampleId/:volume",
 				(req, res) -> this.setVolume(Long.parseLong(req.params(":sampleId")), Float.parseFloat(req.params(":volume"))));
 
-		get("/sample/play/:sampleId", (req, res) -> this.playSample(Long.parseLong(req.params(":sampleId"))));
+		get("/sample/play/:loopId/:sampleId",
+				(req, res) -> this.playSample(Long.parseLong(req.params(":loopId")), Long.parseLong(req.params(":sampleId"))));
 
-		get("/sample/:sampleId/:mute",
-				(req, res) -> this.setSampleMute(Long.parseLong(req.params(":sampleId")), Boolean.parseBoolean(req.params(":mute"))));
+		get("/sample/:loopId/:sampleId/:mute",
+				(req, res) -> this.setSampleMute(Long.parseLong(req.params(":loopId")), Long.parseLong(req.params(":sampleId")),
+						Boolean.parseBoolean(req.params(":mute"))));
 	}
 
 	@PostConstruct
@@ -104,8 +106,8 @@ public class Server implements DataEventListener {
 		return "Success";
 	}
 
-	private String playSample(Long sampleId) {
-		this.audioProcessor.setSampleMute(sampleId, false);
+	private String playSample(Long loopId, Long sampleId) {
+		this.audioProcessor.setSampleMute(loopId, sampleId, false);
 		return "Success";
 	}
 
@@ -119,9 +121,9 @@ public class Server implements DataEventListener {
 		return "Success";
 	}
 
-	private String setSampleMute(Long sampleId, boolean mute) {
+	private String setSampleMute(Long loopId, Long sampleId, boolean mute) {
 		log.info("SampleMute [sampleId=" + sampleId + "][mute=" + mute + "]");
-		this.audioProcessor.setSampleMute(sampleId, mute);
+		this.audioProcessor.setSampleMute(loopId, sampleId, mute);
 		return "Success";
 	}
 

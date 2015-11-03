@@ -85,16 +85,16 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 			url : '/monitor/' + channelId + '/' + enabled
 		});
 	};
-	$scope.sampleMute = function(sampleId, mute) {
+	$scope.sampleMute = function(loopId, sampleId, mute) {
 		$http({
 			method : 'GET',
-			url : '/sample/' + sampleId + '/' + mute
+			url : '/sample/' + loopId + '/' + sampleId + '/' + mute
 		});
 	};
-	$scope.playSample = function(sampleId) {
+	$scope.playSample = function(loopId, sampleId) {
 		$http({
 			method : 'GET',
-			url : '/sample/play/' + sampleId
+			url : '/sample/play/' + loopId + '/' + sampleId
 		});
 	};
 	$scope.test = function(){

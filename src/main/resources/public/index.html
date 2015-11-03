@@ -65,10 +65,10 @@
 					<div ng-repeat="(sampleKey, sampleValue) in loopValue.samples | filter:{channelId: value.id}" class="col-xs-12 sample">
 						<div class="panel panel-default sample">
 							<span class="sample-name">{{sampleValue.id}}</span>
-							<button ng-click="sampleMute(sampleValue.id, true)" class="btn btn-primary btn-xs" ng-show="sampleValue.mute == false">
+							<button ng-click="sampleMute(loopValue.id, sampleValue.id, true)" class="btn btn-primary btn-xs" ng-show="sampleValue.mute == false">
 								<span class="glyphicon glyphicon-volume-up"></span>
 							</button>
-							<button ng-click="sampleMute(sampleValue.id, false)" class="btn btn-primary btn-xs" ng-show="sampleValue.mute == true">
+							<button ng-click="sampleMute(loopValue.id, sampleValue.id, false)" class="btn btn-primary btn-xs" ng-show="sampleValue.mute == true">
 								<span class="glyphicon glyphicon-volume-off"></span>
 							</button>
 						</div>	

@@ -11,6 +11,10 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.collect.FluentIterable;
+
 import ch.sulco.yal.Application;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.InputChannel;
@@ -23,10 +27,7 @@ import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.DataStore.ChannelCreated;
 import ch.sulco.yal.dsp.DataStore.DataEvent;
 import ch.sulco.yal.dsp.DataStore.DataEventListener;
-
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.collect.FluentIterable;
+import ch.sulco.yal.dsp.SampleMutator;
 
 @Singleton
 public class Processor implements DataEventListener {
@@ -35,6 +36,9 @@ public class Processor implements DataEventListener {
 
 	@Inject
 	private DataStore dataStore;
+
+	@Inject
+	private SampleMutator sampleMutator;
 
 	private final Map<Long, AudioSource> audioSources = new HashMap<>();
 	private final Map<Long, AudioSink> audioSinks = new HashMap<>();
@@ -110,10 +114,10 @@ public class Processor implements DataEventListener {
 		this.audioSources.get(channelId).setMonitoring(monitoring);
 	}
 
-	public void setSampleMute(Long sampleId, boolean mute) {
+	public void setSampleMute(Long loopId, Long sampleId, boolean mute) {
 		Optional<AudioSink> firstPlayer = FluentIterable.from(this.audioSinks.values()).first();
 		if (firstPlayer.isPresent()) {
-			setSampleMute(this.dataStore.getCurrentLoop().getId(), sampleId, firstPlayer.get(), mute);
+			setSampleMute(loopId, sampleId, firstPlayer.get(), mute);
 		}
 	}
 
@@ -123,15 +127,9 @@ public class Processor implements DataEventListener {
 	}
 
 	public void setSampleMute(Long loopId, Long sampleId, AudioSink player, boolean mute) {
+		log.info("setSampleMute [loopId=" + loopId + "][sampleId=" + sampleId + "][mute=" + mute + "]");
 		if (player != null) {
-			Loop loop = this.dataStore.getLoop(loopId);
-			if (loop != null) {
-				Sample sample = dataStore.getSample(sampleId);
-				if (sample != null) {
-					sample.setMute(mute, player, true);
-					this.dataStore.updateSample(sample);
-				}
-			}
+			sampleMutator.setMute(loopId, sampleId, mute, player, true);
 		}
 	}
 

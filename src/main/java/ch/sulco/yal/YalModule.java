@@ -6,6 +6,7 @@ import ch.sulco.yal.controller.MidiControl;
 import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dsp.ClickTrackGenerator;
 import ch.sulco.yal.dsp.DataStore;
+import ch.sulco.yal.dsp.SampleMutator;
 import ch.sulco.yal.dsp.audio.AudioSink;
 import ch.sulco.yal.dsp.audio.AudioSource;
 import ch.sulco.yal.dsp.audio.Processor;
@@ -31,5 +32,6 @@ public class YalModule extends AbstractModule {
 		this.bind(Synchronizer.class);
 		this.bind(Server.class);
 		this.bind(ClickTrackGenerator.class);
+		this.bind(SampleMutator.class);
 	}
 }

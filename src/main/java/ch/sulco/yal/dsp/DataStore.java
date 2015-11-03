@@ -94,7 +94,6 @@ public class DataStore {
 				sample.setData(Files.readAllBytes(path));
 				loops.stream().filter(l -> l.getSample(sample.getId()) != null)
 						.forEach(l -> l.getSample(sample.getId()).setData(sample.getData()));
-				sample.setLoop(loops.stream().filter(l -> l.getSample(sample.getId()) != null).findFirst().get());
 				log.info("sample data [" + sample.getId() + "][" + sample.getData().length + "]");
 			} catch (IOException e) {
 				log.error("Unable to load data for sample [" + sample.getId() + "]");
@@ -236,6 +235,7 @@ public class DataStore {
 	public void updateSample(Sample sample) {
 		this.samples.remove(getSample(sample.getId()));
 		this.samples.add(sample);
+		loops.stream().forEach(l -> l.updateSample(sample));
 		this.addEvent(new SampleUpdated(sample));
 	}
 

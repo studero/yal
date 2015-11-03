@@ -1,7 +1,6 @@
 package ch.sulco.yal.dm;
 
 public class Sample {
-	private transient Loop loop;
 	private Long id;
 	private String description;
 	private Float gain;
@@ -32,14 +31,6 @@ public class Sample {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public Loop getLoop() {
-		return this.loop;
-	}
-
-	public void setLoop(Loop loop) {
-		this.loop = loop;
 	}
 
 	public Float getGain() {

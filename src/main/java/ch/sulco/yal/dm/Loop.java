@@ -2,6 +2,7 @@ package ch.sulco.yal.dm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
@@ -51,8 +52,14 @@ public class Loop {
 	}
 
 	public void addSample(Sample sample) {
-		sample.setLoop(this);
 		this.samples.add(sample);
+	}
+
+	public void updateSample(Sample sample) {
+		if (samples.stream().anyMatch(s -> Objects.equals(s.getId(), sample.getId()))) {
+			samples.removeIf(s -> Objects.equals(s.getId(), sample.getId()));
+			samples.add(sample);
+		}
 	}
 
 	public List<Sample> getSamples() {

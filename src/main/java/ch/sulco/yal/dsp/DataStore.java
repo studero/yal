@@ -73,7 +73,7 @@ public class DataStore {
 		try {
 			this.loops.addAll(Lists.newArrayList(
 					new Gson().fromJson(
-							new FileReader(new File("loops.json")),
+							new FileReader(new File(appConfig.getDataPath() + "/loops.json")),
 							Loop[].class)));
 			log.info("loops loaded: " + loops);
 		} catch (JsonIOException | JsonSyntaxException | FileNotFoundException e) {
@@ -82,14 +82,14 @@ public class DataStore {
 		try {
 			this.samples.addAll(Lists.newArrayList(
 					new Gson().fromJson(
-							new FileReader(new File("samples.json")),
+							new FileReader(new File(appConfig.getDataPath() + "/samples.json")),
 							Sample[].class)));
 			log.info("samples loaded: " + samples);
 		} catch (JsonIOException | JsonSyntaxException | FileNotFoundException e) {
 			log.error("Unable to load sample", e);
 		}
 		for (Sample sample : this.samples) {
-			Path path = Paths.get(sample.getId() + ".sample");
+			Path path = Paths.get(appConfig.getDataPath() + "/" + sample.getId() + ".sample");
 			try {
 				sample.setData(Files.readAllBytes(path));
 				loops.stream().filter(l -> l.getSample(sample.getId()) != null)

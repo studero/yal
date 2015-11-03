@@ -28,6 +28,10 @@ public class AppConfig {
 		return Paths.get(getLocalRoot().toString(), "config").toString();
 	}
 
+	public String getDataPath() {
+		return Paths.get(getLocalRoot().toString(), "data").toString();
+	}
+
 	private Path getLocalRoot() {
 		return Paths.get(System.getProperty("user.home"), ".yal");
 	}

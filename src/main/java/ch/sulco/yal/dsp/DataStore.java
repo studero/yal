@@ -116,7 +116,7 @@ public class DataStore {
 		try {
 			String loopsJson = gson.toJson(this.loops);
 			log.info("persist loops: " + loopsJson);
-			FileWriter fileWriter = new FileWriter(new File("loops.json"));
+			FileWriter fileWriter = new FileWriter(new File(appConfig.getDataPath() + "/loops.json"));
 			fileWriter.write(loopsJson);
 			fileWriter.close();
 		} catch (IOException e) {
@@ -125,7 +125,7 @@ public class DataStore {
 		try {
 			String json = gson.toJson(this.samples);
 			log.info("persist samples: " + json);
-			FileWriter fileWriter = new FileWriter(new File("samples.json"));
+			FileWriter fileWriter = new FileWriter(new File(appConfig.getDataPath() + "/samples.json"));
 			fileWriter.write(json);
 			fileWriter.close();
 		} catch (IOException e) {
@@ -139,7 +139,7 @@ public class DataStore {
 				for (int i = 0; i < sample.getData().length; i++) {
 					data[i] = (char) sample.getData()[i];
 				}
-				new FileWriter(new File(sample.getId() + ".sample")).write(data);
+				new FileWriter(new File(appConfig.getDataPath() + "/" + sample.getId() + ".sample")).write(data);
 			} catch (IOException e) {
 				log.error("Unable to persist samples [" + sample.getId() + "]", e);
 			}

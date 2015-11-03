@@ -12,6 +12,7 @@ public class Loop {
 	private String name;
 	private List<Sample> samples = new ArrayList<>();
 	private Long timeLength = 0L;
+	private Long position = 0L;
 	private int dataLength = 0;
 	private boolean active;
 	private LoopState loopState;
@@ -73,6 +74,14 @@ public class Loop {
 
 	public void setTimeLength(Long timeLength) {
 		this.timeLength = timeLength;
+	}
+
+	public Long getPosition() {
+		return position;
+	}
+
+	public void setPosition(Long position) {
+		this.position = position;
 	}
 
 	public int getDataLength() {

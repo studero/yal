@@ -18,7 +18,7 @@
 		</div>
 		
 		<div class="panel panel-default">
-			<div class>{{currentLoop.position | timeformat}} / {{currentLoop.length | timeformat}}</div>
+			<div class>{{currentLoop.position | timeformat}} / {{currentLoop.timeLength | timeformat}}</div>
 			<button ng-click="play()" class="btn btn-primary btn-md" ng-show="currentLoop.loopState == 'STOPPED' || currentLoop.loopState == 'PAUSED'">
 				<span class="glyphicon glyphicon-play"></span>
 			</button>

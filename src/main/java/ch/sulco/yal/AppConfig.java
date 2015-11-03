@@ -18,7 +18,7 @@ public class AppConfig {
 	}
 
 	public AudioFormat getAudioFormat() {
-		int channels = 1;
+		int channels = 2;
 		boolean signed = true;
 		boolean bigEndian = false;
 		return new AudioFormat(this.getSampleRate(), this.getSampleSize(), channels, signed, bigEndian);

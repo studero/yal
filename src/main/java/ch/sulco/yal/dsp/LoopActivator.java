@@ -34,6 +34,9 @@ public class LoopActivator {
 	}
 
 	private void updateLoopSamples(Loop loop, boolean active) {
+		if (active && !loop.getSamples().isEmpty()) {
+			this.synchronizer.initialize(loop.getTimeLength());
+		}
 		for (Sample sample : loop.getSamples()) {
 			for (AudioSink player : sampleMutator.getSamplePlayers(sample.getId())) {
 				if (active) {
@@ -42,9 +45,6 @@ public class LoopActivator {
 					player.stopSample(sample, true);
 				}
 			}
-		}
-		if (active && !loop.getSamples().isEmpty()) {
-			this.synchronizer.initialize(loop.getTimeLength());
 		}
 	}
 

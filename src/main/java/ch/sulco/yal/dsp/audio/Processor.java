@@ -26,6 +26,7 @@ import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.DataStore.ChannelCreated;
 import ch.sulco.yal.dsp.DataStore.DataEvent;
 import ch.sulco.yal.dsp.DataStore.DataEventListener;
+import ch.sulco.yal.dsp.DataStore.LooperStateUpdated;
 import ch.sulco.yal.dsp.SampleMutator;
 
 @Singleton
@@ -145,6 +146,23 @@ public class Processor implements DataEventListener {
 					AudioSink audioSink = Application.injector.getInstance(AudioSink.class);
 					this.audioSinks.put(outputChannel.getId(), audioSink);
 				}
+			}
+		} else if (event instanceof LooperStateUpdated) {
+			LooperStateUpdated looperStateUpdated = (LooperStateUpdated) event;
+			if (looperStateUpdated.getLooperState() == LooperState.PLAYING) {
+				dataStore.getCurrentLoop().getSamples().stream()
+						.forEach(s -> sampleMutator.startSample(
+								dataStore.getCurrentLoop().getId(),
+								s.getId(),
+								audioSinks.values().stream().findFirst().get(),
+								true));
+			} else {
+				dataStore.getCurrentLoop().getSamples().stream()
+						.forEach(s -> sampleMutator.stopSample(
+								dataStore.getCurrentLoop().getId(),
+								s.getId(),
+								audioSinks.values().stream().findFirst().get(),
+								true));
 			}
 		}
 	}

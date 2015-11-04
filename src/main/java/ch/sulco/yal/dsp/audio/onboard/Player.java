@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.sound.sampled.BooleanControl;
+import javax.sound.sampled.BooleanControl.Type;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 
@@ -20,8 +22,8 @@ public class Player extends AudioSink {
 	private AudioSystemProvider audioSystemProvider;
 
 	private Map<Long, Clip> idToClipMap = new HashMap<>();
-	
-	private Clip getSampleClip(Sample sample){
+
+	private Clip getSampleClip(Sample sample) {
 		Clip clip = this.idToClipMap.get(sample.getId());
 		try {
 			if (clip == null) {
@@ -52,9 +54,9 @@ public class Player extends AudioSink {
 	protected void resetSamplePosition(Sample sample) {
 		this.getSampleClip(sample).setFramePosition(0);
 	}
-	
+
 	@Override
-	protected void endSample(Sample sample){
+	protected void endSample(Sample sample) {
 		Clip clip = this.getSampleClip(sample);
 		clip.stop();
 		clip.setFramePosition(0);
@@ -63,5 +65,11 @@ public class Player extends AudioSink {
 	@Override
 	protected void finishSample(Sample sample) {
 		this.getSampleClip(sample).loop(0);
+	}
+
+	@Override
+	public void muteSample(Sample sample, boolean mute) {
+		Clip clip = getSampleClip(sample);
+		((BooleanControl) clip.getControl(Type.MUTE)).setValue(mute);
 	}
 }

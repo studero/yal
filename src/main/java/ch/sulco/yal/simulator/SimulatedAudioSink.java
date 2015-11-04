@@ -39,4 +39,9 @@ public class SimulatedAudioSink extends AudioSink {
 	protected void finishSample(Sample sample) {
 
 	}
+
+	@Override
+	public void muteSample(Sample sample, boolean mute) {
+
+	}
 }

@@ -25,7 +25,7 @@ public abstract class AudioSink implements LoopListener {
 			this.playingSamples.add(sample);
 			this.resetSamplePosition(sample);
 			synchronizer.addLoopListerner(this);
-			if(!doSynchronization){
+			if (!doSynchronization) {
 				log.info("Play position " + synchronizer.getCurrentPosition());
 				this.playSample(sample, synchronizer.getCurrentPosition(), -1);
 			}
@@ -33,11 +33,11 @@ public abstract class AudioSink implements LoopListener {
 	}
 
 	protected abstract void playSample(Sample sample, long position, int count);
-	
+
 	protected abstract long getSamplePosition(Sample sample);
-	
+
 	protected abstract void resetSamplePosition(Sample sample);
-	
+
 	protected abstract void endSample(Sample sample);
 
 	protected abstract void finishSample(Sample sample);
@@ -45,9 +45,9 @@ public abstract class AudioSink implements LoopListener {
 	public void stopSample(Sample sample, boolean doSynchronization) {
 		log.info("Stop sample [" + sample.getId() + "]");
 		if (this.playingSamples.contains(sample)) {
-			if(doSynchronization){
+			if (doSynchronization) {
 				this.finishSample(sample);
-			}else{
+			} else {
 				this.endSample(sample);
 			}
 			this.playingSamples.remove(sample);
@@ -57,23 +57,25 @@ public abstract class AudioSink implements LoopListener {
 		}
 	}
 
+	public abstract void muteSample(Sample sample, boolean mute);
+
 	@Override
 	public long[] loopStarted(boolean firstLoop) {
 		long halfLoopLength = synchronizer.getLoopLength() / 2;
-		long position[] = {halfLoopLength,0,-halfLoopLength};
+		long position[] = { halfLoopLength, 0, -halfLoopLength };
 		for (Sample sample : this.playingSamples) {
 			long samplePosition = this.getSamplePosition(sample);
-			if(samplePosition == 0){
+			if (samplePosition == 0) {
 				this.playSample(sample, 0, -1);
-			}else{
+			} else {
 				samplePosition += halfLoopLength;
 				samplePosition = samplePosition % synchronizer.getLoopLength();
 				samplePosition -= halfLoopLength;
-				if(samplePosition < position[0]){
+				if (samplePosition < position[0]) {
 					position[0] = samplePosition;
 				}
 				position[1] += samplePosition;
-				if(samplePosition > position[2]){
+				if (samplePosition > position[2]) {
 					position[2] = samplePosition;
 				}
 			}

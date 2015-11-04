@@ -32,19 +32,56 @@ public class SampleMutator {
 			Sample sample = dataStore.getSample(loopId, sampleId);
 			Loop loop = dataStore.getLoop(loopId);
 			if (sample != null && loop != null) {
-				if (mute && samplePlayers.get(sampleId).contains(player)) {
-					samplePlayers.get(sampleId).remove(player);
-					if (loop != null && loop.isActive()) {
-						player.stopSample(sample, doSynchronization);
-					}
-				} else if (!mute && !samplePlayers.get(sampleId).contains(player)) {
-					samplePlayers.get(sampleId).add(player);
-					if (loop != null && loop.isActive()) {
-						player.startSample(sample, doSynchronization);
-					}
-				}
+				// if (mute && samplePlayers.get(sampleId).contains(player)) {
+				// samplePlayers.get(sampleId).remove(player);
+				// if (loop != null && loop.isActive() &&
+				// dataStore.getLooperState() == LooperState.PLAYING) {
+				// player.stopSample(sample, doSynchronization);
+				// }
+				// } else if (!mute &&
+				// !samplePlayers.get(sampleId).contains(player)) {
+				// samplePlayers.get(sampleId).add(player);
+				// if (loop != null && loop.isActive() &&
+				// dataStore.getLooperState() == LooperState.PLAYING) {
+				// player.startSample(sample, doSynchronization);
+				// }
+				// }
+				player.muteSample(sample, mute);
 				sample.setMute(mute);
 				dataStore.updateSample(loopId, sample);
+			}
+		}
+	}
+
+	public void stopSample(Long loopId, Long sampleId, AudioSink player, boolean doSynchronization) {
+		if (!samplePlayers.containsKey(sampleId)) {
+			samplePlayers.put(sampleId, new ArrayList<>());
+		}
+		if (player != null) {
+			Sample sample = dataStore.getSample(loopId, sampleId);
+			Loop loop = dataStore.getLoop(loopId);
+			if (sample != null && loop != null) {
+				if (samplePlayers.get(sampleId).contains(player)) {
+					samplePlayers.get(sampleId).remove(player);
+					player.stopSample(sample, doSynchronization);
+				}
+			}
+		}
+	}
+
+	public void startSample(Long loopId, Long sampleId, AudioSink player, boolean doSynchronization) {
+		if (!samplePlayers.containsKey(sampleId)) {
+			samplePlayers.put(sampleId, new ArrayList<>());
+		}
+		if (player != null) {
+			Sample sample = dataStore.getSample(loopId, sampleId);
+			Loop loop = dataStore.getLoop(loopId);
+			if (sample != null && loop != null) {
+				if (!samplePlayers.get(sampleId).contains(player)) {
+					samplePlayers.get(sampleId).add(player);
+				}
+				player.startSample(sample, doSynchronization);
+
 			}
 		}
 	}

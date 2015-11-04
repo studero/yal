@@ -20,8 +20,6 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
@@ -167,30 +165,15 @@ public class DataStore {
 	}
 
 	public Loop getCurrentLoop() {
-		return FluentIterable.from(this.loops).firstMatch(new Predicate<Loop>() {
-			@Override
-			public boolean apply(Loop input) {
-				return input.isActive();
-			}
-		}).orNull();
+		return loops.stream().filter(l -> l.isActive()).findFirst().orElse(null);
 	}
 
 	public Sample getCurrentLoopSample(long sampleId) {
-		return FluentIterable.from(this.getCurrentLoop().getSamples()).firstMatch(new Predicate<Sample>() {
-			@Override
-			public boolean apply(Sample input) {
-				return input.getId() == sampleId;
-			}
-		}).orNull();
+		return getCurrentLoop().getSamples().stream().filter(s -> Objects.equals(sampleId, s.getId())).findFirst().orElse(null);
 	}
 
 	public Loop getLoop(Long id) {
-		return FluentIterable.from(this.loops).firstMatch(new Predicate<Loop>() {
-			@Override
-			public boolean apply(Loop input) {
-				return id == input.getId();
-			}
-		}).orNull();
+		return loops.stream().filter(l -> Objects.equals(id, l.getId())).findFirst().orElse(null);
 	}
 
 	public void createLoop(Loop loop) {
@@ -225,12 +208,7 @@ public class DataStore {
 	}
 
 	public Channel getChannel(final Long id) {
-		return FluentIterable.from(this.channels).firstMatch(new Predicate<Channel>() {
-			@Override
-			public boolean apply(Channel input) {
-				return Objects.equals(id, input.getId());
-			}
-		}).orNull();
+		return channels.stream().filter(c -> Objects.equals(id, c.getId())).findFirst().orElse(null);
 	}
 
 	public void createChannel(Channel channel) {

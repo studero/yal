@@ -7,7 +7,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
-import javax.sound.sampled.LineListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,30 +18,22 @@ public class Synchronizer {
 
 	private final static Logger log = LoggerFactory.getLogger(Synchronizer.class);
 
-	private LineListener lineListener;
 	private LinkedList<LoopListener> loopListeners = new LinkedList<LoopListener>();
 	private long loopLength = 0;
 	private ScheduledExecutorService synchronizeService = Executors.newSingleThreadScheduledExecutor();
 	private ScheduledFuture<?> synchronizeTimer;
 
-	public void initialize(long length) {
+	public void setLength(long length) {
 		loopLength = length;
-		log.info("Synchronizer loop initialized, length to " + loopLength);
+		log.info("length set to " + loopLength);
 	}
 
-	public void reset() {
-		loopLength = 0;
-		log.info("Synchronizer loop cleared");
-	}
-
-	public void checkLine() {
-		if (this.lineListener == null) {
-			if (synchronizeTimer == null) {
-				synchronizeEvent();
-				log.info("Synchronization loop started");
-			}
-			log.info("Synchronization loop event set up " + synchronizeTimer.getDelay(TimeUnit.MICROSECONDS));
+	private void checkLine() {
+		if (synchronizeTimer == null) {
+			synchronizeEvent();
+			log.info("Synchronization loop started");
 		}
+		log.info("Synchronization loop event set up " + synchronizeTimer.getDelay(TimeUnit.MICROSECONDS));
 	}
 
 	private void startTimer(long time) {

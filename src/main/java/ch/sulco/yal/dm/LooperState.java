@@ -1,6 +1,6 @@
 package ch.sulco.yal.dm;
 
-public enum LoopState {
+public enum LooperState {
 	STOPPED,
 	PLAYING,
 	PAUSED

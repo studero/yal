@@ -19,7 +19,6 @@ public class LoopTest {
 		loop.setClickTrackMuted(true);
 		loop.setDataLength(120000);
 		loop.setId(121212L);
-		loop.setLoopState(LoopState.PAUSED);
 		loop.setName("main");
 		loop.setTimeLength(40000L);
 
@@ -32,7 +31,6 @@ public class LoopTest {
 				.assertThat("clickTrackMuted", is(true))
 				.assertThat("dataLength", is(120000))
 				.assertThat("id", is(121212))
-				.assertThat("loopState", is("PAUSED"))
 				.assertThat("name", is("main"))
 				.assertThat("timeLength", is(40000));
 	}

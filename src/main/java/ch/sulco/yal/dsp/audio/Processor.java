@@ -18,8 +18,7 @@ import com.google.common.collect.FluentIterable;
 import ch.sulco.yal.Application;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.InputChannel;
-import ch.sulco.yal.dm.Loop;
-import ch.sulco.yal.dm.LoopState;
+import ch.sulco.yal.dm.LooperState;
 import ch.sulco.yal.dm.OutputChannel;
 import ch.sulco.yal.dm.RecordingState;
 import ch.sulco.yal.dm.Sample;
@@ -60,23 +59,17 @@ public class Processor implements DataEventListener {
 
 	public void play() {
 		log.info("Play");
-		Loop currentLoop = this.dataStore.getCurrentLoop();
-		currentLoop.setLoopState(LoopState.PLAYING);
-		this.dataStore.updateLoop(currentLoop);
+		dataStore.setLooperState(LooperState.PLAYING);
 	}
 
 	public void pause() {
 		// TODO pause players
-		Loop currentLoop = this.dataStore.getCurrentLoop();
-		currentLoop.setLoopState(LoopState.PAUSED);
-		this.dataStore.updateLoop(currentLoop);
+		dataStore.setLooperState(LooperState.PAUSED);
 	}
 
 	public void stop() {
 		// TODO stop players
-		Loop currentLoop = this.dataStore.getCurrentLoop();
-		currentLoop.setLoopState(LoopState.STOPPED);
-		this.dataStore.updateLoop(currentLoop);
+		dataStore.setLooperState(LooperState.STOPPED);
 	}
 
 	public void loop() {

@@ -39,6 +39,8 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	    $scope.currentLoop.samples[event.sample.id] = event.sample;
 	  } else if(event.eventType == 'SampleUpdated'){
 	    $scope.currentLoop.samples[event.sample.id] = event.sample;
+	  } else if(event.eventType == 'LooperStateUpdated'){
+	    $scope.looperState = event.looperState;
 	  }
 	};
 
@@ -121,6 +123,8 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	updateChannels();
 	updateLoops();
 	
+	updateLooperState();
+	
 	function updateSettings(){
 		$http({
 			method : 'GET',
@@ -157,6 +161,15 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 			url : '/length'
 		}).success(function(data, status, headers, config) {
 			$scope.loopLength = data;
+		}).error(function(data, status, headers, config) {
+		});
+	}
+	function updateLooperState(){
+		$http({
+			method : 'GET',
+			url : '/looperstate'
+		}).success(function(data, status, headers, config) {
+			$scope.looperState = data;
 		}).error(function(data, status, headers, config) {
 		});
 	}

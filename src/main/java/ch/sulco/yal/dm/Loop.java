@@ -16,7 +16,6 @@ public class Loop {
 	private Long position = 0L;
 	private int dataLength = 0;
 	private boolean active;
-	private LoopState loopState;
 
 	private transient Sample clickTrack;
 	private Integer bars = 1;
@@ -105,14 +104,6 @@ public class Loop {
 
 	public void setActive(boolean active) {
 		this.active = active;
-	}
-
-	public LoopState getLoopState() {
-		return this.loopState;
-	}
-
-	public void setLoopState(LoopState loopState) {
-		this.loopState = loopState;
 	}
 
 	public Sample getClickTrack() {

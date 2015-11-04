@@ -50,6 +50,7 @@ public class Server implements DataEventListener {
 		get("/stop", (req, res) -> this.stop());
 		get("/loop", (req, res) -> this.loop());
 		get("/length", (req, res) -> this.getLoopLength());
+		get("/looperstate", (req, res) -> this.getLooperState());
 		get("/channels", (req, res) -> this.getChannels());
 		get("/loops", (req, res) -> this.getLoops());
 		get("/settings", (req, res) -> this.getSettings());
@@ -113,6 +114,10 @@ public class Server implements DataEventListener {
 
 	private String getLoopLength() {
 		return this.dataStore.getCurrentLoop().getTimeLength().toString();
+	}
+
+	private String getLooperState() {
+		return this.dataStore.getLooperState().toString();
 	}
 
 	private String setRecord(Long channelId, boolean enabled) {

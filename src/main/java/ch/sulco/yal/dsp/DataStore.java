@@ -31,7 +31,7 @@ import ch.sulco.yal.AppConfig;
 import ch.sulco.yal.Application;
 import ch.sulco.yal.dm.Channel;
 import ch.sulco.yal.dm.Loop;
-import ch.sulco.yal.dm.LoopState;
+import ch.sulco.yal.dm.LooperState;
 import ch.sulco.yal.dm.Mapping;
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.settings.AudioSettings;
@@ -45,6 +45,8 @@ public class DataStore {
 
 	@Inject
 	private AppConfig appConfig;
+
+	private LooperState looperState = LooperState.STOPPED;
 
 	private final List<Loop> loops = new ArrayList<>();
 	private final List<Channel> channels = new ArrayList<>();
@@ -95,7 +97,6 @@ public class DataStore {
 			Loop loop = Application.injector.getInstance(Loop.class);
 			loop.setId(0L);
 			loop.setActive(true);
-			loop.setLoopState(LoopState.STOPPED);
 			this.createLoop(loop);
 		}
 	}
@@ -253,6 +254,15 @@ public class DataStore {
 		this.listeners.add(listener);
 	}
 
+	public LooperState getLooperState() {
+		return looperState;
+	}
+
+	public void setLooperState(LooperState looperState) {
+		this.looperState = looperState;
+		addEvent(new LooperStateUpdated(looperState));
+	}
+
 	private void addEvent(DataEvent event) {
 		for (DataEventListener listener : this.listeners) {
 			listener.onDataEvent(event);
@@ -352,6 +362,19 @@ public class DataStore {
 
 		public Sample getSample() {
 			return sample;
+		}
+	}
+
+	public final class LooperStateUpdated extends DataEvent {
+		private final LooperState looperState;
+
+		LooperStateUpdated(LooperState looperState) {
+			super();
+			this.looperState = looperState;
+		}
+
+		public LooperState getLooperState() {
+			return looperState;
 		}
 	}
 }

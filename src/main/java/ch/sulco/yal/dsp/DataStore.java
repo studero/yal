@@ -47,7 +47,6 @@ public class DataStore {
 	private AppConfig appConfig;
 
 	private final List<Loop> loops = new ArrayList<>();
-	private final List<Sample> samples = new ArrayList<>();
 	private final List<Channel> channels = new ArrayList<>();
 	private final List<Mapping> mappings = new ArrayList<>();
 
@@ -79,24 +78,17 @@ public class DataStore {
 		} catch (JsonIOException | JsonSyntaxException | FileNotFoundException e) {
 			log.error("Unable to load loop", e);
 		}
-		try {
-			this.samples.addAll(Lists.newArrayList(
-					new Gson().fromJson(
-							new FileReader(new File(appConfig.getDataPath() + "/samples.json")),
-							Sample[].class)));
-			log.info("samples loaded: " + samples);
-		} catch (JsonIOException | JsonSyntaxException | FileNotFoundException e) {
-			log.error("Unable to load sample", e);
-		}
-		for (Sample sample : this.samples) {
-			Path path = Paths.get(appConfig.getDataPath() + "/" + sample.getId() + ".sample");
-			try {
-				sample.setData(Files.readAllBytes(path));
-				loops.stream().filter(l -> l.getSample(sample.getId()) != null)
-						.forEach(l -> l.getSample(sample.getId()).setData(sample.getData()));
-				log.info("sample data [" + sample.getId() + "][" + sample.getData().length + "]");
-			} catch (IOException e) {
-				log.error("Unable to load data for sample [" + sample.getId() + "]");
+		for (Loop loop : this.loops) {
+			for (Sample sample : loop.getSamples()) {
+				Path path = Paths.get(appConfig.getDataPath() + "/" + sample.getId() + ".sample");
+				try {
+					sample.setData(Files.readAllBytes(path));
+					loops.stream().filter(l -> l.getSample(sample.getId()) != null)
+							.forEach(l -> l.getSample(sample.getId()).setData(sample.getData()));
+					log.info("sample data [" + sample.getId() + "][" + sample.getData().length + "]");
+				} catch (IOException e) {
+					log.error("Unable to load data for sample [" + sample.getId() + "]");
+				}
 			}
 		}
 		if (loops.isEmpty()) {
@@ -121,26 +113,19 @@ public class DataStore {
 		} catch (IOException e) {
 			log.error("Unable to persist loops", e);
 		}
-		try {
-			String json = gson.toJson(this.samples);
-			log.info("persist samples: " + json);
-			FileWriter fileWriter = new FileWriter(new File(appConfig.getDataPath() + "/samples.json"));
-			fileWriter.write(json);
-			fileWriter.close();
-		} catch (IOException e) {
-			log.error("Unable to persist samples", e);
-		}
 
-		for (Sample sample : samples) {
-			try {
-				log.info("Store sample data [" + sample.getId() + "]");
-				char[] data = new char[sample.getData().length];
-				for (int i = 0; i < sample.getData().length; i++) {
-					data[i] = (char) sample.getData()[i];
+		for (Loop loop : loops) {
+			for (Sample sample : loop.getSamples()) {
+				try {
+					log.info("Store sample data [" + sample.getId() + "]");
+					char[] data = new char[sample.getData().length];
+					for (int i = 0; i < sample.getData().length; i++) {
+						data[i] = (char) sample.getData()[i];
+					}
+					new FileWriter(new File(appConfig.getDataPath() + "/" + sample.getId() + ".sample")).write(data);
+				} catch (IOException e) {
+					log.error("Unable to persist samples [" + sample.getId() + "]", e);
 				}
-				new FileWriter(new File(appConfig.getDataPath() + "/" + sample.getId() + ".sample")).write(data);
-			} catch (IOException e) {
-				log.error("Unable to persist samples [" + sample.getId() + "]", e);
 			}
 		}
 
@@ -218,25 +203,22 @@ public class DataStore {
 		this.addEvent(new LoopUpdated(loop));
 	}
 
-	public Sample getSample(Long id) {
-		return FluentIterable.from(this.samples).firstMatch(new Predicate<Sample>() {
-			@Override
-			public boolean apply(Sample input) {
-				return id == input.getId();
-			}
-		}).orNull();
+	public Sample getSample(Long loopId, Long sampleId) {
+		return loops.stream().filter(l -> Objects.equals(l.getId(), loopId)).findFirst().map(l -> l.getSample(sampleId)).get();
 	}
 
-	public void createSample(Sample sample) {
-		samples.add(sample);
+	public void createSample(Long loopId, Sample sample) {
+		Loop loop = getLoop(loopId);
+		loop.addSample(sample);
 		this.addEvent(new SampleCreated(sample));
+		this.addEvent(new LoopUpdated(loop));
 	}
 
-	public void updateSample(Sample sample) {
-		this.samples.remove(getSample(sample.getId()));
-		this.samples.add(sample);
-		loops.stream().forEach(l -> l.updateSample(sample));
+	public void updateSample(Long loopId, Sample sample) {
+		Loop loop = getLoop(loopId);
+		loop.updateSample(sample);
 		this.addEvent(new SampleUpdated(sample));
+		this.addEvent(new LoopUpdated(loop));
 	}
 
 	public List<Channel> getChannels() {

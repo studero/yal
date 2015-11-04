@@ -100,10 +100,9 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 			} else {
 				byte[] adaptedData = Arrays.copyOf(this.recordedSample, currentLoop.getDataLength());
 				sample.setData(adaptedData);
-			}
-			currentLoop.addSample(sample);
-			dataStore.createSample(sample);
+			}			
 			dataStore.updateLoop(currentLoop);
+			dataStore.createSample(currentLoop.getId(), sample);
 			this.recordedSample = null;
 			this.recordingSample = null;
 		}

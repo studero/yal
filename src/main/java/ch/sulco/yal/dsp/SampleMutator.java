@@ -29,7 +29,7 @@ public class SampleMutator {
 			samplePlayers.put(sampleId, new ArrayList<>());
 		}
 		if (player != null) {
-			Sample sample = dataStore.getSample(sampleId);
+			Sample sample = dataStore.getSample(loopId, sampleId);
 			Loop loop = dataStore.getLoop(loopId);
 			if (sample != null && loop != null) {
 				if (mute && samplePlayers.get(sampleId).contains(player)) {

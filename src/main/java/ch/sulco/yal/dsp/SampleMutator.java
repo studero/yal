@@ -81,7 +81,9 @@ public class SampleMutator {
 					samplePlayers.get(sampleId).add(player);
 				}
 				player.startSample(sample, doSynchronization);
-
+				if (sample.isMute()) {
+					player.muteSample(sample, true);
+				}
 			}
 		}
 	}

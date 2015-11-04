@@ -211,14 +211,12 @@ public class DataStore {
 	public void createSample(Long loopId, Sample sample) {
 		Loop loop = getLoop(loopId);
 		loop.addSample(sample);
-		this.addEvent(new SampleCreated(sample));
 		this.addEvent(new LoopUpdated(loop));
 	}
 
 	public void updateSample(Long loopId, Sample sample) {
 		Loop loop = getLoop(loopId);
 		loop.updateSample(sample);
-		this.addEvent(new SampleUpdated(sample));
 		this.addEvent(new LoopUpdated(loop));
 	}
 
@@ -336,32 +334,6 @@ public class DataStore {
 
 		public Loop getLoop() {
 			return loop;
-		}
-	}
-
-	public final class SampleCreated extends DataEvent {
-		private final Sample sample;
-
-		SampleCreated(Sample sample) {
-			super();
-			this.sample = sample;
-		}
-
-		public Sample getSample() {
-			return sample;
-		}
-	}
-
-	public final class SampleUpdated extends DataEvent {
-		private final Sample sample;
-
-		SampleUpdated(Sample sample) {
-			super();
-			this.sample = sample;
-		}
-
-		public Sample getSample() {
-			return sample;
 		}
 	}
 

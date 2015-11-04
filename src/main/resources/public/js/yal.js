@@ -35,10 +35,6 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 	  } else if(event.eventType == 'LoopUpdated'){
 	    $scope.loops[event.loop.id] = event.loop;
 	    updateCurrentLoop();	
-	  } else if(event.eventType == 'SampleCreated'){
-	    $scope.currentLoop.samples[event.sample.id] = event.sample;
-	  } else if(event.eventType == 'SampleUpdated'){
-	    $scope.currentLoop.samples[event.sample.id] = event.sample;
 	  } else if(event.eventType == 'LooperStateUpdated'){
 	    $scope.looperState = event.looperState;
 	  }

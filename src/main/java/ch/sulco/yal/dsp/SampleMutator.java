@@ -37,16 +37,14 @@ public class SampleMutator {
 					if (loop != null && loop.isActive()) {
 						player.stopSample(sample, doSynchronization);
 					}
-					if (samplePlayers.get(sampleId).isEmpty()) {
-						sample.setMute(true);
-					}
 				} else if (!mute && !samplePlayers.get(sampleId).contains(player)) {
 					samplePlayers.get(sampleId).add(player);
 					if (loop != null && loop.isActive()) {
 						player.startSample(sample, doSynchronization);
 					}
-					sample.setMute(false);
 				}
+				sample.setMute(mute);
+				dataStore.updateSample(loopId, sample);
 			}
 		}
 	}

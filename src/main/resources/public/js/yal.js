@@ -179,14 +179,20 @@ app.controller('yalCtrl', function($scope, $http, $interval) {
 			method : 'GET',
 			url : '/loops'
 		}).success(function(data, status, headers, config) {
-			$scope.loops = data;
+			$scope.loops = [];
+			angular.forEach(data, function(value, key){
+				$scope.loops[value.id] = value;
+			});
 			updateCurrentLoop();			
 		}).error(function(data, status, headers, config) {
 		});
 	}
 	
 	function updateCurrentLoop(){
-		$scope.currentLoop = $scope.loops.filter(function(n){ return n.active === true; })[0];
-		$scope.currentLoop.position = 0;
+		var activeLoops = $scope.loops.filter(function(n){ return n.active === true; });
+		if(activeLoops.length == 1){
+			$scope.currentLoop = activeLoops[0];
+			$scope.currentLoop.position = 0;
+		}
 	}
 });

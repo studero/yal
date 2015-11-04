@@ -39,7 +39,7 @@
 		
 		<div class="panel panel-default col-xs-12 title">
 			<div class="panel panel-default col-xs-2"><h4>Input</h4></div>
-			<div ng-repeat="(key, value) in loops" class="panel panel-default col-xs-2">	
+			<div ng-repeat="(key, value) in loops | orderBy:'id'" class="panel panel-default col-xs-2">	
 				<div ng-click="activateLoop(value.id, true)" style="cursor:pointer;">
 					<h4>{{value.id}} - {{value.name}} <span ng-show="value.active">*</span></h4>
 				</div>
@@ -51,7 +51,7 @@
 			</div>
 		</div>
 		<div class="panel panel-default col-xs-12">
-			<div ng-repeat="(key, value) in channels | filter:{direction: 'IN'}" class="col-xs-12 channel">				
+			<div ng-repeat="(key, value) in channels | filter:{direction: 'IN'} | orderBy:'id'" class="col-xs-12 channel">				
 				<div class="panel panel-default col-xs-2">
 					<button ng-click="record(value.id, true)" class="btn btn-primary btn-xs" ng-show="value.recordingState == 'STOPPED'">
 						<span class="glyphicon glyphicon-record"></span>
@@ -61,7 +61,7 @@
 					</button>
 					<span class="channel-name">{{value.id}} - {{value.name}}</span>
 				</div>
-				<div ng-repeat="(loopKey, loopValue) in loops" class="col-xs-2">
+				<div ng-repeat="(loopKey, loopValue) in loops | orderBy:'id'" class="col-xs-2">
 					<div ng-repeat="(sampleKey, sampleValue) in loopValue.samples | filter:{channelId: value.id}" class="col-xs-12 sample">
 						<div class="panel panel-default sample">
 							<span class="sample-name">{{sampleValue.id}}</span>
@@ -79,7 +79,7 @@
 		<div class="panel panel-default col-xs-2">
 			<div class="panel panel-default col-xs-12 title"><h4>Output</h4></div>
 			<div class="row channels">
-				<div ng-repeat="(key, value) in channels | filter:{direction: 'OUT'}" class="col-xs-10 channel">				
+				<div ng-repeat="(key, value) in channels | filter:{direction: 'OUT'} | orderBy:'id'" class="col-xs-10 channel">				
 					<div class="panel panel-default col-xs-10">
 						<span class="channel-name">{{value.id}} - {{value.name}}</span>
 						<button ng-click="record(value.id, true)" class="btn btn-primary btn-xs" ng-show="value.recordingState == 'STOPPED'">

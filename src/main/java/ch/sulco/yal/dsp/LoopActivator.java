@@ -2,12 +2,17 @@ package ch.sulco.yal.dsp;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.sulco.yal.dm.Loop;
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.audio.AudioSink;
 import ch.sulco.yal.dsp.audio.onboard.Synchronizer;
 
 public class LoopActivator {
+
+	private final static Logger log = LoggerFactory.getLogger(LoopActivator.class);
 
 	@Inject
 	private DataStore dataStore;
@@ -19,6 +24,7 @@ public class LoopActivator {
 	private transient Synchronizer synchronizer;
 
 	public void setCurrentLoopId(Long currentLoopId) {
+		log.info("activate loop [" + currentLoopId + "]");
 		Loop before = dataStore.getCurrentLoop();
 		Loop after = dataStore.getLoop(currentLoopId);
 		if (before != null) {
@@ -43,7 +49,7 @@ public class LoopActivator {
 				if (active) {
 					player.startSample(sample, true);
 				} else {
-					player.stopSample(sample, true);
+					player.stopSample(sample, false);
 				}
 			}
 		}

@@ -45,6 +45,7 @@ public class DataStore {
 	private AppConfig appConfig;
 
 	private LooperState looperState = LooperState.STOPPED;
+	private Long nextLoopId;
 
 	private final List<Loop> loops = new ArrayList<>();
 	private final List<Channel> channels = new ArrayList<>();
@@ -237,6 +238,14 @@ public class DataStore {
 	public void setLooperState(LooperState looperState) {
 		this.looperState = looperState;
 		addEvent(new LooperStateUpdated(looperState));
+	}
+
+	public Long getNextLoopId() {
+		return nextLoopId;
+	}
+
+	public void setNextLoopId(Long nextLoopId) {
+		this.nextLoopId = nextLoopId;
 	}
 
 	private void addEvent(DataEvent event) {

@@ -47,7 +47,7 @@ public abstract class AudioSink implements SyncAdjuster, LoopListener {
 	protected abstract void finishSample(Sample sample);
 
 	public void stopSample(Sample sample, boolean doSynchronization) {
-		log.info("Stop sample [" + sample.getId() + "]");
+		log.info("Stop sample [" + sample.getId() + "][doSynchronization=" + doSynchronization + "]");
 		if (this.playingSamples.contains(sample)) {
 			if (doSynchronization) {
 				this.finishSample(sample);

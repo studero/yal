@@ -89,7 +89,10 @@ public class Server implements DataEventListener {
 	}
 
 	private String activateLoop(Long loopId) {
-		this.loopActivator.setCurrentLoopId(loopId);
+		log.info("next loop id [" + loopId + "]");
+		this.dataStore.setNextLoopId(loopId);
+		if (this.dataStore.getCurrentLoop() == null)
+			this.loopActivator.setCurrentLoopId(loopId);
 		return "Success";
 	}
 

@@ -16,7 +16,6 @@ import ch.sulco.yal.dm.RecordingState;
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.DataStore;
 import ch.sulco.yal.dsp.audio.onboard.LoopListener;
-import ch.sulco.yal.dsp.audio.onboard.SyncAdjustment;
 import ch.sulco.yal.dsp.audio.onboard.Synchronizer;
 
 public abstract class AudioSource implements LoopListener, AudioDataListener {
@@ -118,7 +117,7 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 	protected abstract Thread getRecordThread();
 
 	@Override
-	public SyncAdjustment loopStarted(boolean firstLoop) {
+	public void loopStarted(boolean firstLoop) {
 		log.info("Loop Started [firstLoop=" + firstLoop + "]");
 		if (this.inputChannel.getRecordingState() == RecordingState.WAITING) {
 			this.inputChannel.setOverdubbing(!firstLoop);
@@ -132,7 +131,12 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 		} else {
 			this.synchronizer.removeLoopListerner(this);
 		}
-		return null;
+	}
+
+	@Override
+	public void loopStopped() {
+		log.info("Loop Stopped");
+		this.getRecordThread().interrupt();
 	}
 
 	@Override

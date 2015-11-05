@@ -28,6 +28,7 @@ import ch.sulco.yal.dsp.DataStore.DataEvent;
 import ch.sulco.yal.dsp.DataStore.DataEventListener;
 import ch.sulco.yal.dsp.DataStore.LooperStateUpdated;
 import ch.sulco.yal.dsp.SampleMutator;
+import ch.sulco.yal.dsp.audio.onboard.Synchronizer;
 
 @Singleton
 public class Processor implements DataEventListener {
@@ -39,6 +40,9 @@ public class Processor implements DataEventListener {
 
 	@Inject
 	private SampleMutator sampleMutator;
+
+	@Inject
+	private Synchronizer synchronizer;
 
 	private final Map<Long, AudioSource> audioSources = new HashMap<>();
 	private final Map<Long, AudioSink> audioSinks = new HashMap<>();
@@ -156,7 +160,9 @@ public class Processor implements DataEventListener {
 								s.getId(),
 								audioSinks.values().stream().findFirst().get(),
 								true));
+				synchronizer.startLoop();
 			} else {
+				synchronizer.stopLoop();
 				dataStore.getCurrentLoop().getSamples().stream()
 						.forEach(s -> sampleMutator.stopSample(
 								dataStore.getCurrentLoop().getId(),

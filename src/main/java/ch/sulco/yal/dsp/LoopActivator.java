@@ -31,6 +31,7 @@ public class LoopActivator {
 			this.dataStore.updateLoop(before);
 		}
 		this.dataStore.updateLoop(after);
+		this.dataStore.setLooperState(this.dataStore.getLooperState());
 	}
 
 	private void updateLoopSamples(Loop loop, boolean active) {

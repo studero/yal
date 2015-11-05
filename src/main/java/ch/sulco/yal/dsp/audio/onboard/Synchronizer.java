@@ -18,7 +18,9 @@ public class Synchronizer {
 
 	private final static Logger log = LoggerFactory.getLogger(Synchronizer.class);
 
-	private LinkedList<LoopListener> loopListeners = new LinkedList<LoopListener>();
+	private LinkedList<LoopListener> loopListeners = new LinkedList<>();
+	private LinkedList<SyncAdjuster> syncAdjusters = new LinkedList<>();
+
 	private long loopLength = 0;
 	private ScheduledExecutorService synchronizeService = Executors.newSingleThreadScheduledExecutor();
 	private ScheduledFuture<?> synchronizeTimer;
@@ -45,41 +47,48 @@ public class Synchronizer {
 		}, time, TimeUnit.MICROSECONDS);
 	}
 
-	private void synchronizeEvent() {
-		log.info("Synchronization event");
-		if (loopListeners.isEmpty()) {
+	public void stopLoop() {
+		log.info("stop loop");
+		if (synchronizeTimer != null) {
 			synchronizeTimer.cancel(false);
 			synchronizeTimer = null;
 			log.info("Synchronization loop ended");
-		} else {
-			Stopwatch stopwatch = Stopwatch.createStarted();
-			int count = 0;
-			long halfLoopLength = getLoopLength() / 2;
-			SyncAdjustment loopSyncAdjustment = new SyncAdjustment(halfLoopLength, -halfLoopLength, 0L);
-			for (LoopListener loopListener : loopListeners) {
-				SyncAdjustment syncAdjustment = loopListener.loopStarted(false);
-				if (syncAdjustment != null) {
-					count++;
-					if (syncAdjustment.getLowestSamplePosition() < loopSyncAdjustment.getLowestSamplePosition()) {
-						loopSyncAdjustment.setLowestSamplePosition(syncAdjustment.getLowestSamplePosition());
-					}
-					loopSyncAdjustment.setAverageSamplePosition(
-							loopSyncAdjustment.getAverageSamplePosition() + syncAdjustment.getAverageSamplePosition());
-					if (syncAdjustment.getHighestSamplePosition() > loopSyncAdjustment.getHighestSamplePosition()) {
-						loopSyncAdjustment.setHighestSamplePosition(syncAdjustment.getHighestSamplePosition());
-					}
+		}
+		for (LoopListener loopListener : loopListeners) {
+			loopListener.loopStopped();
+		}
+	}
+
+	private void synchronizeEvent() {
+		log.info("Synchronization event");
+
+		Stopwatch stopwatch = Stopwatch.createStarted();
+		int count = 0;
+		long halfLoopLength = getLoopLength() / 2;
+		SyncAdjustment loopSyncAdjustment = new SyncAdjustment(halfLoopLength, -halfLoopLength, 0L);
+		for (SyncAdjuster syncAdjuster : syncAdjusters) {
+			SyncAdjustment syncAdjustment = syncAdjuster.getSyncAdjustment();
+			if (syncAdjustment != null) {
+				count++;
+				if (syncAdjustment.getLowestSamplePosition() < loopSyncAdjustment.getLowestSamplePosition()) {
+					loopSyncAdjustment.setLowestSamplePosition(syncAdjustment.getLowestSamplePosition());
+				}
+				loopSyncAdjustment.setAverageSamplePosition(
+						loopSyncAdjustment.getAverageSamplePosition() + syncAdjustment.getAverageSamplePosition());
+				if (syncAdjustment.getHighestSamplePosition() > loopSyncAdjustment.getHighestSamplePosition()) {
+					loopSyncAdjustment.setHighestSamplePosition(syncAdjustment.getHighestSamplePosition());
 				}
 			}
-			if (count > 0) {
-				loopSyncAdjustment.setAverageSamplePosition(loopSyncAdjustment.getAverageSamplePosition() / count);
-			}
-			long calculateTime = stopwatch.elapsed(TimeUnit.MICROSECONDS);
-			long newLenght = loopLength - loopSyncAdjustment.getAverageSamplePosition() / 2 - calculateTime - 1500;
-			log.info("Synchronization position calculated in " + calculateTime + " [min=" + loopSyncAdjustment.getLowestSamplePosition()
-					+ ", avg=" + loopSyncAdjustment.getAverageSamplePosition() + ", max="
-					+ loopSyncAdjustment.getHighestSamplePosition() + "]");
-			startTimer(newLenght);
 		}
+		if (count > 0) {
+			loopSyncAdjustment.setAverageSamplePosition(loopSyncAdjustment.getAverageSamplePosition() / count);
+		}
+		long calculateTime = stopwatch.elapsed(TimeUnit.MICROSECONDS);
+		long newLenght = loopLength - loopSyncAdjustment.getAverageSamplePosition() / 2 - calculateTime - 1500;
+		log.info("Synchronization position calculated in " + calculateTime + " [min=" + loopSyncAdjustment.getLowestSamplePosition()
+				+ ", avg=" + loopSyncAdjustment.getAverageSamplePosition() + ", max="
+				+ loopSyncAdjustment.getHighestSamplePosition() + "]");
+		startTimer(newLenght);
 	}
 
 	public void addLoopListerner(LoopListener loopListerer) {
@@ -87,16 +96,35 @@ public class Synchronizer {
 			this.loopListeners.add(loopListerer);
 			log.info("Synchronization listener added, now has " + loopListeners.size());
 		}
-		if (loopLength == 0) {
-			loopListerer.loopStarted(true);
-		} else {
-			this.checkLine();
+	}
+
+	public void addSyncAdjuster(SyncAdjuster syncAdjuster) {
+		if (!this.syncAdjusters.contains(syncAdjuster)) {
+			this.syncAdjusters.add(syncAdjuster);
+			log.info("Synchronization adjuster added, now has " + syncAdjusters.size());
+		}
+	}
+
+	public void startLoop() {
+		log.info("start loop [length=" + loopLength + "]");
+		triggerLoopStarted(loopLength == 0);
+		this.checkLine();
+	}
+
+	private void triggerLoopStarted(boolean firstLoop) {
+		for (LoopListener loopListener : loopListeners) {
+			loopListener.loopStarted(firstLoop);
 		}
 	}
 
 	public void removeLoopListerner(LoopListener loopListerer) {
 		this.loopListeners.remove(loopListerer);
 		log.info("Synchronization listener removed, now has " + loopListeners.size());
+	}
+
+	public void removeSyncAdjuster(SyncAdjuster syncAdjuster) {
+		this.syncAdjusters.remove(syncAdjuster);
+		log.info("Synchronization adjuster removed, now has " + syncAdjusters.size());
 	}
 
 	public long getCurrentPosition() {

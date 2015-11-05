@@ -9,10 +9,11 @@ import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.audio.onboard.LoopListener;
+import ch.sulco.yal.dsp.audio.onboard.SyncAdjuster;
 import ch.sulco.yal.dsp.audio.onboard.SyncAdjustment;
 import ch.sulco.yal.dsp.audio.onboard.Synchronizer;
 
-public abstract class AudioSink implements LoopListener {
+public abstract class AudioSink implements SyncAdjuster, LoopListener {
 	private final static Logger log = LoggerFactory.getLogger(AudioSink.class);
 
 	@Inject
@@ -25,7 +26,9 @@ public abstract class AudioSink implements LoopListener {
 		if (!this.playingSamples.contains(sample)) {
 			this.playingSamples.add(sample);
 			this.resetSamplePosition(sample);
+			synchronizer.addSyncAdjuster(this);
 			synchronizer.addLoopListerner(this);
+			// synchronizer.startLoop();
 			if (!doSynchronization) {
 				log.info("Play position " + synchronizer.getCurrentPosition());
 				this.playSample(sample, synchronizer.getCurrentPosition(), -1);
@@ -53,6 +56,7 @@ public abstract class AudioSink implements LoopListener {
 			}
 			this.playingSamples.remove(sample);
 			if (this.playingSamples.isEmpty()) {
+				this.synchronizer.removeSyncAdjuster(this);
 				this.synchronizer.removeLoopListerner(this);
 			}
 		}
@@ -61,14 +65,29 @@ public abstract class AudioSink implements LoopListener {
 	public abstract void muteSample(Sample sample, boolean mute);
 
 	@Override
-	public SyncAdjustment loopStarted(boolean firstLoop) {
-		long halfLoopLength = synchronizer.getLoopLength() / 2;
-		SyncAdjustment syncAdjustment = new SyncAdjustment(halfLoopLength, -halfLoopLength, 0L);
+	public void loopStarted(boolean firstLoop) {
 		for (Sample sample : this.playingSamples) {
 			long samplePosition = this.getSamplePosition(sample);
 			if (samplePosition == 0) {
 				this.playSample(sample, 0, -1);
-			} else {
+			}
+		}
+	}
+
+	@Override
+	public void loopStopped() {
+		for (Sample sample : this.playingSamples) {
+			this.stopSample(sample, false);
+		}
+	}
+
+	@Override
+	public SyncAdjustment getSyncAdjustment() {
+		long halfLoopLength = synchronizer.getLoopLength() / 2;
+		SyncAdjustment syncAdjustment = new SyncAdjustment(halfLoopLength, -halfLoopLength, 0L);
+		for (Sample sample : this.playingSamples) {
+			long samplePosition = this.getSamplePosition(sample);
+			if (samplePosition != 0) {
 				samplePosition += halfLoopLength;
 				samplePosition = samplePosition % synchronizer.getLoopLength();
 				samplePosition -= halfLoopLength;

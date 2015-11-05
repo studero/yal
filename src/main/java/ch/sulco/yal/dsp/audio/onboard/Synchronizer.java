@@ -55,27 +55,29 @@ public class Synchronizer {
 			Stopwatch stopwatch = Stopwatch.createStarted();
 			int count = 0;
 			long halfLoopLength = getLoopLength() / 2;
-			long position[] = { halfLoopLength, 0, -halfLoopLength };
+			SyncAdjustment loopSyncAdjustment = new SyncAdjustment(halfLoopLength, -halfLoopLength, 0L);
 			for (LoopListener loopListener : loopListeners) {
-				long loopPosition[] = loopListener.loopStarted(false);
-				if (loopPosition != null) {
+				SyncAdjustment syncAdjustment = loopListener.loopStarted(false);
+				if (syncAdjustment != null) {
 					count++;
-					if (loopPosition[0] < position[0]) {
-						position[0] = loopPosition[0];
+					if (syncAdjustment.getLowestSamplePosition() < loopSyncAdjustment.getLowestSamplePosition()) {
+						loopSyncAdjustment.setLowestSamplePosition(syncAdjustment.getLowestSamplePosition());
 					}
-					position[1] += loopPosition[1];
-					if (loopPosition[2] > position[2]) {
-						position[2] = loopPosition[2];
+					loopSyncAdjustment.setAverageSamplePosition(
+							loopSyncAdjustment.getAverageSamplePosition() + syncAdjustment.getAverageSamplePosition());
+					if (syncAdjustment.getHighestSamplePosition() > loopSyncAdjustment.getHighestSamplePosition()) {
+						loopSyncAdjustment.setHighestSamplePosition(syncAdjustment.getHighestSamplePosition());
 					}
 				}
 			}
 			if (count > 0) {
-				position[1] /= count;
+				loopSyncAdjustment.setAverageSamplePosition(loopSyncAdjustment.getAverageSamplePosition() / count);
 			}
 			long calculateTime = stopwatch.elapsed(TimeUnit.MICROSECONDS);
-			long newLenght = loopLength - position[1] / 2 - calculateTime - 1500;
-			log.info("Synchronization position calculated in " + calculateTime + " [min=" + position[0] + ", avg=" + position[1] + ", max="
-					+ position[2] + "]");
+			long newLenght = loopLength - loopSyncAdjustment.getAverageSamplePosition() / 2 - calculateTime - 1500;
+			log.info("Synchronization position calculated in " + calculateTime + " [min=" + loopSyncAdjustment.getLowestSamplePosition()
+					+ ", avg=" + loopSyncAdjustment.getAverageSamplePosition() + ", max="
+					+ loopSyncAdjustment.getHighestSamplePosition() + "]");
 			startTimer(newLenght);
 		}
 	}

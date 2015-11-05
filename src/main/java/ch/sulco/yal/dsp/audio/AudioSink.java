@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.sulco.yal.dm.Sample;
 import ch.sulco.yal.dsp.audio.onboard.LoopListener;
+import ch.sulco.yal.dsp.audio.onboard.SyncAdjustment;
 import ch.sulco.yal.dsp.audio.onboard.Synchronizer;
 
 public abstract class AudioSink implements LoopListener {
@@ -60,9 +61,9 @@ public abstract class AudioSink implements LoopListener {
 	public abstract void muteSample(Sample sample, boolean mute);
 
 	@Override
-	public long[] loopStarted(boolean firstLoop) {
+	public SyncAdjustment loopStarted(boolean firstLoop) {
 		long halfLoopLength = synchronizer.getLoopLength() / 2;
-		long position[] = { halfLoopLength, 0, -halfLoopLength };
+		SyncAdjustment syncAdjustment = new SyncAdjustment(halfLoopLength, -halfLoopLength, 0L);
 		for (Sample sample : this.playingSamples) {
 			long samplePosition = this.getSamplePosition(sample);
 			if (samplePosition == 0) {
@@ -71,16 +72,16 @@ public abstract class AudioSink implements LoopListener {
 				samplePosition += halfLoopLength;
 				samplePosition = samplePosition % synchronizer.getLoopLength();
 				samplePosition -= halfLoopLength;
-				if (samplePosition < position[0]) {
-					position[0] = samplePosition;
+				if (samplePosition < syncAdjustment.getLowestSamplePosition()) {
+					syncAdjustment.setLowestSamplePosition(samplePosition);
 				}
-				position[1] += samplePosition;
-				if (samplePosition > position[2]) {
-					position[2] = samplePosition;
+				syncAdjustment.setAverageSamplePosition(syncAdjustment.getAverageSamplePosition() + samplePosition);
+				if (samplePosition > syncAdjustment.getHighestSamplePosition()) {
+					syncAdjustment.setHighestSamplePosition(samplePosition);
 				}
 			}
 		}
-		position[1] /= this.playingSamples.size();
-		return position;
+		syncAdjustment.setAverageSamplePosition(syncAdjustment.getAverageSamplePosition() / this.playingSamples.size());
+		return syncAdjustment;
 	}
 }

@@ -89,7 +89,9 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 		if (this.recordedSample != null) {
 			Loop currentLoop = this.dataStore.getCurrentLoop();
 			Sample sample = new Sample();
-			sample.setId(currentLoop.getNumSamples());
+			Long nextSampleId = dataStore.getNextSampleId();
+			log.info("new sample id " + nextSampleId);
+			sample.setId(nextSampleId);
 			sample.setChannelId(this.inputChannel.getId());
 			if (currentLoop.getSamples().isEmpty()) {
 				long sampleLength = this.getSampleLength();
@@ -128,6 +130,8 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 		} else if (this.inputChannel.getRecordingState() == RecordingState.RECORDING) {
 			this.recordedSample = this.recordingSample.toByteArray();
 			this.recordingSample = new ByteArrayOutputStream();
+			log.info("recorded sample " + recordedSample.length);
+			stopRecord();
 		} else {
 			this.synchronizer.removeLoopListerner(this);
 		}
@@ -136,7 +140,7 @@ public abstract class AudioSource implements LoopListener, AudioDataListener {
 	@Override
 	public void loopStopped() {
 		log.info("Loop Stopped");
-		this.getRecordThread().interrupt();
+		stopRecord();
 	}
 
 	@Override

@@ -188,6 +188,17 @@ public class DataStore {
 		this.addEvent(new LoopUpdated(loop));
 	}
 
+	public Long getNextSampleId() {
+		return loops.stream()
+				.map(l -> l.getSamples())
+				.map(s -> s.stream()
+						.map(sa -> sa.getId())
+						.max((i1, i2) -> Long.compare(i1, i2))
+						.get())
+				.max((i1, i2) -> Long.compare(i1, i2))
+				.get() + 1;
+	}
+
 	public Sample getSample(Long loopId, Long sampleId) {
 		return loops.stream().filter(l -> Objects.equals(l.getId(), loopId)).findFirst().map(l -> l.getSample(sampleId)).get();
 	}

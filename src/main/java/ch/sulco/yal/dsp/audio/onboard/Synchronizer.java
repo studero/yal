@@ -31,12 +31,14 @@ public class Synchronizer {
 	private LinkedList<SyncAdjuster> syncAdjusters = new LinkedList<>();
 
 	private long loopLength = 0;
+	private boolean firstLoop;
 	private ScheduledExecutorService synchronizeService = Executors.newSingleThreadScheduledExecutor();
 	private ScheduledFuture<?> synchronizeTimer;
 
 	public void setLength(long length) {
 		loopLength = length;
 		synchronizeTimer = null;
+		firstLoop = true;
 		log.info("length set to " + loopLength);
 	}
 
@@ -55,6 +57,8 @@ public class Synchronizer {
 				synchronizeEvent();
 			}
 		}, time, TimeUnit.MICROSECONDS);
+		triggerLoopStarted(firstLoop);
+		firstLoop = false;
 	}
 
 	public void stopLoop() {
@@ -120,7 +124,6 @@ public class Synchronizer {
 
 	public void startLoop() {
 		log.info("start loop [length=" + loopLength + "]");
-		triggerLoopStarted(loopLength == 0);
 		this.checkLine();
 	}
 

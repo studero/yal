@@ -28,6 +28,9 @@ public class Application {
 	@Inject
 	private Server server;
 
+	// @Inject
+	// private VaadinServer vaadinServer;
+
 	@Inject
 	private Processor audioProcessor;
 
